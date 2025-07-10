@@ -24,9 +24,10 @@ class MainApp extends StatelessWidget {
           create: (context) => PageCubit(),
         ),
       ],
-      child: const MaterialApp(
+      child: MaterialApp(
+        theme: ThemeData(fontFamily: 'Urbanist'),
         debugShowCheckedModeBanner: false,
-        home: Scaffold(
+        home: const Scaffold(
           body: MainPage(),
         ),
       ),
