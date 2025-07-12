@@ -8,10 +8,12 @@ environment:
 
 dependencies:
   bloc: ^9.0.0
+  carousel_slider: ^5.1.1
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
   page_transition: ^2.1.0
+  smooth_page_indicator: ^1.2.1
   solar_icons: ^0.0.5
 
 dev_dependencies:

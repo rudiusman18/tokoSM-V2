@@ -1,0 +1,79 @@
+[COLORS]
+base-100 => #ffffff
+base-200 => #f1f2f4
+base-300 => #e2e5e9
+accent => #00d3bb
+neutral => #09090b
+primary => #2a7eff
+secondary => #979fad
+info => #00bafe
+success => #00ba7b
+warning => #fbc700
+error => #f82834
+
+[FONT SIZE]
+text-xxs => font-size: 10px
+text-xs => font-size: 12px
+text-sm => font-size: 14px
+text-base => font-size: 16px
+text-lg => font-size: 18px
+text-xl => font-size: 20px
+text-2xl => font-size: 24px
+text-3xl => font-size: 30px
+
+[BORDER RADIUS]
+rounded-xs => border-radius: 2px
+rounded-sm => border-radius: 4px
+rounded-md => border-radius: 6px
+rounded-lg => border-radius: 8px
+rounded-xl => border-radius: 12px
+rounded-2xl => border-radius: 16px
+rounded-3xl => border-radius: 24px
+rounded-full => border-radius: 9999px
+
+[INPUT, SELECT]
+input-xs: height: 24px, padding: 0 12px; font-size: 11px
+input-sm: height: 32px, padding: 0 12px; font-size: 12px (default)
+input-md: height: 40px, padding: 0 12px; font-size: 14px
+
+[BUTTONS]
+btn-xs => height: 24px; padding: 8px; font-size: 11px
+btn-sm => height: 32px; padding: 12px; font-size: 12px
+btn-md => height: 40px; padding: 16px; font-size: 16px (default)
+btn-lg => height: 48px; padding: 20px; font-size: 18px
+
+[BUTTONS BG COLOR]
+btn-default (base-200) => #e2e5e9
+btn-success => #00ba7b
+btn-warning => #fbc700
+btn-error => #f82834
+btn-neutral => #09090b
+
+[BADGE]
+badge-xs => height: 16px, padding: 2px 4px, font-size: 10px
+badge-sm => height: 20px, padding: 2px 4px, font-size: 12px
+
+[BUTTONS BG COLOR (Non Status Transaksi)]
+badge-default => #e2e5e9
+badge-success => #00ba7b
+badge-warning => #fbc700
+badge-error => #f82834
+badge-neutral => #09090b
+
+[BADGE (Status Transaksi)]
+badge-trx => height: 18px, padding: 1px 4px, font-size: 12px
+
+[BADGE COLORS (Status Transaksi)]
+badge-error => bg: #fee2e2, text: #ef4444
+badge-warning => bg: #fef9c3, text: #eab308
+badge-info => bg: #e0f2fe, text: #38bdf8
+badge-success => bg: #dcfce7, text: #22c55e
+badge-secondary => bg: #f1f5f9, text: #64748b
+
+
+[COMPONENTS]
+button, input, select, tab (all) => border-radius: 8px [rounded-lg] (default)
+navmenu => height: 56px, mainAxisAlignment: spaceAround, crossAxisAlignment: center
+header => height: 48px, padding-horizontal: 16px, font-size: 16px
+border besar => color base-200
+border kecil (garis-garis) / separator => color base-300
