@@ -309,6 +309,104 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
+    Widget promoSection() {
+      return Column(
+        spacing: 10,
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(
+              horizontal: 16,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Promo",
+                  style: TextStyle(
+                    fontWeight: bold,
+                  ),
+                ),
+                _HomePageExtension().allButtonView(onTap: () {})
+              ],
+            ),
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                spacing: 10,
+                children: [
+                  for (var index = 0; index < 20; index++) ...{
+                    _HomePageExtension().smallItemView(
+                      imageURL:
+                          'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80',
+                      productName: "Lorem Ipsum",
+                      productPrice: "Rp 12000",
+                      discountPercentage: "",
+                      productPriceColor: colorSuccess,
+                      productRealPrice: "",
+                      bonusInformation: "Buy 1 Get 1",
+                    ),
+                  }
+                ],
+              ),
+            ),
+          )
+        ],
+      );
+    }
+
+    Widget terlarisSection() {
+      return Column(
+        spacing: 10,
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(
+              horizontal: 16,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Terlaris",
+                  style: TextStyle(
+                    fontWeight: bold,
+                  ),
+                ),
+                _HomePageExtension().allButtonView(onTap: () {})
+              ],
+            ),
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                spacing: 10,
+                children: [
+                  for (var index = 0; index < 20; index++) ...{
+                    _HomePageExtension().smallItemView(
+                      imageURL:
+                          'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80',
+                      productName: "Lorem Ipsum",
+                      productPrice: "Rp 12000",
+                      discountPercentage: "",
+                      productPriceColor: colorSuccess,
+                      productRealPrice: "",
+                      bonusInformation: "",
+                    ),
+                  }
+                ],
+              ),
+            ),
+          )
+        ],
+      );
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -335,6 +433,14 @@ class _HomePageState extends State<HomePage> {
                     height: 10,
                   ),
                   discountSection(),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  promoSection(),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  terlarisSection(),
                 ],
               ),
             )
@@ -403,42 +509,75 @@ class _HomePageExtension {
                   fontWeight: bold,
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  color: colorError,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      SolarIconsBold.bolt,
-                      size: 10,
-                      color: Colors.white,
-                    ),
-                    Text(
-                      discountPercentage,
-                      style: TextStyle(
-                        fontSize: 10,
+              if (discountPercentage != "") ...{
+                Container(
+                  padding: const EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: colorError,
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        SolarIconsBold.bolt,
+                        size: 10,
                         color: Colors.white,
-                        fontWeight: bold,
                       ),
-                    ),
-                  ],
+                      Text(
+                        discountPercentage,
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.white,
+                          fontWeight: bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+              },
             ],
           ),
-          Text(
-            productRealPrice == "" ? bonusInformation : productRealPrice,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey,
-              fontWeight: bold,
-              decoration: TextDecoration.lineThrough,
+          if (productRealPrice != "") ...{
+            Text(
+              productRealPrice,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey,
+                fontWeight: bold,
+                decoration: TextDecoration.lineThrough,
+              ),
             ),
-          ),
+          },
+          if (bonusInformation != "") ...{
+            Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                color: colorWarning,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Row(
+                spacing: 2,
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Icon(
+                    SolarIconsBold.tag,
+                    size: 10,
+                    color: Colors.white,
+                  ),
+                  Text(
+                    bonusInformation,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: Colors.white,
+                      fontWeight: bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          },
         ],
       ),
     );
