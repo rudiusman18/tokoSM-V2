@@ -1,6 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:tokosm_v2/shared/themes.dart';
@@ -407,6 +406,49 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
+    Widget popularSection() {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Populer",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                _HomePageExtension().allButtonView(onTap: () {}),
+              ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          GridView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: 20,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              childAspectRatio: 0.85,
+            ),
+            itemBuilder: (context, index) {
+              return _HomePageExtension().bigItemView(
+                productName: "Lorem Ipsum",
+                price: "Rp 12000",
+                rating: "4.7",
+              );
+            },
+          ),
+        ],
+      );
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -441,6 +483,10 @@ class _HomePageState extends State<HomePage> {
                     height: 10,
                   ),
                   terlarisSection(),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  popularSection(),
                 ],
               ),
             )
@@ -480,7 +526,7 @@ class _HomePageExtension {
       required String discountPercentage,
       required String productRealPrice,
       required String bonusInformation}) {
-    return Container(
+    return SizedBox(
       width: 96,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -580,6 +626,57 @@ class _HomePageExtension {
           },
         ],
       ),
+    );
+  }
+
+  Widget bigItemView({
+    required String productName,
+    required String price,
+    required String rating,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AspectRatio(
+          aspectRatio: 1,
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+                color: Colors.grey, borderRadius: BorderRadius.circular(10)),
+          ),
+        ),
+        Text(
+          productName,
+          style: const TextStyle(
+            fontSize: 12,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+        Text(
+          price,
+          style: TextStyle(
+            fontSize: 12,
+            color: colorSuccess,
+            fontWeight: bold,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+        Row(
+          children: [
+            Icon(
+              Icons.star,
+              size: 12,
+              color: colorWarning,
+            ),
+            Text(
+              rating,
+              style: const TextStyle(
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

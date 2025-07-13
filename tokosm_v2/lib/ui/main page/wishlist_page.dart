@@ -1,14 +1,199 @@
 import 'package:flutter/material.dart';
+import 'package:tokosm_v2/shared/themes.dart';
 
-class WishlistPage extends StatelessWidget {
+class WishlistPage extends StatefulWidget {
   const WishlistPage({super.key});
 
   @override
+  State<WishlistPage> createState() => _WishlistPageState();
+}
+
+class _WishlistPageState extends State<WishlistPage> {
+  var tabFilter = ["Terbaru", "Terlaris", "Termahal", "Termurah"];
+
+  @override
   Widget build(BuildContext context) {
+    Widget header() {
+      return DefaultTabController(
+        length: 3,
+        child: Container(
+          margin: const EdgeInsets.only(top: 10),
+          child: Column(
+            children: [
+              // NOTE: header
+              Text(
+                "Produk Favorit",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: bold,
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // NOTE: search
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: colorSecondary,
+                    width: 1,
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.search,
+                      size: 20,
+                      color: colorSecondary,
+                    ),
+                    Expanded(
+                      child: Container(
+                        margin: const EdgeInsets.only(left: 10),
+                        child: TextFormField(
+                          decoration: const InputDecoration.collapsed(
+                            hintText: "Cari Produk",
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  for (var i = 0; i < tabFilter.length; i++) ...{
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.only(
+                          bottom: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
+                              color: i == 0
+                                  ? Colors.black
+                                  : colorSecondary, // Warna border
+                              width: 2.0, // Ketebalan border
+                            ),
+                          ),
+                        ),
+                        child: Text(
+                          tabFilter[i],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: i == 0 ? Colors.black : colorSecondary,
+                          ),
+                        ),
+                      ),
+                    ),
+                  },
+                ],
+              )
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
-      body: Text(
-        "Ini adalah halaman wishlist page",
+      body: SafeArea(
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(
+                horizontal: 16,
+              ),
+              child: header(),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Expanded(
+                child: ListView(
+              children: [
+                GridView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: 20,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 0.85,
+                  ),
+                  itemBuilder: (context, index) {
+                    return _wishlistPageExtension().bigItemView(
+                      productName: "Lorem Ipsum",
+                      price: "Rp 12000",
+                      rating: "4.7",
+                    );
+                  },
+                ),
+              ],
+            )),
+          ],
+        ),
       ),
+    );
+  }
+}
+
+class _wishlistPageExtension {
+  Widget bigItemView({
+    required String productName,
+    required String price,
+    required String rating,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AspectRatio(
+          aspectRatio: 1,
+          child: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+                color: Colors.grey, borderRadius: BorderRadius.circular(10)),
+          ),
+        ),
+        Text(
+          productName,
+          style: const TextStyle(
+            fontSize: 12,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+        Text(
+          price,
+          style: TextStyle(
+            fontSize: 12,
+            color: colorSuccess,
+            fontWeight: bold,
+          ),
+          overflow: TextOverflow.ellipsis,
+        ),
+        Row(
+          children: [
+            Icon(
+              Icons.star,
+              size: 12,
+              color: colorWarning,
+            ),
+            Text(
+              rating,
+              style: const TextStyle(
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
