@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:tokosm_v2/shared/themes.dart';
@@ -123,7 +124,7 @@ class _HomePageState extends State<HomePage> {
 
     Widget carouselBanner() {
       return Container(
-        margin: const EdgeInsets.only(top: 20),
+        margin: const EdgeInsets.only(top: 10),
         height: 128,
         decoration: BoxDecoration(
           boxShadow: [
@@ -190,25 +191,255 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    return Scaffold(
-      body: SafeArea(
-        child: Container(
-          margin: const EdgeInsets.symmetric(
-            horizontal: 16,
-          ),
-          child: Column(
-            children: [
-              header(),
-              Expanded(
-                child: ListView(
+    Widget flashSaleSection() {
+      return Column(
+        spacing: 10,
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(
+              horizontal: 16,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
-                    carouselBanner(),
+                    Text(
+                      "Fla",
+                      style: TextStyle(
+                        fontWeight: bold,
+                        fontStyle: FontStyle.italic,
+                        color: colorError,
+                      ),
+                    ),
+                    Icon(
+                      SolarIconsBold.bolt,
+                      size: 14,
+                      color: colorError,
+                    ),
+                    Text(
+                      "h Sale",
+                      style: TextStyle(
+                        fontWeight: bold,
+                        fontStyle: FontStyle.italic,
+                        color: colorError,
+                      ),
+                    ),
                   ],
                 ),
-              )
-            ],
+                _HomePageExtension().allButtonView(onTap: () {})
+              ],
+            ),
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                spacing: 10,
+                children: [
+                  for (var index = 0; index < 20; index++) ...{
+                    _HomePageExtension().smallItemView(
+                      imageURL:
+                          'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80',
+                      productName: "Lorem Ipsum",
+                      productPrice: "Rp 12000",
+                      discountPercentage: "20%",
+                      productPriceColor: colorError,
+                      productRealPrice: "RP 20000",
+                      bonusInformation: "",
+                    ),
+                  }
+                ],
+              ),
+            ),
+          )
+        ],
+      );
+    }
+
+    Widget discountSection() {
+      return Column(
+        spacing: 10,
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(
+              horizontal: 16,
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Diskon",
+                  style: TextStyle(
+                    fontWeight: bold,
+                  ),
+                ),
+                _HomePageExtension().allButtonView(onTap: () {})
+              ],
+            ),
+          ),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                spacing: 10,
+                children: [
+                  for (var index = 0; index < 20; index++) ...{
+                    _HomePageExtension().smallItemView(
+                      imageURL:
+                          'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80',
+                      productName: "Lorem Ipsum",
+                      productPrice: "Rp 12000",
+                      discountPercentage: "20%",
+                      productPriceColor: colorSuccess,
+                      productRealPrice: "RP 20000",
+                      bonusInformation: "",
+                    ),
+                  }
+                ],
+              ),
+            ),
+          )
+        ],
+      );
+    }
+
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.symmetric(
+                horizontal: 16,
+              ),
+              child: header(),
+            ),
+            Expanded(
+              child: ListView(
+                children: [
+                  Container(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                      ),
+                      child: carouselBanner()),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  flashSaleSection(),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  discountSection(),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HomePageExtension {
+  Widget allButtonView({required Function onTap}) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          "Lihat Semua",
+          style: TextStyle(
+            color: colorSuccess,
+            fontSize: 12,
           ),
         ),
+        Icon(
+          SolarIconsOutline.altArrowRight,
+          size: 12,
+          color: colorSuccess,
+        ),
+      ],
+    );
+  }
+
+  Widget smallItemView(
+      {required String imageURL,
+      required String productName,
+      required String productPrice,
+      required Color productPriceColor,
+      required String discountPercentage,
+      required String productRealPrice,
+      required String bonusInformation}) {
+    return Container(
+      width: 96,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            // Ini nanti diisi image
+            height: 96,
+            width: 96,
+            decoration: BoxDecoration(
+              color: Colors.grey,
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+          Text(
+            productName,
+            style: const TextStyle(fontSize: 12),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                productPrice,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: productPriceColor,
+                  fontWeight: bold,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  color: colorError,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      SolarIconsBold.bolt,
+                      size: 10,
+                      color: Colors.white,
+                    ),
+                    Text(
+                      discountPercentage,
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.white,
+                        fontWeight: bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Text(
+            productRealPrice == "" ? bonusInformation : productRealPrice,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey,
+              fontWeight: bold,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
+        ],
       ),
     );
   }

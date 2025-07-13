@@ -25,7 +25,10 @@ class MainApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        theme: ThemeData(fontFamily: 'Urbanist'),
+        theme: ThemeData(
+          fontFamily: 'Urbanist',
+          splashColor: Colors.transparent,
+        ),
         debugShowCheckedModeBanner: false,
         home: const Scaffold(
           body: MainPage(),

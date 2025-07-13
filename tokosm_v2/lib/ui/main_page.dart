@@ -41,6 +41,7 @@ class _MainPageState extends State<MainPage> {
             onTap: (int index) {
               context.read<PageCubit>().setPage(index);
             },
+            useLegacyColorScheme: false,
             type: BottomNavigationBarType.fixed,
             selectedFontSize: 10,
             unselectedFontSize: 10,
