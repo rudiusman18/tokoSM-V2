@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tokosm_v2/cubit/wishlist_cubit.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 
 class WishlistPage extends StatefulWidget {
@@ -69,25 +71,38 @@ class _WishlistPageState extends State<WishlistPage> {
                 children: [
                   for (var i = 0; i < tabFilter.length; i++) ...{
                     Expanded(
-                      child: Container(
-                        padding: const EdgeInsets.only(
-                          bottom: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              color: i == 0
-                                  ? Colors.black
-                                  : colorSecondary, // Warna border
-                              width: 2.0, // Ketebalan border
+                      child: GestureDetector(
+                        onTap: () {
+                          context.read<WishlistTabFilterCubit>().setTabIndex(i);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.only(
+                            bottom: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border(
+                              bottom: BorderSide(
+                                color: i ==
+                                        context
+                                            .read<WishlistTabFilterCubit>()
+                                            .state
+                                    ? Colors.black
+                                    : colorSecondary, // Warna border
+                                width: 2.0, // Ketebalan border
+                              ),
                             ),
                           ),
-                        ),
-                        child: Text(
-                          tabFilter[i],
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: i == 0 ? Colors.black : colorSecondary,
+                          child: Text(
+                            tabFilter[i],
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: i ==
+                                      context
+                                          .read<WishlistTabFilterCubit>()
+                                          .state
+                                  ? Colors.black
+                                  : colorSecondary,
+                            ),
                           ),
                         ),
                       ),
@@ -101,46 +116,51 @@ class _WishlistPageState extends State<WishlistPage> {
       );
     }
 
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              margin: const EdgeInsets.symmetric(
-                horizontal: 16,
-              ),
-              child: header(),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Expanded(
-                child: ListView(
+    return BlocBuilder<WishlistTabFilterCubit, int>(
+      builder: (context, state) {
+        return Scaffold(
+          body: SafeArea(
+            child: Column(
               children: [
-                GridView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  itemCount: 20,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 0.85,
+                Container(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 16,
                   ),
-                  itemBuilder: (context, index) {
-                    return _wishlistPageExtension().bigItemView(
-                      productName: "Lorem Ipsum",
-                      price: "Rp 12000",
-                      rating: "4.7",
-                    );
-                  },
+                  child: header(),
                 ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Expanded(
+                    child: ListView(
+                  children: [
+                    GridView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount: 20,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        childAspectRatio: 0.85,
+                      ),
+                      itemBuilder: (context, index) {
+                        return _wishlistPageExtension().bigItemView(
+                          productName: "Lorem Ipsum",
+                          price: "Rp 12000",
+                          rating: "4.7",
+                        );
+                      },
+                    ),
+                  ],
+                )),
               ],
-            )),
-          ],
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

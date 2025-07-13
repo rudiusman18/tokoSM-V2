@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tokosm_v2/cubit/page_cubit.dart';
+import 'package:tokosm_v2/cubit/wishlist_cubit.dart';
 import 'package:tokosm_v2/ui/main_page.dart';
 
 void main() {
@@ -22,6 +23,9 @@ class MainApp extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => PageCubit(),
+        ),
+        BlocProvider(
+          create: (context) => WishlistTabFilterCubit(),
         ),
       ],
       child: MaterialApp(
