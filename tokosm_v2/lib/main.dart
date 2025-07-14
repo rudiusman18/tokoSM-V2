@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:tokosm_v2/cubit/page_cubit.dart';
 import 'package:tokosm_v2/cubit/transaction_cubit.dart';
 import 'package:tokosm_v2/cubit/wishlist_cubit.dart';
 import 'package:tokosm_v2/ui/main_page.dart';
+import 'package:tokosm_v2/ui/product%20page/detail_product_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,11 +30,23 @@ class MainApp extends StatelessWidget {
         BlocProvider(
           create: (context) => WishlistTabFilterCubit(),
         ),
-         BlocProvider(
+        BlocProvider(
           create: (context) => TransactionTabFilterCubit(),
         ),
       ],
       child: MaterialApp(
+        onGenerateRoute: (RouteSettings settings) {
+          switch (settings.name) {
+            case 'product/detail-product':
+              return PageTransition(
+                type: PageTransitionType.rightToLeft,
+                childCurrent: context.currentRoute,
+                child: const DetailProductPage(),
+                settings: settings,
+              );
+          }
+          return null;
+        },
         theme: ThemeData(
           fontFamily: 'Urbanist',
           splashColor: Colors.transparent,
