@@ -225,6 +225,7 @@ class _TransactionPageExtension {
                       status,
                       style: TextStyle(
                         color: colorError,
+                        fontSize: 12,
                       ),
                     ),
                   )
