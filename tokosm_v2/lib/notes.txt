@@ -81,5 +81,5 @@ border kecil (garis-garis) / separator => color base-300
 
 
 VERSION
-Flutter: 3.32
-java JDK: 17
+Flutter: 3.32.6
+java JDK: 17.0.2

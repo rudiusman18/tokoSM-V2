@@ -9,6 +9,7 @@ environment:
 dependencies:
   bloc: ^9.0.0
   carousel_slider: ^5.1.1
+  expandable: ^5.0.1
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1

@@ -35,7 +35,8 @@ class _WishlistPageState extends State<WishlistPage> {
 
               // NOTE: search
               Container(
-                padding: const EdgeInsets.all(8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
@@ -52,10 +53,14 @@ class _WishlistPageState extends State<WishlistPage> {
                     ),
                     Expanded(
                       child: Container(
-                        margin: const EdgeInsets.only(left: 10),
+                        margin: const EdgeInsets.only(
+                          left: 10,
+                        ),
                         child: TextFormField(
+                          style: const TextStyle(fontSize: 12),
                           decoration: const InputDecoration.collapsed(
                             hintText: "Cari Produk",
+                            hintStyle: TextStyle(fontSize: 12),
                           ),
                         ),
                       ),
@@ -102,6 +107,7 @@ class _WishlistPageState extends State<WishlistPage> {
                                           .state
                                   ? Colors.black
                                   : colorSecondary,
+                              fontSize: 12,
                             ),
                           ),
                         ),
@@ -132,30 +138,26 @@ class _WishlistPageState extends State<WishlistPage> {
                   height: 10,
                 ),
                 Expanded(
-                    child: ListView(
-                  children: [
-                    GridView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemCount: 20,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 10,
-                        childAspectRatio: 0.85,
-                      ),
-                      itemBuilder: (context, index) {
-                        return _wishlistPageExtension().bigItemView(
-                          productName: "Lorem Ipsum",
-                          price: "Rp 12000",
-                          rating: "4.7",
-                        );
-                      },
-                    ),
-                  ],
-                )),
+                  child: ListView(
+                    children: [
+                      Center(
+                        child: Wrap(
+                          spacing: 10,
+                          runSpacing: 10,
+                          children: List.generate(20, (index) {
+                            return _wishlistPageExtension().bigItemView(
+                              context:
+                                  context, // Pass context to measure screen width
+                              productName: "Lorem Ipsum",
+                              price: "Rp 12000",
+                              rating: "4.7",
+                            );
+                          }),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -165,55 +167,59 @@ class _WishlistPageState extends State<WishlistPage> {
   }
 }
 
+// ignore: camel_case_types
 class _wishlistPageExtension {
   Widget bigItemView({
+    required BuildContext context,
     required String productName,
     required String price,
     required String rating,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        AspectRatio(
-          aspectRatio: 1,
-          child: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-                color: Colors.grey, borderRadius: BorderRadius.circular(10)),
-          ),
-        ),
-        Text(
-          productName,
-          style: const TextStyle(
-            fontSize: 12,
-          ),
-          overflow: TextOverflow.ellipsis,
-        ),
-        Text(
-          price,
-          style: TextStyle(
-            fontSize: 12,
-            color: colorSuccess,
-            fontWeight: bold,
-          ),
-          overflow: TextOverflow.ellipsis,
-        ),
-        Row(
-          children: [
-            Icon(
-              Icons.star,
-              size: 12,
-              color: colorWarning,
-            ),
-            Text(
-              rating,
-              style: const TextStyle(
-                fontSize: 12,
+    final screenWidth = MediaQuery.of(context).size.width;
+    const horizontalPadding = 32; // 16 left + 16 right
+    const spacing = 10;
+    final itemWidth = (screenWidth - horizontalPadding - spacing) / 2;
+
+    return SizedBox(
+      width: itemWidth,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AspectRatio(
+            aspectRatio: 1,
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                borderRadius: BorderRadius.circular(10),
               ),
             ),
-          ],
-        ),
-      ],
+          ),
+          Text(
+            productName,
+            style: const TextStyle(fontSize: 12),
+            overflow: TextOverflow.ellipsis,
+          ),
+          Text(
+            price,
+            style: TextStyle(
+              fontSize: 12,
+              color: colorSuccess,
+              fontWeight: bold,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+          Row(
+            children: [
+              Icon(Icons.star, size: 12, color: colorWarning),
+              Text(
+                rating,
+                style: const TextStyle(fontSize: 12),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

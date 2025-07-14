@@ -7,3 +7,7 @@ class WishlistTabFilterCubit extends Cubit<int> {
     emit(index);
   }
 }
+
+class WishlistCubit extends Cubit<int> {
+  WishlistCubit() : super(0);
+}
