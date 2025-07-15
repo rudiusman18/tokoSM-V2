@@ -16,108 +16,102 @@ class _WishlistPageState extends State<WishlistPage> {
   @override
   Widget build(BuildContext context) {
     Widget header() {
-      return DefaultTabController(
-        length: 3,
-        child: Container(
-          margin: const EdgeInsets.only(top: 10),
-          child: Column(
-            children: [
-              // NOTE: header
-              Text(
-                "Produk Favorit",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: bold,
+      return Container(
+        margin: const EdgeInsets.only(top: 10),
+        child: Column(
+          children: [
+            // NOTE: header
+            Text(
+              "Produk Favorit",
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: bold,
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // NOTE: search
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: colorSecondary,
+                  width: 1,
                 ),
               ),
-
-              const SizedBox(height: 20),
-
-              // NOTE: search
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.search,
+                    size: 20,
                     color: colorSecondary,
-                    width: 1,
                   ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.search,
-                      size: 20,
-                      color: colorSecondary,
-                    ),
-                    Expanded(
-                      child: Container(
-                        margin: const EdgeInsets.only(
-                          left: 10,
-                        ),
-                        child: TextFormField(
-                          style: const TextStyle(fontSize: 12),
-                          decoration: const InputDecoration.collapsed(
-                            hintText: "Cari Produk",
-                            hintStyle: TextStyle(fontSize: 12),
-                          ),
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.only(
+                        left: 10,
+                      ),
+                      child: TextFormField(
+                        style: const TextStyle(fontSize: 12),
+                        decoration: const InputDecoration.collapsed(
+                          hintText: "Cari Produk",
+                          hintStyle: TextStyle(fontSize: 12),
                         ),
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  )
+                ],
               ),
+            ),
 
-              const SizedBox(height: 10),
+            const SizedBox(height: 10),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  for (var i = 0; i < tabFilter.length; i++) ...{
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          context.read<WishlistTabFilterCubit>().setTabIndex(i);
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.only(
-                            bottom: 5,
-                          ),
-                          decoration: BoxDecoration(
-                            border: Border(
-                              bottom: BorderSide(
-                                color: i ==
-                                        context
-                                            .read<WishlistTabFilterCubit>()
-                                            .state
-                                    ? Colors.black
-                                    : colorSecondary, // Warna border
-                                width: 2.0, // Ketebalan border
-                              ),
-                            ),
-                          ),
-                          child: Text(
-                            tabFilter[i],
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                for (var i = 0; i < tabFilter.length; i++) ...{
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        context.read<WishlistTabFilterCubit>().setTabIndex(i);
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.only(
+                          bottom: 5,
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border(
+                            bottom: BorderSide(
                               color: i ==
                                       context
                                           .read<WishlistTabFilterCubit>()
                                           .state
                                   ? Colors.black
-                                  : colorSecondary,
-                              fontSize: 12,
+                                  : colorSecondary, // Warna border
+                              width: 2.0, // Ketebalan border
                             ),
+                          ),
+                        ),
+                        child: Text(
+                          tabFilter[i],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: i ==
+                                    context.read<WishlistTabFilterCubit>().state
+                                ? Colors.black
+                                : colorSecondary,
+                            fontSize: 12,
                           ),
                         ),
                       ),
                     ),
-                  },
-                ],
-              )
-            ],
-          ),
+                  ),
+                },
+              ],
+            )
+          ],
         ),
       );
     }
