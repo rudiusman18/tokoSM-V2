@@ -432,14 +432,17 @@ class _HomePageState extends State<HomePage> {
             child: Wrap(
               spacing: 10,
               runSpacing: 10,
-              children: List.generate(20, (index) {
-                return _HomePageExtension().bigItemView(
-                  context: context, // Pass context to measure screen width
-                  productName: "Lorem Ipsum",
-                  price: "Rp 12000",
-                  rating: "4.7",
-                );
-              }),
+              children: List.generate(
+                20,
+                (index) {
+                  return _HomePageExtension().bigItemView(
+                    context: context, // Pass context to measure screen width
+                    productName: "Lorem Ipsum",
+                    price: "Rp 12000",
+                    rating: "4.7",
+                  );
+                },
+              ),
             ),
           ),
         ],
