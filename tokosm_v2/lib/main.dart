@@ -5,6 +5,8 @@ import 'package:page_transition/page_transition.dart';
 import 'package:tokosm_v2/cubit/page_cubit.dart';
 import 'package:tokosm_v2/cubit/transaction_cubit.dart';
 import 'package:tokosm_v2/cubit/wishlist_cubit.dart';
+import 'package:tokosm_v2/login_page.dart';
+import 'package:tokosm_v2/splash_page.dart';
 import 'package:tokosm_v2/ui/main_page.dart';
 import 'package:tokosm_v2/ui/product%20page/detail_product_page.dart';
 
@@ -37,6 +39,14 @@ class MainApp extends StatelessWidget {
       child: MaterialApp(
         onGenerateRoute: (RouteSettings settings) {
           switch (settings.name) {
+            case 'login':
+              return PageTransition(
+                type: PageTransitionType.rightToLeft,
+                childCurrent: context.currentRoute,
+                settings: settings,
+                child: const LoginPage(),
+              );
+
             case 'product/detail-product':
               return PageTransition(
                 type: PageTransitionType.rightToLeft,
@@ -53,7 +63,7 @@ class MainApp extends StatelessWidget {
         ),
         debugShowCheckedModeBanner: false,
         home: const Scaffold(
-          body: MainPage(),
+          body: SplashPage(),
         ),
       ),
     );
