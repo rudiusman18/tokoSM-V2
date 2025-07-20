@@ -8,3 +8,5 @@ Color colorWarning = const Color(0xfffbc700);
 
 FontWeight bold = FontWeight.bold;
 FontWeight extraBold = FontWeight.w800;
+
+String baseURL = "https://apitokosm.share.zrok.io/api/v1";

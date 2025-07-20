@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_icons/solar_icons.dart';
+import 'package:tokosm_v2/cubit/login_cubit.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 
 class LoginPage extends StatefulWidget {
@@ -91,22 +93,30 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(
               height: 10,
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                vertical: 5,
-              ),
-              decoration: BoxDecoration(
-                color: colorSuccess,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                "Login",
-                style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.white,
-                  fontWeight: bold,
+            GestureDetector(
+              onTap: () {
+                print("Login ditekan");
+                context.read<LoginCubit>().postLogin(
+                    email: emailController.text,
+                    password: passwordController.text);
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 5,
                 ),
-                textAlign: TextAlign.center,
+                decoration: BoxDecoration(
+                  color: colorSuccess,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  "Login",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.white,
+                    fontWeight: bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
             ),
             const SizedBox(
