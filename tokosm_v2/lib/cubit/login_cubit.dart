@@ -12,13 +12,16 @@ class LoginCubit extends Cubit<LoginState> {
     try {
       var loginData =
           await LoginService().postLogin(email: email, password: password);
-      print("login berhasil dengan isi $loginData");
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user credential', "$email||$password");
       emit(LoginSuccess(loginModelData: loginData));
     } catch (e) {
-      print("login gagal dengan pesan $e");
       emit(LoginFailure(error: e.toString()));
     }
+  }
+
+  void logout() async {
+    var prefs = await SharedPreferences.getInstance();
+    prefs.remove("user credential");
   }
 }

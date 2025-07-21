@@ -12,6 +12,7 @@ class ProductCubit extends Cubit<ProductState> {
     required String token,
     required int cabangId,
     required String type,
+    String sort = "",
     int page = 1,
     int limit = 10,
   }) async {
@@ -23,8 +24,8 @@ class ProductCubit extends Cubit<ProductState> {
         type: type,
         page: page,
         limit: limit,
+        sort: sort,
       );
-      print("produk berhasil didapatkan");
       emit(ProductSuccess(
           flashSaleProductData:
               type == "flashsale" ? productModel : state.flashSaleProduct,
@@ -36,7 +37,7 @@ class ProductCubit extends Cubit<ProductState> {
           popularProductData:
               type == "populer" ? productModel : state.popularProduct));
     } catch (e) {
-      print("produk error ${e.toString()}");
+      print("Error $e");
       emit(ProductFailure(e.toString()));
     }
   }

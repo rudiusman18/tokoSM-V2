@@ -62,7 +62,7 @@ class Data {
   String? flashsaleEnd;
   dynamic hargaProduk;
   dynamic hargaDiskon;
-  List<String>? gambar;
+  List<String>? gambarProduk;
   dynamic isDiskon;
   dynamic isPromo;
   dynamic isFlashsale;
@@ -108,7 +108,7 @@ class Data {
       this.flashsaleEnd,
       this.hargaProduk,
       this.hargaDiskon,
-      this.gambar,
+      this.gambarProduk,
       this.isDiskon,
       this.isPromo,
       this.isFlashsale,
@@ -154,7 +154,7 @@ class Data {
     flashsaleEnd = json['flashsale_end'];
     hargaProduk = json['harga_produk'];
     hargaDiskon = json['harga_diskon'];
-    gambar = json['gambar'].cast<String>();
+    gambarProduk = json['gambar_produk'].cast<String>();
     isDiskon = json['is_diskon'];
     isPromo = json['is_promo'];
     isFlashsale = json['is_flashsale'];
@@ -202,7 +202,7 @@ class Data {
     data['flashsale_end'] = flashsaleEnd;
     data['harga_produk'] = hargaProduk;
     data['harga_diskon'] = hargaDiskon;
-    data['gambar'] = gambar;
+    data['gambar_produk'] = gambarProduk;
     data['is_diskon'] = isDiskon;
     data['is_promo'] = isPromo;
     data['is_flashsale'] = isFlashsale;

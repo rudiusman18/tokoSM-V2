@@ -1,98 +1,120 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tokosm_v2/cubit/category_cubit.dart';
+import 'package:tokosm_v2/cubit/login_cubit.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 
-class CategoryPage extends StatelessWidget {
+class CategoryPage extends StatefulWidget {
   const CategoryPage({super.key});
 
   @override
+  State<CategoryPage> createState() => _CategoryPageState();
+}
+
+class _CategoryPageState extends State<CategoryPage> {
+  @override
+  void initState() {
+    initCategory();
+    super.initState();
+  }
+
+  void initCategory() async {
+    context.read<CategoryCubit>().getProductCategory(
+        token: context.read<LoginCubit>().state.loginModel.token ?? "");
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Container(
-          margin: const EdgeInsets.only(
-            top: 10,
-            left: 16,
-            right: 16,
-          ),
-          width: double.infinity,
-          child: Column(
-            children: [
-              Text(
-                "Kategori Produk",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: bold,
-                ),
+    return BlocBuilder<CategoryCubit, CategoryState>(
+      builder: (context, state) {
+        return Scaffold(
+          body: SafeArea(
+            child: Container(
+              margin: const EdgeInsets.only(
+                top: 10,
+                left: 16,
+                right: 16,
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              Expanded(
-                child: ListView(
-                  children: [
-                    ExpandablePanel(
-                      theme: const ExpandableThemeData(
-                        headerAlignment: ExpandablePanelHeaderAlignment.center,
-                        tapBodyToCollapse: true,
-                      ),
-                      header: Text(
-                        "Makanan & Minuman",
-                        style: TextStyle(
-                          fontWeight: bold,
-                        ),
-                      ),
-                      expanded: const SingleChildScrollView(
-                        child: Row(
-                          children: [
-                            Card(
-                              child: Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  "Makanan",
-                                  style: TextStyle(fontSize: 10),
-                                ),
-                              ),
-                            ),
-                            Card(
-                              child: Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  "Makanan",
-                                  style: TextStyle(fontSize: 10),
-                                ),
-                              ),
-                            ),
-                            Card(
-                              child: Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  "Makanan",
-                                  style: TextStyle(fontSize: 10),
-                                ),
-                              ),
-                            ),
-                            Card(
-                              child: Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  "Makanan",
-                                  style: TextStyle(fontSize: 10),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      collapsed: const SizedBox(),
+              width: double.infinity,
+              child: Column(
+                children: [
+                  Text(
+                    "Kategori Produk",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: bold,
                     ),
-                  ],
-                ),
-              )
-            ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        for (var index = 0;
+                            index <
+                                ((context
+                                            .read<CategoryCubit>()
+                                            .state
+                                            .categoryModel?["data"] ??
+                                        []) as List)
+                                    .length;
+                            index++) ...{
+                          ExpandablePanel(
+                            theme: const ExpandableThemeData(
+                              headerAlignment:
+                                  ExpandablePanelHeaderAlignment.center,
+                              tapBodyToCollapse: true,
+                            ),
+                            header: Text(
+                              "${(context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["kat1"]}",
+                              style: TextStyle(
+                                fontWeight: bold,
+                              ),
+                            ),
+                            expanded: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  for (var index1 = 0;
+                                      index1 <
+                                          (((context
+                                                              .read<CategoryCubit>()
+                                                              .state
+                                                              .categoryModel?[
+                                                          "data"] as List)
+                                                      .map((e) => e as Map<
+                                                          String, dynamic>)
+                                                      .toList()[index]["child"] ??
+                                                  []) as List)
+                                              .length;
+                                      index1++) ...{
+                                    Card(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["child"] ?? []) as List).map((e) => e as Map<String, dynamic>).toList()[index1]["kat2"]}",
+                                          style: const TextStyle(fontSize: 10),
+                                        ),
+                                      ),
+                                    ),
+                                  },
+                                ],
+                              ),
+                            ),
+                            collapsed: const SizedBox(),
+                          ),
+                        },
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

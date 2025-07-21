@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:tokosm_v2/cubit/category_cubit.dart';
 import 'package:tokosm_v2/cubit/login_cubit.dart';
 import 'package:tokosm_v2/cubit/page_cubit.dart';
 import 'package:tokosm_v2/cubit/product_cubit.dart';
@@ -11,6 +12,7 @@ import 'package:tokosm_v2/login_page.dart';
 import 'package:tokosm_v2/splash_page.dart';
 import 'package:tokosm_v2/ui/main_page.dart';
 import 'package:tokosm_v2/ui/product%20page/detail_product_page.dart';
+import 'package:tokosm_v2/ui/setting_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,13 +37,16 @@ class MainApp extends StatelessWidget {
           create: (context) => LoginCubit(),
         ),
         BlocProvider(
-          create: (context) => WishlistTabFilterCubit(),
+          create: (context) => WishlistCubit(),
         ),
         BlocProvider(
           create: (context) => TransactionTabFilterCubit(),
         ),
         BlocProvider(
           create: (context) => ProductCubit(),
+        ),
+        BlocProvider(
+          create: (context) => CategoryCubit(),
         ),
       ],
       child: MaterialApp(
@@ -53,6 +58,14 @@ class MainApp extends StatelessWidget {
                 childCurrent: context.currentRoute,
                 settings: settings,
                 child: const LoginPage(),
+              );
+
+            case 'home-page/setting':
+              return PageTransition(
+                type: PageTransitionType.rightToLeft,
+                childCurrent: context.currentRoute,
+                settings: settings,
+                child: const SettingPage(),
               );
 
             case 'product/detail-product':

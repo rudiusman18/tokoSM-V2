@@ -51,11 +51,15 @@ class _HomePageState extends State<HomePage> {
     context.read<ProductCubit>().getProducts(
         token: context.read<LoginCubit>().state.loginModel.token ?? "",
         cabangId: 1,
-        type: 'terlaris');
+        type: 'terlaris',
+        sort: 'terlaris');
     context.read<ProductCubit>().getProducts(
-        token: context.read<LoginCubit>().state.loginModel.token ?? "",
-        cabangId: 1,
-        type: 'populer');
+          token: context.read<LoginCubit>().state.loginModel.token ?? "",
+          cabangId: 1,
+          type: 'populer',
+          sort: 'populer',
+          limit: 99999999,
+        );
   }
 
   @override
@@ -92,16 +96,21 @@ class _HomePageState extends State<HomePage> {
                 ),
 
                 // NOTE: setting dan keranjang
-                const Row(
+                Row(
                   spacing: 10,
                   children: [
-                    Icon(
+                    const Icon(
                       SolarIconsOutline.cartLarge2,
                       size: 24,
                     ),
-                    Icon(
-                      SolarIconsOutline.settings,
-                      size: 24,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, "home-page/setting");
+                      },
+                      child: const Icon(
+                        SolarIconsOutline.settings,
+                        size: 24,
+                      ),
                     ),
                   ],
                 )
@@ -115,6 +124,9 @@ class _HomePageState extends State<HomePage> {
             // NOTE: search
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              margin: const EdgeInsets.only(
+                bottom: 10,
+              ),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
@@ -153,7 +165,6 @@ class _HomePageState extends State<HomePage> {
 
     Widget carouselBanner() {
       return Container(
-        margin: const EdgeInsets.only(top: 10),
         height: 128,
         decoration: BoxDecoration(
           boxShadow: [
@@ -268,39 +279,42 @@ class _HomePageState extends State<HomePage> {
             scrollDirection: Axis.horizontal,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                spacing: 10,
-                children: [
-                  for (var index = 0;
-                      index < (product ?? []).length;
-                      index++) ...{
-                    _HomePageExtension().smallItemView(
-                      context: context,
-                      imageURL: product?[index].gambar?.first ?? "",
-                      productName: product?[index].namaProduk ?? "",
-                      productPrice: product?[index].isFlashsale == 1
-                          ? "Rp ${product?[index].hargaFlashsale}"
-                          : product?[index].isDiskon == 1
-                              ? "Rp ${product?[index].hargaDiskon}"
-                              : "Rp ${product?[index].hargaJual}",
-                      discountPercentage: product?[index].isFlashsale == 1
-                          ? "${product?[index].persentaseFlashsale}%"
-                          : product?[index].isDiskon == 1
-                              ? "${product?[index].persentaseDiskon}%"
-                              : "",
-                      productPriceColor: colorSuccess,
-                      productRealPrice: product?[index].isFlashsale == 1 ||
-                              product?[index].isDiskon == 1
-                          ? "Rp ${product?[index].hargaJual}"
-                          : "",
-                      bonusInformation: product?[index].isPromo == 1
-                          ? "${product?[index].namaPromo}"
-                          : "",
-                      isFlashSale:
-                          product?[index].isFlashsale == 1 ? true : false,
-                    ),
-                  }
-                ],
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 10,
+                  children: [
+                    for (var index = 0;
+                        index < (product ?? []).length;
+                        index++) ...{
+                      _HomePageExtension().smallItemView(
+                        context: context,
+                        imageURL: product?[index].gambarProduk?.first ?? "",
+                        productName: product?[index].namaProduk ?? "",
+                        productPrice: product?[index].isFlashsale == 1
+                            ? "Rp ${product?[index].hargaFlashsale}"
+                            : product?[index].isDiskon == 1
+                                ? "Rp ${product?[index].hargaDiskon}"
+                                : "Rp ${product?[index].hargaJual}",
+                        discountPercentage: product?[index].isFlashsale == 1
+                            ? "${product?[index].persentaseFlashsale}%"
+                            : product?[index].isDiskon == 1
+                                ? "${product?[index].persentaseDiskon}%"
+                                : "",
+                        productPriceColor: colorSuccess,
+                        productRealPrice: product?[index].isFlashsale == 1 ||
+                                product?[index].isDiskon == 1
+                            ? "Rp ${product?[index].hargaJual}"
+                            : "",
+                        bonusInformation: product?[index].isPromo == 1
+                            ? "${product?[index].namaPromo}"
+                            : "",
+                        isFlashSale:
+                            product?[index].isFlashsale == 1 ? true : false,
+                      ),
+                    }
+                  ],
+                ),
               ),
             ),
           )
@@ -336,39 +350,42 @@ class _HomePageState extends State<HomePage> {
             scrollDirection: Axis.horizontal,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                spacing: 10,
-                children: [
-                  for (var index = 0;
-                      index < (product ?? []).length;
-                      index++) ...{
-                    _HomePageExtension().smallItemView(
-                      context: context,
-                      imageURL: product?[index].gambar?.first ?? "",
-                      productName: product?[index].namaProduk ?? "",
-                      productPrice: product?[index].isFlashsale == 1
-                          ? "Rp ${product?[index].hargaFlashsale}"
-                          : product?[index].isDiskon == 1
-                              ? "Rp ${product?[index].hargaDiskon}"
-                              : "Rp ${product?[index].hargaJual}",
-                      discountPercentage: product?[index].isFlashsale == 1
-                          ? "${product?[index].persentaseFlashsale}%"
-                          : product?[index].isDiskon == 1
-                              ? "${product?[index].persentaseDiskon}%"
-                              : "",
-                      productPriceColor: colorSuccess,
-                      productRealPrice: product?[index].isFlashsale == 1 ||
-                              product?[index].isDiskon == 1
-                          ? "Rp ${product?[index].hargaJual}"
-                          : "",
-                      bonusInformation: product?[index].isPromo == 1
-                          ? "${product?[index].namaPromo}"
-                          : "",
-                      isFlashSale:
-                          product?[index].isFlashsale == 1 ? true : false,
-                    ),
-                  }
-                ],
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 10,
+                  children: [
+                    for (var index = 0;
+                        index < (product ?? []).length;
+                        index++) ...{
+                      _HomePageExtension().smallItemView(
+                        context: context,
+                        imageURL: product?[index].gambarProduk?.first ?? "",
+                        productName: product?[index].namaProduk ?? "",
+                        productPrice: product?[index].isFlashsale == 1
+                            ? "Rp ${product?[index].hargaFlashsale}"
+                            : product?[index].isDiskon == 1
+                                ? "Rp ${product?[index].hargaDiskon}"
+                                : "Rp ${product?[index].hargaJual}",
+                        discountPercentage: product?[index].isFlashsale == 1
+                            ? "${product?[index].persentaseFlashsale}%"
+                            : product?[index].isDiskon == 1
+                                ? "${product?[index].persentaseDiskon}%"
+                                : "",
+                        productPriceColor: colorSuccess,
+                        productRealPrice: product?[index].isFlashsale == 1 ||
+                                product?[index].isDiskon == 1
+                            ? "Rp ${product?[index].hargaJual}"
+                            : "",
+                        bonusInformation: product?[index].isPromo == 1
+                            ? "${product?[index].namaPromo}"
+                            : "",
+                        isFlashSale:
+                            product?[index].isFlashsale == 1 ? true : false,
+                      ),
+                    }
+                  ],
+                ),
               ),
             ),
           )
@@ -413,7 +430,7 @@ class _HomePageState extends State<HomePage> {
                         index++) ...{
                       _HomePageExtension().smallItemView(
                         context: context,
-                        imageURL: product?[index].gambar?.first ?? "",
+                        imageURL: product?[index].gambarProduk?.first ?? "",
                         productName: product?[index].namaProduk ?? "",
                         productPrice: product?[index].isFlashsale == 1
                             ? "Rp ${product?[index].hargaFlashsale}"
@@ -483,7 +500,7 @@ class _HomePageState extends State<HomePage> {
                         index++) ...{
                       _HomePageExtension().smallItemView(
                         context: context,
-                        imageURL: product?[index].gambar?.first ?? "",
+                        imageURL: product?[index].gambarProduk?.first ?? "",
                         productName: product?[index].namaProduk ?? "",
                         productPrice: product?[index].isFlashsale == 1
                             ? "Rp ${product?[index].hargaFlashsale}"
@@ -546,7 +563,7 @@ class _HomePageState extends State<HomePage> {
                 (index) {
                   return _HomePageExtension().bigItemView(
                     context: context,
-                    imageURL: product?[index].gambar?.first ?? "",
+                    imageURL: product?[index].gambarProduk?.first ?? "",
                     productName: product?[index].namaProduk ?? "",
                     productPrice: product?[index].isFlashsale == 1
                         ? "Rp ${product?[index].hargaFlashsale}"
@@ -823,6 +840,10 @@ class _HomePageExtension {
                     decoration: BoxDecoration(
                       color: Colors.grey,
                       borderRadius: BorderRadius.circular(10),
+                      image: DecorationImage(
+                        image: NetworkImage(imageURL),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                 ),
@@ -832,8 +853,9 @@ class _HomePageExtension {
                   overflow: TextOverflow.ellipsis,
                 ),
                 Row(
+                  spacing: 10,
                   children: [
-                    Expanded(
+                    Flexible(
                       child: Text(
                         productPrice,
                         style: TextStyle(

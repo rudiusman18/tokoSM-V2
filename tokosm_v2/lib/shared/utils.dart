@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:tokosm_v2/shared/themes.dart';
 
 String baseURL = "https://apitokosm.share.zrok.io/api/v1";
+String imageURL = "http://10.10.10.98:3000/uploads/images";
 
 class Utils {
   void scaffoldMessenger(
@@ -15,6 +17,50 @@ class Utils {
           text,
         ),
       ),
+    );
+  }
+
+  void alertDialog({
+    required BuildContext context,
+    required Function function,
+    required String title,
+    required String message,
+  }) {
+    showDialog(
+      context: context,
+      builder: (
+        BuildContext context,
+      ) {
+        return AlertDialog(
+          title: Text(
+            title,
+            style: TextStyle(
+              fontWeight: bold,
+            ),
+          ),
+          content: Text(message),
+          actions: [
+            TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.black,
+              ),
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.black,
+              ),
+              child: const Text("OK"),
+              onPressed: () {
+                function();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }
