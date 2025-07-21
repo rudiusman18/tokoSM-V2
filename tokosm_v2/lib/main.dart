@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:tokosm_v2/cubit/login_cubit.dart';
 import 'package:tokosm_v2/cubit/page_cubit.dart';
+import 'package:tokosm_v2/cubit/product_cubit.dart';
 import 'package:tokosm_v2/cubit/transaction_cubit.dart';
 import 'package:tokosm_v2/cubit/wishlist_cubit.dart';
 import 'package:tokosm_v2/login_page.dart';
@@ -39,6 +40,9 @@ class MainApp extends StatelessWidget {
         BlocProvider(
           create: (context) => TransactionTabFilterCubit(),
         ),
+        BlocProvider(
+          create: (context) => ProductCubit(),
+        ),
       ],
       child: MaterialApp(
         onGenerateRoute: (RouteSettings settings) {
@@ -56,6 +60,14 @@ class MainApp extends StatelessWidget {
                 type: PageTransitionType.rightToLeft,
                 childCurrent: context.currentRoute,
                 child: const DetailProductPage(),
+                settings: settings,
+              );
+
+            case 'main-page':
+              return PageTransition(
+                type: PageTransitionType.rightToLeft,
+                childCurrent: context.currentRoute,
+                child: const MainPage(),
                 settings: settings,
               );
           }

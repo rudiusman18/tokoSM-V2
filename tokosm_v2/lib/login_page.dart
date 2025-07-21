@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:tokosm_v2/cubit/login_cubit.dart';
 import 'package:tokosm_v2/shared/themes.dart';
+import 'package:tokosm_v2/shared/utils.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -42,108 +43,132 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        margin: const EdgeInsets.symmetric(
-          horizontal: 16,
-        ),
-        padding: const EdgeInsets.only(
-          top: 50,
-        ),
-        child: ListView(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return BlocConsumer<LoginCubit, LoginState>(
+      listener: (context, state) {
+        if (state is LoginFailure) {
+          Utils().scaffoldMessenger(context, state.error);
+        }
+
+        if (state is LoginSuccess) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            "main-page",
+            (route) => false,
+          );
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          body: Container(
+            margin: const EdgeInsets.symmetric(
+              horizontal: 16,
+            ),
+            padding: const EdgeInsets.only(
+              top: 50,
+            ),
+            child: ListView(
               children: [
-                const Text(
-                  "Masuk",
-                  style: TextStyle(
-                    fontSize: 48,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                Image.asset(
-                  'assets/logo-tokosm.png',
-                  width: 48,
-                  height: 48,
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            _LoginPageExtension().loginItem(
-              title: "Email",
-              controller: emailController,
-              focus: emailFocusNode,
-              placeholder: 'Email',
-              icon: SolarIconsOutline.letter,
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            _LoginPageExtension().loginItem(
-              title: "Password",
-              controller: passwordController,
-              focus: passwordFocusNode,
-              placeholder: 'Password',
-              icon: SolarIconsOutline.lock,
-              isPassword: true,
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            GestureDetector(
-              onTap: () {
-                print("Login ditekan");
-                context.read<LoginCubit>().postLogin(
-                    email: emailController.text,
-                    password: passwordController.text);
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 5,
-                ),
-                decoration: BoxDecoration(
-                  color: colorSuccess,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  "Login",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white,
-                    fontWeight: bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Center(
-              child: RichText(
-                text: TextSpan(
-                  text: "Belum punya akun? ",
-                  style: const TextStyle(
-                    color: Colors.black,
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextSpan(
-                      text: "Daftar Sekarang",
+                    const Text(
+                      "Masuk",
                       style: TextStyle(
-                        fontWeight: bold,
-                        color: colorSuccess,
+                        fontSize: 48,
+                        fontWeight: FontWeight.w900,
                       ),
+                    ),
+                    Image.asset(
+                      'assets/logo-tokosm.png',
+                      width: 48,
+                      height: 48,
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(
+                  height: 30,
+                ),
+                _LoginPageExtension().loginItem(
+                  title: "Email",
+                  controller: emailController,
+                  focus: emailFocusNode,
+                  placeholder: 'Email',
+                  icon: SolarIconsOutline.letter,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                _LoginPageExtension().loginItem(
+                  title: "Password",
+                  controller: passwordController,
+                  focus: passwordFocusNode,
+                  placeholder: 'Password',
+                  icon: SolarIconsOutline.lock,
+                  isPassword: true,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    if (context.read<LoginCubit>().state is! LoginLoading) {
+                      context.read<LoginCubit>().postLogin(
+                          email: emailController.text,
+                          password: passwordController.text);
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 5,
+                    ),
+                    decoration: BoxDecoration(
+                      color: colorSuccess,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: (context.read<LoginCubit>().state is LoginLoading)
+                        ? const Center(
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          )
+                        : Text(
+                            "Login",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                              fontWeight: bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Center(
+                  child: RichText(
+                    text: TextSpan(
+                      text: "Belum punya akun? ",
+                      style: const TextStyle(
+                        color: Colors.black,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: "Daftar Sekarang",
+                          style: TextStyle(
+                            fontWeight: bold,
+                            color: colorSuccess,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

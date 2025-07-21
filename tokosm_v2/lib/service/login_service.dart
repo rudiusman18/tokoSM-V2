@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:tokosm_v2/model/login_model.dart';
-import 'package:tokosm_v2/shared/themes.dart';
+import 'package:tokosm_v2/shared/utils.dart';
 
 class LoginService {
   Future<LoginModel> postLogin(
@@ -26,7 +26,7 @@ class LoginService {
       return loginModel;
     } else {
       var data = jsonDecode(response.body);
-      throw Exception("$data");
+      throw ("${data['message']}");
     }
   }
 }

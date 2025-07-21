@@ -1,7 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:solar_icons/solar_icons.dart';
+import 'package:tokosm_v2/cubit/login_cubit.dart';
+import 'package:tokosm_v2/cubit/product_cubit.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 
 class HomePage extends StatefulWidget {
@@ -25,6 +28,35 @@ class _HomePageState extends State<HomePage> {
       CarouselSliderController();
 
   int carouselCurrentIndex = 0;
+
+  @override
+  void initState() {
+    initProductData();
+    super.initState();
+  }
+
+  void initProductData() async {
+    context.read<ProductCubit>().getProducts(
+        token: context.read<LoginCubit>().state.loginModel.token ?? "",
+        cabangId: 1,
+        type: 'flashsale');
+    context.read<ProductCubit>().getProducts(
+        token: context.read<LoginCubit>().state.loginModel.token ?? "",
+        cabangId: 1,
+        type: 'diskon');
+    context.read<ProductCubit>().getProducts(
+        token: context.read<LoginCubit>().state.loginModel.token ?? "",
+        cabangId: 1,
+        type: 'promo');
+    context.read<ProductCubit>().getProducts(
+        token: context.read<LoginCubit>().state.loginModel.token ?? "",
+        cabangId: 1,
+        type: 'terlaris');
+    context.read<ProductCubit>().getProducts(
+        token: context.read<LoginCubit>().state.loginModel.token ?? "",
+        cabangId: 1,
+        type: 'populer');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +221,9 @@ class _HomePageState extends State<HomePage> {
     }
 
     Widget flashSaleSection() {
+      var product = context.read<ProductCubit>().state.flashSaleProduct.data;
       return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 10,
         children: [
           Container(
@@ -237,17 +271,33 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 spacing: 10,
                 children: [
-                  for (var index = 0; index < 20; index++) ...{
+                  for (var index = 0;
+                      index < (product ?? []).length;
+                      index++) ...{
                     _HomePageExtension().smallItemView(
                       context: context,
-                      imageURL:
-                          'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80',
-                      productName: "Lorem Ipsum",
-                      productPrice: "Rp 12000",
-                      discountPercentage: "20%",
-                      productPriceColor: colorError,
-                      productRealPrice: "RP 20000",
-                      bonusInformation: "",
+                      imageURL: product?[index].gambar?.first ?? "",
+                      productName: product?[index].namaProduk ?? "",
+                      productPrice: product?[index].isFlashsale == 1
+                          ? "Rp ${product?[index].hargaFlashsale}"
+                          : product?[index].isDiskon == 1
+                              ? "Rp ${product?[index].hargaDiskon}"
+                              : "Rp ${product?[index].hargaJual}",
+                      discountPercentage: product?[index].isFlashsale == 1
+                          ? "${product?[index].persentaseFlashsale}%"
+                          : product?[index].isDiskon == 1
+                              ? "${product?[index].persentaseDiskon}%"
+                              : "",
+                      productPriceColor: colorSuccess,
+                      productRealPrice: product?[index].isFlashsale == 1 ||
+                              product?[index].isDiskon == 1
+                          ? "Rp ${product?[index].hargaJual}"
+                          : "",
+                      bonusInformation: product?[index].isPromo == 1
+                          ? "${product?[index].namaPromo}"
+                          : "",
+                      isFlashSale:
+                          product?[index].isFlashsale == 1 ? true : false,
                     ),
                   }
                 ],
@@ -259,8 +309,10 @@ class _HomePageState extends State<HomePage> {
     }
 
     Widget discountSection() {
+      var product = context.read<ProductCubit>().state.discountProduct.data;
       return Column(
         spacing: 10,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             margin: const EdgeInsets.symmetric(
@@ -287,17 +339,33 @@ class _HomePageState extends State<HomePage> {
               child: Row(
                 spacing: 10,
                 children: [
-                  for (var index = 0; index < 20; index++) ...{
+                  for (var index = 0;
+                      index < (product ?? []).length;
+                      index++) ...{
                     _HomePageExtension().smallItemView(
                       context: context,
-                      imageURL:
-                          'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80',
-                      productName: "Lorem Ipsum",
-                      productPrice: "Rp 12000",
-                      discountPercentage: "20%",
+                      imageURL: product?[index].gambar?.first ?? "",
+                      productName: product?[index].namaProduk ?? "",
+                      productPrice: product?[index].isFlashsale == 1
+                          ? "Rp ${product?[index].hargaFlashsale}"
+                          : product?[index].isDiskon == 1
+                              ? "Rp ${product?[index].hargaDiskon}"
+                              : "Rp ${product?[index].hargaJual}",
+                      discountPercentage: product?[index].isFlashsale == 1
+                          ? "${product?[index].persentaseFlashsale}%"
+                          : product?[index].isDiskon == 1
+                              ? "${product?[index].persentaseDiskon}%"
+                              : "",
                       productPriceColor: colorSuccess,
-                      productRealPrice: "RP 20000",
-                      bonusInformation: "",
+                      productRealPrice: product?[index].isFlashsale == 1 ||
+                              product?[index].isDiskon == 1
+                          ? "Rp ${product?[index].hargaJual}"
+                          : "",
+                      bonusInformation: product?[index].isPromo == 1
+                          ? "${product?[index].namaPromo}"
+                          : "",
+                      isFlashSale:
+                          product?[index].isFlashsale == 1 ? true : false,
                     ),
                   }
                 ],
@@ -309,6 +377,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     Widget promoSection() {
+      var product = context.read<ProductCubit>().state.promoProduct.data;
       return Column(
         spacing: 10,
         children: [
@@ -334,23 +403,42 @@ class _HomePageState extends State<HomePage> {
             scrollDirection: Axis.horizontal,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                spacing: 10,
-                children: [
-                  for (var index = 0; index < 20; index++) ...{
-                    _HomePageExtension().smallItemView(
-                      context: context,
-                      imageURL:
-                          'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80',
-                      productName: "Lorem Ipsum",
-                      productPrice: "Rp 12000",
-                      discountPercentage: "",
-                      productPriceColor: colorSuccess,
-                      productRealPrice: "",
-                      bonusInformation: "Buy 1 Get 1",
-                    ),
-                  }
-                ],
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 10,
+                  children: [
+                    for (var index = 0;
+                        index < (product ?? []).length;
+                        index++) ...{
+                      _HomePageExtension().smallItemView(
+                        context: context,
+                        imageURL: product?[index].gambar?.first ?? "",
+                        productName: product?[index].namaProduk ?? "",
+                        productPrice: product?[index].isFlashsale == 1
+                            ? "Rp ${product?[index].hargaFlashsale}"
+                            : product?[index].isDiskon == 1
+                                ? "Rp ${product?[index].hargaDiskon}"
+                                : "Rp ${product?[index].hargaJual}",
+                        discountPercentage: product?[index].isFlashsale == 1
+                            ? "${product?[index].persentaseFlashsale}%"
+                            : product?[index].isDiskon == 1
+                                ? "${product?[index].persentaseDiskon}%"
+                                : "",
+                        productPriceColor: colorSuccess,
+                        productRealPrice: product?[index].isFlashsale == 1 ||
+                                product?[index].isDiskon == 1
+                            ? "Rp ${product?[index].hargaJual}"
+                            : "",
+                        bonusInformation: product?[index].isPromo == 1
+                            ? "${product?[index].namaPromo}"
+                            : "",
+                        isFlashSale:
+                            product?[index].isFlashsale == 1 ? true : false,
+                      ),
+                    }
+                  ],
+                ),
               ),
             ),
           )
@@ -359,6 +447,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     Widget terlarisSection() {
+      var product = context.read<ProductCubit>().state.bestSellerProduct.data;
       return Column(
         spacing: 10,
         children: [
@@ -384,23 +473,42 @@ class _HomePageState extends State<HomePage> {
             scrollDirection: Axis.horizontal,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                spacing: 10,
-                children: [
-                  for (var index = 0; index < 20; index++) ...{
-                    _HomePageExtension().smallItemView(
-                      context: context,
-                      imageURL:
-                          'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80',
-                      productName: "Lorem Ipsum",
-                      productPrice: "Rp 12000",
-                      discountPercentage: "",
-                      productPriceColor: colorSuccess,
-                      productRealPrice: "",
-                      bonusInformation: "",
-                    ),
-                  }
-                ],
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 10,
+                  children: [
+                    for (var index = 0;
+                        index < (product ?? []).length;
+                        index++) ...{
+                      _HomePageExtension().smallItemView(
+                        context: context,
+                        imageURL: product?[index].gambar?.first ?? "",
+                        productName: product?[index].namaProduk ?? "",
+                        productPrice: product?[index].isFlashsale == 1
+                            ? "Rp ${product?[index].hargaFlashsale}"
+                            : product?[index].isDiskon == 1
+                                ? "Rp ${product?[index].hargaDiskon}"
+                                : "Rp ${product?[index].hargaJual}",
+                        discountPercentage: product?[index].isFlashsale == 1
+                            ? "${product?[index].persentaseFlashsale}%"
+                            : product?[index].isDiskon == 1
+                                ? "${product?[index].persentaseDiskon}%"
+                                : "",
+                        productPriceColor: colorSuccess,
+                        productRealPrice: product?[index].isFlashsale == 1 ||
+                                product?[index].isDiskon == 1
+                            ? "Rp ${product?[index].hargaJual}"
+                            : "",
+                        bonusInformation: product?[index].isPromo == 1
+                            ? "${product?[index].namaPromo}"
+                            : "",
+                        isFlashSale:
+                            product?[index].isFlashsale == 1 ? true : false,
+                      ),
+                    }
+                  ],
+                ),
               ),
             ),
           )
@@ -409,6 +517,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     Widget popularSection() {
+      var product = context.read<ProductCubit>().state.popularProduct.data;
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -433,13 +542,33 @@ class _HomePageState extends State<HomePage> {
               spacing: 10,
               runSpacing: 10,
               children: List.generate(
-                20,
+                (product ?? []).length,
                 (index) {
                   return _HomePageExtension().bigItemView(
-                    context: context, // Pass context to measure screen width
-                    productName: "Lorem Ipsum",
-                    price: "Rp 12000",
-                    rating: "4.7",
+                    context: context,
+                    imageURL: product?[index].gambar?.first ?? "",
+                    productName: product?[index].namaProduk ?? "",
+                    productPrice: product?[index].isFlashsale == 1
+                        ? "Rp ${product?[index].hargaFlashsale}"
+                        : product?[index].isDiskon == 1
+                            ? "Rp ${product?[index].hargaDiskon}"
+                            : "Rp ${product?[index].hargaJual}",
+                    discountPercentage: product?[index].isFlashsale == 1
+                        ? "${product?[index].persentaseFlashsale}%"
+                        : product?[index].isDiskon == 1
+                            ? "${product?[index].persentaseDiskon}%"
+                            : "",
+                    productPriceColor: colorSuccess,
+                    productRealPrice: product?[index].isFlashsale == 1 ||
+                            product?[index].isDiskon == 1
+                        ? "Rp ${product?[index].hargaJual}"
+                        : "",
+                    bonusInformation: product?[index].isPromo == 1
+                        ? "${product?[index].namaPromo}"
+                        : "",
+                    rating: product?[index].rating ?? "",
+                    isFlashSale:
+                        product?[index].isFlashsale == 1 ? true : false,
                   );
                 },
               ),
@@ -449,50 +578,54 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              margin: const EdgeInsets.symmetric(
-                horizontal: 16,
-              ),
-              child: header(),
-            ),
-            Expanded(
-              child: ListView(
-                children: [
-                  Container(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 16,
+    return BlocBuilder<ProductCubit, ProductState>(
+      builder: (context, state) {
+        return Scaffold(
+          body: SafeArea(
+            child: Column(
+              children: [
+                Container(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                  ),
+                  child: header(),
+                ),
+                Expanded(
+                  child: ListView(
+                    children: [
+                      Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                          ),
+                          child: carouselBanner()),
+                      const SizedBox(
+                        height: 10,
                       ),
-                      child: carouselBanner()),
-                  const SizedBox(
-                    height: 10,
+                      flashSaleSection(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      discountSection(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      promoSection(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      terlarisSection(),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      popularSection(),
+                    ],
                   ),
-                  flashSaleSection(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  discountSection(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  promoSection(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  terlarisSection(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  popularSection(),
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
+                )
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -518,15 +651,17 @@ class _HomePageExtension {
     );
   }
 
-  Widget smallItemView(
-      {required BuildContext context,
-      required String imageURL,
-      required String productName,
-      required String productPrice,
-      required Color productPriceColor,
-      required String discountPercentage,
-      required String productRealPrice,
-      required String bonusInformation}) {
+  Widget smallItemView({
+    required BuildContext context,
+    required String imageURL,
+    required String productName,
+    required String productPrice,
+    required Color productPriceColor,
+    required String discountPercentage,
+    required String productRealPrice,
+    required String bonusInformation,
+    bool isFlashSale = false,
+  }) {
     return GestureDetector(
       onTap: () {
         Navigator.pushNamed(context, 'product/detail-product');
@@ -534,59 +669,74 @@ class _HomePageExtension {
       child: SizedBox(
         width: 96,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              // Ini nanti diisi image
-              height: 96,
-              width: 96,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            Text(
-              productName,
-              style: const TextStyle(fontSize: 12),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  productPrice,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: productPriceColor,
-                    fontWeight: bold,
+                Container(
+                  // Ini nanti diisi image
+                  height: 96,
+                  width: 96,
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(10),
+                    image: DecorationImage(
+                      image: NetworkImage(imageURL),
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
-                if (discountPercentage != "") ...{
-                  Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: colorError,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          SolarIconsBold.bolt,
-                          size: 10,
-                          color: Colors.white,
+                Text(
+                  productName,
+                  style: const TextStyle(fontSize: 12),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        productPrice,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: productPriceColor,
+                          fontWeight: bold,
                         ),
-                        Text(
-                          discountPercentage,
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: Colors.white,
-                            fontWeight: bold,
-                          ),
-                        ),
-                      ],
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                  ),
-                },
+                    if (discountPercentage != "") ...{
+                      Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: colorError,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if (isFlashSale)
+                              const Icon(
+                                SolarIconsBold.bolt,
+                                size: 10,
+                                color: Colors.white,
+                              ),
+                            Text(
+                              discountPercentage,
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.white,
+                                fontWeight: bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    },
+                  ],
+                ),
               ],
             ),
             if (productRealPrice != "") ...{
@@ -597,6 +747,7 @@ class _HomePageExtension {
                   color: Colors.grey,
                   fontWeight: bold,
                   decoration: TextDecoration.lineThrough,
+                  decorationThickness: 3,
                 ),
               ),
             },
@@ -637,9 +788,15 @@ class _HomePageExtension {
 
   Widget bigItemView({
     required BuildContext context,
+    required String imageURL,
     required String productName,
-    required String price,
+    required String productPrice,
+    required Color productPriceColor,
+    required String discountPercentage,
+    required String productRealPrice,
+    required String bonusInformation,
     required String rating,
+    bool isFlashSale = false,
   }) {
     final screenWidth = MediaQuery.of(context).size.width;
     const horizontalPadding = 32; // 16 left + 16 right
@@ -653,41 +810,124 @@ class _HomePageExtension {
       child: SizedBox(
         width: itemWidth,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            AspectRatio(
-              aspectRatio: 1,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-            Text(
-              productName,
-              style: const TextStyle(fontSize: 12),
-              overflow: TextOverflow.ellipsis,
-            ),
-            Text(
-              price,
-              style: TextStyle(
-                fontSize: 12,
-                color: colorSuccess,
-                fontWeight: bold,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-            Row(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.star, size: 12, color: colorWarning),
+                AspectRatio(
+                  aspectRatio: 1,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
                 Text(
-                  rating,
+                  productName,
                   style: const TextStyle(fontSize: 12),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        productPrice,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: productPriceColor,
+                          fontWeight: bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    if (discountPercentage != "") ...{
+                      Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: colorError,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if (isFlashSale)
+                              const Icon(
+                                SolarIconsBold.bolt,
+                                size: 10,
+                                color: Colors.white,
+                              ),
+                            Text(
+                              discountPercentage,
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.white,
+                                fontWeight: bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    },
+                  ],
                 ),
               ],
             ),
+            if (rating != "") ...{
+              Row(
+                children: [
+                  Icon(Icons.star, size: 12, color: colorWarning),
+                  Text(
+                    rating,
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ],
+              ),
+            },
+            if (productRealPrice != "") ...{
+              Text(
+                productRealPrice,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                  fontWeight: bold,
+                  decoration: TextDecoration.lineThrough,
+                  decorationThickness: 3,
+                ),
+              ),
+            },
+            if (bonusInformation != "") ...{
+              Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  color: colorWarning,
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Row(
+                  spacing: 2,
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      SolarIconsBold.tag,
+                      size: 10,
+                      color: Colors.white,
+                    ),
+                    Text(
+                      bonusInformation,
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.white,
+                        fontWeight: bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            },
           ],
         ),
       ),
