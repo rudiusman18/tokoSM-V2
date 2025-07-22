@@ -12,6 +12,7 @@ import 'package:tokosm_v2/login_page.dart';
 import 'package:tokosm_v2/splash_page.dart';
 import 'package:tokosm_v2/ui/main_page.dart';
 import 'package:tokosm_v2/ui/product%20page/detail_product_page.dart';
+import 'package:tokosm_v2/ui/product_page.dart';
 import 'package:tokosm_v2/ui/setting_page.dart';
 
 void main() {
@@ -66,6 +67,14 @@ class MainApp extends StatelessWidget {
                 childCurrent: context.currentRoute,
                 settings: settings,
                 child: const SettingPage(),
+              );
+
+            case 'product-page':
+              return PageTransition(
+                type: PageTransitionType.rightToLeft,
+                childCurrent: context.currentRoute,
+                settings: settings,
+                child: const ProductPage(),
               );
 
             case 'product/detail-product':

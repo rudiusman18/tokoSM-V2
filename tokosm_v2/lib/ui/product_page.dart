@@ -2,30 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:tokosm_v2/cubit/login_cubit.dart';
-import 'package:tokosm_v2/cubit/wishlist_cubit.dart';
+import 'package:tokosm_v2/cubit/product_cubit.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 
-class WishlistPage extends StatefulWidget {
-  const WishlistPage({super.key});
+class ProductPage extends StatefulWidget {
+  const ProductPage({super.key});
 
   @override
-  State<WishlistPage> createState() => _WishlistPageState();
+  State<ProductPage> createState() => _ProductPageState();
 }
 
-class _WishlistPageState extends State<WishlistPage> {
-  var tabFilter = ["Terbaru", "Terlaris", "Termahal", "Termurah"];
+class _ProductPageState extends State<ProductPage> {
+  var tabFilter = ["Populer", "Terlaris", "Terbaru", "Termahal", "Termurah"];
 
   @override
   void initState() {
-    initWishlistProduct();
+    initProductData();
     super.initState();
   }
 
-  void initWishlistProduct() async {
-    context.read<WishlistCubit>().getWishlistProduct(
+  void initProductData() async {
+    context.read<ProductCubit>().productTabIndex(0);
+    context.read<ProductCubit>().getAllProduct(
           token: context.read<LoginCubit>().state.loginModel.token ?? "",
           cabangId: 1,
+          type: '',
           sort: tabFilter.first.toLowerCase(),
+          page: 1,
+          limit: 999999999,
         );
   }
 
@@ -36,50 +40,74 @@ class _WishlistPageState extends State<WishlistPage> {
         margin: const EdgeInsets.only(top: 10),
         child: Column(
           children: [
-            // NOTE: header
-            Text(
-              "Produk Favorit",
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: bold,
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            // NOTE: search
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: colorSecondary,
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.search,
-                    size: 20,
-                    color: colorSecondary,
+            // NOTE: Header
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Icon(
+                    SolarIconsOutline.arrowLeft,
                   ),
-                  Expanded(
-                    child: Container(
-                      margin: const EdgeInsets.only(
-                        left: 10,
-                      ),
-                      child: TextFormField(
-                        style: const TextStyle(fontSize: 12),
-                        decoration: const InputDecoration.collapsed(
-                          hintText: "Cari Produk",
-                          hintStyle: TextStyle(fontSize: 12),
-                        ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Expanded(
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: colorSecondary,
+                        width: 1,
                       ),
                     ),
-                  )
-                ],
-              ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.search,
+                          size: 20,
+                          color: colorSecondary,
+                        ),
+                        Expanded(
+                          child: Container(
+                            margin: const EdgeInsets.only(
+                              left: 10,
+                            ),
+                            child: TextFormField(
+                              style: const TextStyle(fontSize: 12),
+                              decoration: const InputDecoration.collapsed(
+                                hintText: "Cari Produk",
+                                hintStyle: TextStyle(fontSize: 12),
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                const Icon(
+                  SolarIconsOutline.cartLarge2,
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    _ProductPageExtension().filterBottomSheet(context: context);
+                  },
+                  child: const Icon(
+                    SolarIconsOutline.tuning_2,
+                  ),
+                ),
+              ],
             ),
 
             const SizedBox(height: 10),
@@ -91,8 +119,8 @@ class _WishlistPageState extends State<WishlistPage> {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                        context.read<WishlistCubit>().setTabIndex(i);
-                        context.read<WishlistCubit>().getWishlistProduct(
+                        context.read<ProductCubit>().productTabIndex(i);
+                        context.read<ProductCubit>().getAllProduct(
                               token: context
                                       .read<LoginCubit>()
                                       .state
@@ -100,7 +128,10 @@ class _WishlistPageState extends State<WishlistPage> {
                                       .token ??
                                   "",
                               cabangId: 1,
+                              type: '',
                               sort: tabFilter[i].toLowerCase(),
+                              page: 1,
+                              limit: 999999999,
                             );
                       },
                       child: Container(
@@ -112,9 +143,9 @@ class _WishlistPageState extends State<WishlistPage> {
                             bottom: BorderSide(
                               color: i ==
                                       context
-                                          .read<WishlistCubit>()
+                                          .read<ProductCubit>()
                                           .state
-                                          .tabIndex
+                                          .productTabIndex
                                   ? Colors.black
                                   : colorSecondary, // Warna border
                               width: 2.0, // Ketebalan border
@@ -126,7 +157,10 @@ class _WishlistPageState extends State<WishlistPage> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             color: i ==
-                                    context.read<WishlistCubit>().state.tabIndex
+                                    context
+                                        .read<ProductCubit>()
+                                        .state
+                                        .productTabIndex
                                 ? Colors.black
                                 : colorSecondary,
                             fontSize: 12,
@@ -143,7 +177,7 @@ class _WishlistPageState extends State<WishlistPage> {
       );
     }
 
-    return BlocBuilder<WishlistCubit, WishlistState>(
+    return BlocBuilder<ProductCubit, ProductState>(
       builder: (context, state) {
         return Scaffold(
           body: SafeArea(
@@ -167,20 +201,18 @@ class _WishlistPageState extends State<WishlistPage> {
                           runSpacing: 10,
                           children: List.generate(
                               (context
-                                          .read<WishlistCubit>()
+                                          .read<ProductCubit>()
                                           .state
-                                          .wishlistProduct
+                                          .wildProduct
                                           .data ??
                                       [])
                                   .length, (index) {
                             var product = context
-                                .read<WishlistCubit>()
+                                .read<ProductCubit>()
                                 .state
-                                .wishlistProduct
+                                .wildProduct
                                 .data;
-                            print(
-                                "isi gambarProduk adalah: ${product?[index].gambarProduk?.first ?? ""}");
-                            return _wishlistPageExtension().bigItemView(
+                            return _ProductPageExtension().bigItemView(
                               context: context,
                               imageURL:
                                   product?[index].gambarProduk?.first ?? "",
@@ -226,7 +258,7 @@ class _WishlistPageState extends State<WishlistPage> {
 }
 
 // ignore: camel_case_types
-class _wishlistPageExtension {
+class _ProductPageExtension {
   Widget bigItemView({
     required BuildContext context,
     required String imageURL,
@@ -385,6 +417,110 @@ class _wishlistPageExtension {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> filterBottomSheet({required BuildContext context}) {
+    return showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          margin: const EdgeInsets.all(16),
+          width: double.infinity,
+          child: Column(
+            spacing: 10,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Filter",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: bold,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Icon(
+                      Icons.close,
+                    ),
+                  ),
+                ],
+              ),
+              //NOTE: Kategori
+              Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Kategori",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: bold,
+                        ),
+                      ),
+                      Text(
+                        "Lihat Semua",
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: bold,
+                          color: colorSuccess,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              //NOTE: Promo
+              Column(
+                children: [
+                  Text(
+                    "Promo",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: bold,
+                    ),
+                  ),
+                ],
+              ),
+              //NOTE: Rating
+              Column(
+                children: [
+                  Text(
+                    "Rating",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: bold,
+                    ),
+                  ),
+                ],
+              ),
+
+              //NOTE: Harga
+              Column(
+                children: [
+                  Text(
+                    "Harga",
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: bold,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

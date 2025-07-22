@@ -6,6 +6,8 @@ abstract class ProductState {
   final ProductModel promoProduct;
   final ProductModel bestSellerProduct;
   final ProductModel popularProduct;
+  final ProductModel wildProduct;
+  final int productTabIndex;
 
   const ProductState({
     required this.flashSaleProduct,
@@ -13,6 +15,8 @@ abstract class ProductState {
     required this.promoProduct,
     required this.bestSellerProduct,
     required this.popularProduct,
+    required this.wildProduct,
+    required this.productTabIndex,
   });
 }
 
@@ -24,17 +28,22 @@ class ProductInitial extends ProductState {
           promoProduct: ProductModel(),
           bestSellerProduct: ProductModel(),
           popularProduct: ProductModel(),
+          wildProduct: ProductModel(),
+          productTabIndex: 0,
         );
 }
 
 class ProductLoading extends ProductState {
-  ProductLoading()
+  final int productTabIndexData;
+  ProductLoading(this.productTabIndexData)
       : super(
           flashSaleProduct: ProductModel(),
           discountProduct: ProductModel(),
           promoProduct: ProductModel(),
           bestSellerProduct: ProductModel(),
           popularProduct: ProductModel(),
+          wildProduct: ProductModel(),
+          productTabIndex: productTabIndexData,
         );
 }
 
@@ -44,6 +53,8 @@ class ProductSuccess extends ProductState {
   final ProductModel promoProductData;
   final ProductModel bestSellerProductData;
   final ProductModel popularProductData;
+  final ProductModel wildProductData;
+  final int productTabIndexData;
 
   ProductSuccess({
     required this.flashSaleProductData,
@@ -51,12 +62,16 @@ class ProductSuccess extends ProductState {
     required this.promoProductData,
     required this.bestSellerProductData,
     required this.popularProductData,
+    required this.wildProductData,
+    required this.productTabIndexData,
   }) : super(
           flashSaleProduct: flashSaleProductData,
           discountProduct: discountProductData,
           promoProduct: promoProductData,
           bestSellerProduct: bestSellerProductData,
           popularProduct: popularProductData,
+          wildProduct: wildProductData,
+          productTabIndex: productTabIndexData,
         );
 }
 
@@ -69,5 +84,7 @@ class ProductFailure extends ProductState {
           promoProduct: ProductModel(),
           bestSellerProduct: ProductModel(),
           popularProduct: ProductModel(),
+          wildProduct: ProductModel(),
+          productTabIndex: 0,
         );
 }

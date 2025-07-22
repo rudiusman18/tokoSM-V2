@@ -147,6 +147,11 @@ class _HomePageState extends State<HomePage> {
                         left: 10,
                       ),
                       child: TextFormField(
+                        onFieldSubmitted: (value) {
+                          if (value != "") {
+                            Navigator.pushNamed(context, 'product-page');
+                          }
+                        },
                         style: const TextStyle(fontSize: 12),
                         decoration: const InputDecoration.collapsed(
                           hintText: "Cari Produk",
@@ -155,6 +160,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   )
+                
                 ],
               ),
             ),
@@ -836,15 +842,52 @@ class _HomePageExtension {
               children: [
                 AspectRatio(
                   aspectRatio: 1,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.circular(10),
-                      image: DecorationImage(
-                        image: NetworkImage(imageURL),
-                        fit: BoxFit.cover,
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          borderRadius: BorderRadius.circular(10),
+                          image: DecorationImage(
+                            image: NetworkImage(imageURL),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
-                    ),
+                      if (bonusInformation != "") ...{
+                        Positioned(
+                          bottom: 5,
+                          left: 5,
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: colorWarning,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Row(
+                              spacing: 2,
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  SolarIconsBold.tag,
+                                  size: 10,
+                                  color: Colors.white,
+                                ),
+                                Text(
+                                  bonusInformation,
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.white,
+                                    fontWeight: bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      },
+                    ],
                   ),
                 ),
                 Text(
@@ -866,6 +909,18 @@ class _HomePageExtension {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    if (productRealPrice != "") ...{
+                      Text(
+                        productRealPrice,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                          fontWeight: bold,
+                          decoration: TextDecoration.lineThrough,
+                          decorationThickness: 3,
+                        ),
+                      ),
+                    },
                     if (discountPercentage != "") ...{
                       Container(
                         padding: const EdgeInsets.all(2),
@@ -907,47 +962,6 @@ class _HomePageExtension {
                     style: const TextStyle(fontSize: 12),
                   ),
                 ],
-              ),
-            },
-            if (productRealPrice != "") ...{
-              Text(
-                productRealPrice,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                  fontWeight: bold,
-                  decoration: TextDecoration.lineThrough,
-                  decorationThickness: 3,
-                ),
-              ),
-            },
-            if (bonusInformation != "") ...{
-              Container(
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  color: colorWarning,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Row(
-                  spacing: 2,
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      SolarIconsBold.tag,
-                      size: 10,
-                      color: Colors.white,
-                    ),
-                    Text(
-                      bonusInformation,
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.white,
-                        fontWeight: bold,
-                      ),
-                    ),
-                  ],
-                ),
               ),
             },
           ],
