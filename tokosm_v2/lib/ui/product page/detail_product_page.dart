@@ -366,7 +366,7 @@ class _DetailProductExtension {
             color: colorWarning,
           ),
           onRatingUpdate: (rating) {
-            print(rating);
+            // print(rating);
           },
         ),
         Text(

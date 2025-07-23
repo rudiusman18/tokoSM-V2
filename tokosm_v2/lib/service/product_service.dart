@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:tokosm_v2/model/product_model.dart';
-import 'package:tokosm_v2/shared/themes.dart';
 import 'package:tokosm_v2/shared/utils.dart';
 
 class ProductService {
@@ -11,11 +10,15 @@ class ProductService {
     required int cabangId,
     required String type,
     required String sort,
+    required String cat,
+    required String minrating,
+    required String minprice,
+    required String maxprice,
     int page = 1,
     int limit = 10,
   }) async {
     var url = Uri.parse(
-        "$baseURL/produk?cabang=$cabangId&type=$type&page=$page&limit=$limit&sort=$sort");
+        "$baseURL/produk?cabang=$cabangId&type=$type&page=$page&limit=$limit&sort=$sort&cat=$cat&minrating=$minrating&minprice=$minprice&maxprice=$maxprice");
     var header = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
@@ -68,6 +71,27 @@ class ProductService {
   Future<Map<String, dynamic>> getProductCategory(
       {required String token}) async {
     var url = Uri.parse("$baseURL/produk/kategori?tree=1");
+    var header = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    var response = await http.get(
+      url,
+      headers: header,
+    );
+
+    if (response.statusCode >= 200 && response.statusCode <= 299) {
+      var data = jsonDecode(response.body);
+      return data;
+    } else {
+      var data = jsonDecode(response.body);
+      throw ("${data['message']}");
+    }
+  }
+
+  Future<Map<String, dynamic>> getBannerProduct({required String token}) async {
+    var url = Uri.parse("$baseURL/produk/banner");
     var header = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',

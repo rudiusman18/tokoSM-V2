@@ -6,6 +6,8 @@ part 'product_state.dart';
 class ProductCubit extends Cubit<ProductState> {
   ProductCubit() : super(ProductInitial());
 
+  
+
   void productTabIndex(int index) {
     emit(
       ProductSuccess(
@@ -25,6 +27,10 @@ class ProductCubit extends Cubit<ProductState> {
     required int cabangId,
     required String type,
     String sort = "",
+    String category = "",
+    String minrating = "",
+    String minprice = "",
+    String maxprice = "",
     int page = 1,
     int limit = 10,
   }) async {
@@ -51,6 +57,10 @@ class ProductCubit extends Cubit<ProductState> {
       ProductModel productModel = await ProductService().getProduct(
         token: token,
         cabangId: cabangId,
+        cat: category,
+        maxprice: maxprice,
+        minprice: minprice,
+        minrating: minrating,
         type: type,
         sort: sort,
       );
@@ -87,6 +97,10 @@ class ProductCubit extends Cubit<ProductState> {
         page: page,
         limit: limit,
         sort: sort,
+        cat: "",
+        maxprice: "",
+        minprice: "",
+        minrating: "",
       );
       emit(
         ProductSuccess(
@@ -104,7 +118,6 @@ class ProductCubit extends Cubit<ProductState> {
         ),
       );
     } catch (e) {
-      print("Error $e");
       emit(ProductFailure(e.toString()));
     }
   }

@@ -160,7 +160,6 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   )
-                
                 ],
               ),
             ),
@@ -277,7 +276,8 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-                _HomePageExtension().allButtonView(onTap: () {})
+                _HomePageExtension()
+                    .allButtonView(context: context, onTap: () {})
               ],
             ),
           ),
@@ -348,7 +348,8 @@ class _HomePageState extends State<HomePage> {
                     fontWeight: bold,
                   ),
                 ),
-                _HomePageExtension().allButtonView(onTap: () {})
+                _HomePageExtension()
+                    .allButtonView(context: context, onTap: () {})
               ],
             ),
           ),
@@ -418,7 +419,8 @@ class _HomePageState extends State<HomePage> {
                     fontWeight: bold,
                   ),
                 ),
-                _HomePageExtension().allButtonView(onTap: () {})
+                _HomePageExtension()
+                    .allButtonView(context: context, onTap: () {})
               ],
             ),
           ),
@@ -488,7 +490,8 @@ class _HomePageState extends State<HomePage> {
                     fontWeight: bold,
                   ),
                 ),
-                _HomePageExtension().allButtonView(onTap: () {})
+                _HomePageExtension()
+                    .allButtonView(context: context, onTap: () {})
               ],
             ),
           ),
@@ -555,7 +558,8 @@ class _HomePageState extends State<HomePage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                _HomePageExtension().allButtonView(onTap: () {}),
+                _HomePageExtension()
+                    .allButtonView(context: context, onTap: () {}),
               ],
             ),
           ),
@@ -654,23 +658,29 @@ class _HomePageState extends State<HomePage> {
 }
 
 class _HomePageExtension {
-  Widget allButtonView({required Function onTap}) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          "Lihat Semua",
-          style: TextStyle(
-            color: colorSuccess,
-            fontSize: 12,
+  Widget allButtonView(
+      {required BuildContext context, required Function onTap}) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(context, 'product-page');
+      },
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            "Lihat Semua",
+            style: TextStyle(
+              color: colorSuccess,
+              fontSize: 12,
+            ),
           ),
-        ),
-        Icon(
-          SolarIconsOutline.altArrowRight,
-          size: 12,
-          color: colorSuccess,
-        ),
-      ],
+          Icon(
+            SolarIconsOutline.altArrowRight,
+            size: 12,
+            color: colorSuccess,
+          ),
+        ],
+      ),
     );
   }
 

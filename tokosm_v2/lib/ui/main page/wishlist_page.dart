@@ -178,8 +178,6 @@ class _WishlistPageState extends State<WishlistPage> {
                                 .state
                                 .wishlistProduct
                                 .data;
-                            print(
-                                "isi gambarProduk adalah: ${product?[index].gambarProduk?.first ?? ""}");
                             return _wishlistPageExtension().bigItemView(
                               context: context,
                               imageURL:

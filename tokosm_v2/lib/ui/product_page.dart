@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_icons/solar_icons.dart';
+import 'package:tokosm_v2/cubit/category_cubit.dart';
 import 'package:tokosm_v2/cubit/login_cubit.dart';
 import 'package:tokosm_v2/cubit/product_cubit.dart';
 import 'package:tokosm_v2/shared/themes.dart';
@@ -101,7 +102,13 @@ class _ProductPageState extends State<ProductPage> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    _ProductPageExtension().filterBottomSheet(context: context);
+                    _ProductPageExtension().filterBottomSheet(
+                        context: context,
+                        sortBy: tabFilter[context
+                                .read<ProductCubit>()
+                                .state
+                                .productTabIndex]
+                            .toLowerCase());
                   },
                   child: const Icon(
                     SolarIconsOutline.tuning_2,
@@ -259,6 +266,19 @@ class _ProductPageState extends State<ProductPage> {
 
 // ignore: camel_case_types
 class _ProductPageExtension {
+  var promoFilter = ["Flashsale", "Diskon", "Bundling & Hadiah"];
+  var ratingFilter = ["5", "≥4", "≥3", "≥2", "≥1"];
+  TextEditingController lowestPriceController = TextEditingController(text: "");
+  TextEditingController highestPriceController =
+      TextEditingController(text: "");
+  FocusNode lowestPriceFocusNode = FocusNode();
+  FocusNode highestPriceFocusNode = FocusNode();
+
+  //NOTE: variable yang menerima input filter
+  String selectedCategory = "";
+  String selectedPromo = "";
+  String selectedRating = "";
+
   Widget bigItemView({
     required BuildContext context,
     required String imageURL,
@@ -420,107 +440,456 @@ class _ProductPageExtension {
     );
   }
 
-  Future<void> filterBottomSheet({required BuildContext context}) {
+  Future<void> filterBottomSheet({
+    required BuildContext context,
+    required String sortBy,
+  }) {
+    context.read<CategoryCubit>().getProductCategory(
+          token: context.read<LoginCubit>().state.loginModel.token ?? "",
+        );
+
     return showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
-        return Container(
-          margin: const EdgeInsets.all(16),
-          width: double.infinity,
-          child: Column(
-            spacing: 10,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Filter",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: bold,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Icon(
-                      Icons.close,
-                    ),
-                  ),
-                ],
-              ),
-              //NOTE: Kategori
-              Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Kategori",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: bold,
-                        ),
-                      ),
-                      Text(
-                        "Lihat Semua",
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: bold,
-                          color: colorSuccess,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              //NOTE: Promo
-              Column(
-                children: [
-                  Text(
-                    "Promo",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: bold,
-                    ),
-                  ),
-                ],
-              ),
-              //NOTE: Rating
-              Column(
-                children: [
-                  Text(
-                    "Rating",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: bold,
-                    ),
-                  ),
-                ],
-              ),
+        return StatefulBuilder(builder: (BuildContext context, setState) {
+          lowestPriceFocusNode.addListener(() {
+            setState(() {}); // Rebuild to reflect focus change
+          });
 
-              //NOTE: Harga
-              Column(
-                children: [
-                  Text(
-                    "Harga",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: bold,
+          highestPriceFocusNode.addListener(() {
+            setState(() {});
+          });
+
+          return BlocBuilder<CategoryCubit, CategoryState>(
+            builder: (context, state) {
+              return Container(
+                margin: const EdgeInsets.all(16),
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                width: double.infinity,
+                child: Column(
+                  spacing: 10,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Filter",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: bold,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Icon(
+                            Icons.close,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
+                    //NOTE: Kategori
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              "Kategori",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: bold,
+                              ),
+                            ),
+                            Text(
+                              "Lihat Semua",
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: bold,
+                                color: colorSuccess,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              for (var index = 0;
+                                  index <
+                                      ((context
+                                                  .read<CategoryCubit>()
+                                                  .state
+                                                  .categoryModel?["data"] ??
+                                              []) as List)
+                                          .length;
+                                  index++) ...{
+                                for (var index1 = 0;
+                                    index1 <
+                                        (((context
+                                                            .read<CategoryCubit>()
+                                                            .state
+                                                            .categoryModel?[
+                                                        "data"] as List)
+                                                    .map((e) => e
+                                                        as Map<String, dynamic>)
+                                                    .toList()[index]["child"] ??
+                                                []) as List)
+                                            .length;
+                                    index1++) ...{
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedCategory =
+                                            "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["child"] ?? []) as List).map((e) => e as Map<String, dynamic>).toList()[index1]["kat2_slug"]}"
+                                                .toLowerCase();
+                                      });
+                                    },
+                                    child: filterItem(
+                                      cardColor:
+                                          "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["child"] ?? []) as List).map((e) => e as Map<String, dynamic>).toList()[index1]["kat2_slug"]}"
+                                                      .toLowerCase() ==
+                                                  selectedCategory
+                                              ? Colors.black
+                                              : null,
+                                      name:
+                                          "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["child"] ?? []) as List).map((e) => e as Map<String, dynamic>).toList()[index1]["kat2"]}",
+                                    ),
+                                  ),
+                                },
+                              },
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    //NOTE: Promo
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Promo",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: bold,
+                          ),
+                        ),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              for (var index = 0;
+                                  index < promoFilter.length;
+                                  index++)
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedPromo =
+                                          promoFilter[index].toLowerCase();
+                                    });
+                                  },
+                                  child: filterItem(
+                                    cardColor:
+                                        promoFilter[index].toLowerCase() ==
+                                                selectedPromo
+                                            ? Colors.black
+                                            : null,
+                                    name: promoFilter[index],
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    //NOTE: Rating
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Rating",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: bold,
+                          ),
+                        ),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              for (var index = 0;
+                                  index < ratingFilter.length;
+                                  index++)
+                                GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedRating = ratingFilter[index]
+                                          .replaceAll("≥", "");
+                                    });
+                                  },
+                                  child: filterItem(
+                                    cardColor: ratingFilter[index]
+                                                .replaceAll("≥", "") ==
+                                            selectedRating
+                                        ? Colors.black
+                                        : null,
+                                    name: "",
+                                    content: Row(
+                                      children: [
+                                        Text(
+                                          ratingFilter[index],
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: ratingFilter[index]
+                                                        .replaceAll("≥", "") ==
+                                                    selectedRating
+                                                ? Colors.white
+                                                : Colors.black,
+                                          ),
+                                        ),
+                                        Icon(
+                                          Icons.star,
+                                          color: colorWarning,
+                                          size: 14,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    //NOTE: Harga
+                    Column(
+                      spacing: 10,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Harga",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: bold,
+                          ),
+                        ),
+                        Row(
+                          spacing: 10,
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: lowestPriceFocusNode.hasFocus
+                                        ? Colors.black
+                                        : Colors.grey,
+                                    width: 1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  spacing: 5,
+                                  children: [
+                                    Text(
+                                      "Rp",
+                                      style: TextStyle(
+                                        fontWeight: bold,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: TextFormField(
+                                        focusNode: lowestPriceFocusNode,
+                                        controller: lowestPriceController,
+                                        cursorColor: Colors.black,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                        ),
+                                        keyboardType: TextInputType.number,
+                                        decoration:
+                                            const InputDecoration.collapsed(
+                                          hintText: 'Terendah',
+                                          hintStyle: TextStyle(
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const Text("-"),
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: highestPriceFocusNode.hasFocus
+                                        ? Colors.black
+                                        : Colors.grey,
+                                    width: 1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  spacing: 5,
+                                  children: [
+                                    Text(
+                                      "Rp",
+                                      style: TextStyle(
+                                        fontWeight: bold,
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: TextFormField(
+                                        cursorColor: Colors.black,
+                                        controller: highestPriceController,
+                                        focusNode: highestPriceFocusNode,
+                                        keyboardType: TextInputType.number,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                        ),
+                                        decoration:
+                                            const InputDecoration.collapsed(
+                                          hintText: 'Tertinggi',
+                                          hintStyle: TextStyle(
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      spacing: 10,
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: colorSuccess,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              "Reset",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: colorSuccess,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              print(
+                                  "Filter yang diterapkan adalah: $selectedCategory, $selectedPromo, $selectedRating, ${lowestPriceController.text}, ${highestPriceController.text}");
+                              context.read<ProductCubit>().getAllProduct(
+                                    token: context
+                                            .read<LoginCubit>()
+                                            .state
+                                            .loginModel
+                                            .token ??
+                                        "",
+                                    cabangId: 1,
+                                    type: (selectedPromo == 'bundling & hadiah'
+                                        ? 'promo'
+                                        : selectedPromo),
+                                    category: selectedCategory,
+                                    minrating: selectedRating,
+                                    maxprice: highestPriceController.text,
+                                    minprice: lowestPriceController.text,
+                                    page: 1,
+                                    limit: 999999999,
+                                    sort: sortBy,
+                                  );
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                color: colorSuccess,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Text(
+                                "Terapkan",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        });
       },
     );
+  }
+
+  Widget filterItem({
+    Color? cardColor,
+    required String name,
+    Widget? content,
+  }) {
+    return Card(
+      color: cardColor,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: content ??
+            Text(
+              name,
+              style: TextStyle(
+                fontSize: 12,
+                color: cardColor != null ? Colors.white : Colors.black,
+              ),
+            ),
+      ),
+    );
+  }
+}
+
+//NOTE: halaman untuk menampilkan kategori secara penuh
+class CategoryFilterPage extends StatefulWidget {
+  const CategoryFilterPage({super.key});
+
+  @override
+  State<CategoryFilterPage> createState() => _CategoryFilterPageState();
+}
+
+class _CategoryFilterPageState extends State<CategoryFilterPage> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }
