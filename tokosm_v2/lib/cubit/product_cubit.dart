@@ -124,4 +124,19 @@ class ProductCubit extends Cubit<ProductState> {
       emit(ProductFailure(e.toString()));
     }
   }
+
+  void setSearchKeyword(String text) {
+    emit(
+      ProductSearchKeyword(
+        searchKeyword: text,
+        flashSaleProductData: state.flashSaleProduct,
+        discountProductData: state.discountProduct,
+        promoProductData: state.promoProduct,
+        bestSellerProductData: state.bestSellerProduct,
+        popularProductData: state.popularProduct,
+        wildProductData: state.wildProduct,
+        productTabIndexData: state.productTabIndex,
+      ),
+    );
+  }
 }

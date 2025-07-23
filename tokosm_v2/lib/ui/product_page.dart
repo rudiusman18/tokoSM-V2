@@ -17,8 +17,13 @@ class ProductPage extends StatefulWidget {
 class _ProductPageState extends State<ProductPage> {
   var tabFilter = ["Populer", "Terlaris", "Terbaru", "Termahal", "Termurah"];
 
+  TextEditingController searchController = TextEditingController(text: "");
+
   @override
   void initState() {
+    searchController.text =
+        (context.read<ProductCubit>().state as ProductSearchKeyword)
+            .searchKeyword;
     initProductData();
     super.initState();
   }
@@ -82,6 +87,7 @@ class _ProductPageState extends State<ProductPage> {
                             ),
                             child: TextFormField(
                               style: const TextStyle(fontSize: 12),
+                              controller: searchController,
                               decoration: const InputDecoration.collapsed(
                                 hintText: "Cari Produk",
                                 hintStyle: TextStyle(fontSize: 12),

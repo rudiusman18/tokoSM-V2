@@ -88,3 +88,32 @@ class ProductFailure extends ProductState {
           productTabIndex: 0,
         );
 }
+
+class ProductSearchKeyword extends ProductState {
+  final ProductModel flashSaleProductData;
+  final ProductModel discountProductData;
+  final ProductModel promoProductData;
+  final ProductModel bestSellerProductData;
+  final ProductModel popularProductData;
+  final ProductModel wildProductData;
+  final int productTabIndexData;
+  String searchKeyword;
+  ProductSearchKeyword({
+    required this.searchKeyword,
+    required this.flashSaleProductData,
+    required this.discountProductData,
+    required this.promoProductData,
+    required this.bestSellerProductData,
+    required this.popularProductData,
+    required this.wildProductData,
+    required this.productTabIndexData,
+  }) : super(
+          flashSaleProduct: flashSaleProductData,
+          discountProduct: discountProductData,
+          promoProduct: promoProductData,
+          bestSellerProduct: bestSellerProductData,
+          popularProduct: popularProductData,
+          wildProduct: wildProductData,
+          productTabIndex: productTabIndexData,
+        );
+}

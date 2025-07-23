@@ -26,6 +26,8 @@ class _HomePageState extends State<HomePage> {
     'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80'
   ];
 
+  TextEditingController searchController = TextEditingController(text: "");
+
   final CarouselSliderController carouselController =
       CarouselSliderController();
 
@@ -194,8 +196,13 @@ class _HomePageState extends State<HomePage> {
                         left: 10,
                       ),
                       child: TextFormField(
+                        controller: searchController,
                         onFieldSubmitted: (value) {
                           if (value != "") {
+                            context
+                                .read<ProductCubit>()
+                                .setSearchKeyword(searchController.text);
+                            searchController.text = "";
                             Navigator.pushNamed(context, 'product-page');
                           }
                         },
@@ -761,6 +768,7 @@ class _HomePageExtension {
       {required BuildContext context, required Function onTap}) {
     return GestureDetector(
       onTap: () {
+        context.read<ProductCubit>().setSearchKeyword("");
         Navigator.pushNamed(context, 'product-page');
       },
       child: Row(
