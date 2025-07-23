@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import 'package:solar_icons/solar_icons.dart';
+import 'package:tokosm_v2/cubit/cabang_cubit.dart';
 import 'package:tokosm_v2/cubit/login_cubit.dart';
 import 'package:tokosm_v2/cubit/product_cubit.dart';
+import 'package:tokosm_v2/model/cabang_model.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 
 class HomePage extends StatefulWidget {
@@ -31,35 +33,41 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
-    initProductData();
+    initCabangData();
     super.initState();
   }
 
   void initProductData() async {
     context.read<ProductCubit>().getProducts(
         token: context.read<LoginCubit>().state.loginModel.token ?? "",
-        cabangId: 1,
+        cabangId: context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
         type: 'flashsale');
     context.read<ProductCubit>().getProducts(
         token: context.read<LoginCubit>().state.loginModel.token ?? "",
-        cabangId: 1,
+        cabangId: context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
         type: 'diskon');
     context.read<ProductCubit>().getProducts(
         token: context.read<LoginCubit>().state.loginModel.token ?? "",
-        cabangId: 1,
+        cabangId: context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
         type: 'promo');
     context.read<ProductCubit>().getProducts(
         token: context.read<LoginCubit>().state.loginModel.token ?? "",
-        cabangId: 1,
+        cabangId: context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
         type: 'terlaris',
         sort: 'terlaris');
     context.read<ProductCubit>().getProducts(
           token: context.read<LoginCubit>().state.loginModel.token ?? "",
-          cabangId: 1,
+          cabangId:
+              context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
           type: 'populer',
           sort: 'populer',
           limit: 99999999,
         );
+  }
+
+  void initCabangData() async {
+    context.read<CabangCubit>().getCabangData(
+        token: context.read<LoginCubit>().state.loginModel.token ?? "");
   }
 
   @override
@@ -74,25 +82,64 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 //NOTE: opsi cabang
-                Row(
-                  spacing: 10,
-                  children: [
-                    const Icon(
-                      SolarIconsOutline.mapPointWave,
-                      size: 24,
-                    ),
-                    Text(
-                      "Cabang Pusat",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: bold,
+                GestureDetector(
+                  onTap: () async {
+                    final List<String> listCabangName =
+                        (context.read<CabangCubit>().state.cabangModel.data ??
+                                [])
+                            .map((e) => e.namaCabang ?? "")
+                            .toList();
+
+                    final result = await showMenu<String>(
+                      context: context,
+                      position: const RelativeRect.fromLTRB(
+                          30, 80, 30, 0), // sesuaikan posisi
+                      items: listCabangName.map((String cabang) {
+                        return PopupMenuItem<String>(
+                          value: cabang,
+                          child: Text(cabang),
+                        );
+                      }).toList(),
+                    );
+
+                    if (result != null) {
+                      setState(() {
+                        context.read<CabangCubit>().selectCabang(
+                              cabang: (context
+                                          .read<CabangCubit>()
+                                          .state
+                                          .cabangModel
+                                          .data ??
+                                      [])
+                                  .firstWhere(
+                                (e) =>
+                                    (e.namaCabang ?? "").toLowerCase() ==
+                                    result.toLowerCase(),
+                              ),
+                            );
+                      });
+                    }
+                  },
+                  child: Row(
+                    spacing: 10,
+                    children: [
+                      const Icon(
+                        SolarIconsOutline.mapPointWave,
+                        size: 24,
                       ),
-                    ),
-                    const Icon(
-                      SolarIconsBold.altArrowDown,
-                      size: 15,
-                    ),
-                  ],
+                      Text(
+                        "Cabang ${context.read<CabangCubit>().state.selectedCabangData.namaCabang?.replaceAll("Cab ", "")}",
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: bold,
+                        ),
+                      ),
+                      const Icon(
+                        SolarIconsBold.altArrowDown,
+                        size: 15,
+                      ),
+                    ],
+                  ),
                 ),
 
                 // NOTE: setting dan keranjang
@@ -474,6 +521,7 @@ class _HomePageState extends State<HomePage> {
     Widget terlarisSection() {
       var product = context.read<ProductCubit>().state.bestSellerProduct.data;
       return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 10,
         children: [
           Container(
@@ -605,52 +653,100 @@ class _HomePageState extends State<HomePage> {
       );
     }
 
-    return BlocBuilder<ProductCubit, ProductState>(
+    return BlocConsumer<CabangCubit, CabangState>(
+      listener: (context, state) {
+        if (state is CabangSuccess) {
+          if (context.read<CabangCubit>().state.selectedCabangData.namaCabang ==
+              null) {
+            context.read<CabangCubit>().selectCabang(
+                cabang:
+                    context.read<CabangCubit>().state.cabangModel.data?.first ??
+                        DataCabang());
+          }
+          initProductData();
+        }
+      },
       builder: (context, state) {
-        return Scaffold(
-          body: SafeArea(
-            child: Column(
-              children: [
-                Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                  ),
-                  child: header(),
-                ),
-                Expanded(
-                  child: ListView(
-                    children: [
-                      Container(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 16,
+        return BlocBuilder<ProductCubit, ProductState>(
+          builder: (context, state) {
+            return Scaffold(
+              body: SafeArea(
+                child: Column(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                      ),
+                      child: header(),
+                    ),
+                    Expanded(
+                      child: ListView(
+                        children: [
+                          Container(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              child: carouselBanner()),
+                          if ((context
+                                      .read<ProductCubit>()
+                                      .state
+                                      .flashSaleProduct
+                                      .data ??
+                                  [])
+                              .isNotEmpty) ...{
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            flashSaleSection(),
+                          },
+                          if ((context
+                                      .read<ProductCubit>()
+                                      .state
+                                      .discountProduct
+                                      .data ??
+                                  [])
+                              .isNotEmpty) ...{
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            discountSection(),
+                          },
+                          if ((context
+                                      .read<ProductCubit>()
+                                      .state
+                                      .promoProduct
+                                      .data ??
+                                  [])
+                              .isNotEmpty) ...{
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            promoSection(),
+                          },
+                          if ((context
+                                      .read<ProductCubit>()
+                                      .state
+                                      .bestSellerProduct
+                                      .data ??
+                                  [])
+                              .isNotEmpty) ...{
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            terlarisSection(),
+                          },
+                          const SizedBox(
+                            height: 10,
                           ),
-                          child: carouselBanner()),
-                      const SizedBox(
-                        height: 10,
+                          popularSection(),
+                        ],
                       ),
-                      flashSaleSection(),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      discountSection(),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      promoSection(),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      terlarisSection(),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      popularSection(),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
+                    )
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
     );

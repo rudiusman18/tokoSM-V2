@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_icons/solar_icons.dart';
+import 'package:tokosm_v2/cubit/cabang_cubit.dart';
 import 'package:tokosm_v2/cubit/login_cubit.dart';
 import 'package:tokosm_v2/cubit/wishlist_cubit.dart';
 import 'package:tokosm_v2/shared/themes.dart';
@@ -24,7 +25,8 @@ class _WishlistPageState extends State<WishlistPage> {
   void initWishlistProduct() async {
     context.read<WishlistCubit>().getWishlistProduct(
           token: context.read<LoginCubit>().state.loginModel.token ?? "",
-          cabangId: 1,
+          cabangId:
+              context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
           sort: tabFilter.first.toLowerCase(),
         );
   }
@@ -178,10 +180,13 @@ class _WishlistPageState extends State<WishlistPage> {
                                 .state
                                 .wishlistProduct
                                 .data;
+
                             return _wishlistPageExtension().bigItemView(
                               context: context,
-                              imageURL:
-                                  product?[index].gambarProduk?.first ?? "",
+                              imageURL: ((product?[index].gambarProduk ?? [])
+                                      .isNotEmpty
+                                  ? product![index].gambarProduk!.first
+                                  : ""),
                               productName: product?[index].namaProduk ?? "",
                               productPrice: product?[index].isFlashsale == 1
                                   ? "Rp ${product?[index].hargaFlashsale}"

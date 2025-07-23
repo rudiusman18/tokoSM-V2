@@ -6,8 +6,6 @@ part 'product_state.dart';
 class ProductCubit extends Cubit<ProductState> {
   ProductCubit() : super(ProductInitial());
 
-  
-
   void productTabIndex(int index) {
     emit(
       ProductSuccess(
@@ -92,7 +90,7 @@ class ProductCubit extends Cubit<ProductState> {
     try {
       ProductModel productModel = await ProductService().getProduct(
         token: token,
-        cabangId: 1,
+        cabangId: cabangId,
         type: type,
         page: page,
         limit: limit,
@@ -102,6 +100,11 @@ class ProductCubit extends Cubit<ProductState> {
         minprice: "",
         minrating: "",
       );
+
+      if (type == "flashsale") {
+        print(productModel.data);
+      }
+
       emit(
         ProductSuccess(
           flashSaleProductData:

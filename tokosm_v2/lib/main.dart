@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:tokosm_v2/cubit/cabang_cubit.dart';
 import 'package:tokosm_v2/cubit/category_cubit.dart';
 import 'package:tokosm_v2/cubit/login_cubit.dart';
 import 'package:tokosm_v2/cubit/page_cubit.dart';
@@ -48,6 +49,9 @@ class MainApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => CategoryCubit(),
+        ),
+        BlocProvider(
+          create: (context) => CabangCubit(),
         ),
       ],
       child: MaterialApp(
