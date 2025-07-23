@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_icons/solar_icons.dart';
+import 'package:tokosm_v2/cubit/cabang_cubit.dart';
 import 'package:tokosm_v2/cubit/category_cubit.dart';
 import 'package:tokosm_v2/cubit/login_cubit.dart';
 import 'package:tokosm_v2/cubit/product_cubit.dart';
@@ -26,7 +27,8 @@ class _ProductPageState extends State<ProductPage> {
     context.read<ProductCubit>().productTabIndex(0);
     context.read<ProductCubit>().getAllProduct(
           token: context.read<LoginCubit>().state.loginModel.token ?? "",
-          cabangId: 1,
+          cabangId:
+              context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
           type: '',
           sort: tabFilter.first.toLowerCase(),
           page: 1,
@@ -134,7 +136,12 @@ class _ProductPageState extends State<ProductPage> {
                                       .loginModel
                                       .token ??
                                   "",
-                              cabangId: 1,
+                              cabangId: context
+                                      .read<CabangCubit>()
+                                      .state
+                                      .selectedCabangData
+                                      .id ??
+                                  0,
                               type: '',
                               sort: tabFilter[i].toLowerCase(),
                               page: 1,
@@ -200,10 +207,13 @@ class _ProductPageState extends State<ProductPage> {
                   height: 10,
                 ),
                 Expanded(
-                  child: ListView(
-                    children: [
-                      Center(
-                        child: Wrap(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                    ),
+                    child: ListView(
+                      children: [
+                        Wrap(
                           spacing: 10,
                           runSpacing: 10,
                           children: List.generate(
@@ -250,9 +260,9 @@ class _ProductPageState extends State<ProductPage> {
                               rating: product?[index].rating ?? "",
                             );
                           }),
-                        ),
-                      )
-                    ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -815,7 +825,12 @@ class _ProductPageExtension {
                                             .loginModel
                                             .token ??
                                         "",
-                                    cabangId: 1,
+                                    cabangId: context
+                                            .read<CabangCubit>()
+                                            .state
+                                            .selectedCabangData
+                                            .id ??
+                                        0,
                                     type: (selectedPromo == 'bundling & hadiah'
                                         ? 'promo'
                                         : selectedPromo),

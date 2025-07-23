@@ -101,7 +101,12 @@ class _WishlistPageState extends State<WishlistPage> {
                                       .loginModel
                                       .token ??
                                   "",
-                              cabangId: 1,
+                              cabangId: context
+                                      .read<CabangCubit>()
+                                      .state
+                                      .selectedCabangData
+                                      .id ??
+                                  0,
                               sort: tabFilter[i].toLowerCase(),
                             );
                       },
@@ -161,10 +166,13 @@ class _WishlistPageState extends State<WishlistPage> {
                   height: 10,
                 ),
                 Expanded(
-                  child: ListView(
-                    children: [
-                      Center(
-                        child: Wrap(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                    ),
+                    child: ListView(
+                      children: [
+                        Wrap(
                           spacing: 10,
                           runSpacing: 10,
                           children: List.generate(
@@ -214,9 +222,9 @@ class _WishlistPageState extends State<WishlistPage> {
                               rating: product?[index].rating ?? "",
                             );
                           }),
-                        ),
-                      )
-                    ],
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ],

@@ -612,7 +612,10 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           const SizedBox(height: 10),
-          Center(
+          Container(
+            margin: const EdgeInsets.symmetric(
+              horizontal: 16,
+            ),
             child: Wrap(
               spacing: 10,
               runSpacing: 10,
