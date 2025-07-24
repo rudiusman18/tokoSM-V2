@@ -152,7 +152,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                   ],
                                 ),
                                 Text(
-                                  "Berakhir ${formatTanggal(product.flashsaleEnd ?? "")}",
+                                  "Berakhir ${Utils().formatTanggal(product.flashsaleEnd ?? "")}",
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,

@@ -21,12 +21,13 @@ class Utils {
     );
   }
 
-  void alertDialog({
-    required BuildContext context,
-    required Function function,
-    required String title,
-    required String message,
-  }) {
+  void alertDialog(
+      {required BuildContext context,
+      required Function function,
+      required String title,
+      required String message,
+      String cancelTitle = "Cancel",
+      String confirmTitle = "Ok"}) {
     showDialog(
       context: context,
       builder: (
@@ -45,7 +46,7 @@ class Utils {
               style: TextButton.styleFrom(
                 foregroundColor: Colors.black,
               ),
-              child: const Text("Cancel"),
+              child: Text(cancelTitle),
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
@@ -54,7 +55,7 @@ class Utils {
               style: TextButton.styleFrom(
                 foregroundColor: Colors.black,
               ),
-              child: const Text("OK"),
+              child: Text(confirmTitle),
               onPressed: () {
                 function();
               },
@@ -64,10 +65,55 @@ class Utils {
       },
     );
   }
-}
 
-String formatTanggal(String input) {
-  DateTime dateTime = DateTime.parse(input);
-  // Format: 18 April 2025 23:00
-  return DateFormat("d MMMM y HH:mm", "id_ID").format(dateTime);
+  void customAlertDialog(
+      {required BuildContext context,
+      required Function confirmationFunction,
+      required Widget content,
+      required String title,
+      String cancelTitle = "Cancel",
+      String confirmTitle = "Ok"}) {
+    showDialog(
+      context: context,
+      builder: (
+        BuildContext context,
+      ) {
+        return AlertDialog(
+          title: Text(
+            title,
+            style: TextStyle(
+              fontWeight: bold,
+            ),
+          ),
+          content: content,
+          actions: [
+            TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.black,
+              ),
+              child: Text(cancelTitle),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+            TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.black,
+              ),
+              child: Text(confirmTitle),
+              onPressed: () {
+                confirmationFunction();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  String formatTanggal(String input) {
+    DateTime dateTime = DateTime.parse(input);
+    // Format: 18 April 2025 23:00
+    return DateFormat("d MMMM y HH:mm", "id_ID").format(dateTime);
+  }
 }

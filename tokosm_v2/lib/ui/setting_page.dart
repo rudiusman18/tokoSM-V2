@@ -14,6 +14,12 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
+  TextEditingController oldPasswordController = TextEditingController(text: "");
+  TextEditingController newPasswordController = TextEditingController(text: "");
+
+  FocusNode oldPasswordFocusNode = FocusNode();
+  FocusNode newPasswordFocusNode = FocusNode();
+
   @override
   Widget build(BuildContext context) {
     Widget header() {
@@ -157,9 +163,30 @@ class _SettingPageState extends State<SettingPage> {
                   child: Column(
                     spacing: 10,
                     children: [
-                      _SettingPageExtension().settingItem(
-                        icon: SolarIconsOutline.lockPassword,
-                        title: "Ubah Kata Sandi",
+                      GestureDetector(
+                        onTap: () {
+                          Utils().customAlertDialog(
+                            context: context,
+                            title: "Ubah Kata Sandi",
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                _SettingPageExtension().FormItem(
+                                  title: "Password Lama",
+                                  controller: oldPasswordController,
+                                  focus: oldPasswordFocusNode,
+                                  placeholder: 'password lama',
+                                  icon: SolarIconsOutline.lockPassword,
+                                )
+                              ],
+                            ),
+                            confirmationFunction: () {},
+                          );
+                        },
+                        child: _SettingPageExtension().settingItem(
+                          icon: SolarIconsOutline.lockPassword,
+                          title: "Ubah Kata Sandi",
+                        ),
                       ),
                       _SettingPageExtension().settingItem(
                         icon: SolarIconsOutline.delivery,
@@ -273,6 +300,88 @@ class _SettingPageExtension {
           height: 5,
         ),
       ],
+    );
+  }
+
+  bool isPasswordVisible = true;
+
+  Widget FormItem({
+    required String title,
+    required TextEditingController controller,
+    required FocusNode focus,
+    required String placeholder,
+    required IconData icon,
+    bool isPassword = false,
+  }) {
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return Column(
+          spacing: 5,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontWeight: bold,
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: 5,
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: focus.hasFocus ? Colors.black : greyBase300,
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                spacing: 10,
+                children: [
+                  Icon(
+                    icon,
+                    size: 14,
+                  ),
+                  Expanded(
+                    child: TextFormField(
+                      autocorrect: false,
+                      controller: controller,
+                      cursorColor: Colors.black,
+                      obscureText:
+                          isPassword && isPasswordVisible ? true : false,
+                      focusNode: focus,
+                      decoration: InputDecoration.collapsed(
+                        hintText: placeholder,
+                        focusColor: Colors.black,
+                        hintStyle: const TextStyle(fontSize: 14),
+                      ),
+                    ),
+                  ),
+                  if (isPassword) ...{
+                    GestureDetector(
+                      onTap: () {
+                        setState(
+                          () {
+                            isPasswordVisible = !isPasswordVisible;
+                          },
+                        );
+                      },
+                      child: Icon(
+                        isPasswordVisible
+                            ? SolarIconsOutline.eye
+                            : SolarIconsOutline.eyeClosed,
+                        size: 20,
+                      ),
+                    ),
+                  },
+                ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 }
