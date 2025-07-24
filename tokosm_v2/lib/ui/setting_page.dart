@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:tokosm_v2/cubit/login_cubit.dart';
+import 'package:tokosm_v2/cubit/page_cubit.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 import 'package:tokosm_v2/shared/utils.dart';
 
@@ -164,17 +165,29 @@ class _SettingPageState extends State<SettingPage> {
                         icon: SolarIconsOutline.delivery,
                         title: "Daftar Alamat",
                       ),
-                      _SettingPageExtension().settingItem(
-                        icon: SolarIconsOutline.billList,
-                        title: "Daftar Transaksi",
+                      GestureDetector(
+                        onTap: () {
+                          context.read<PageCubit>().setPage(3);
+                          Navigator.pop(context);
+                        },
+                        child: _SettingPageExtension().settingItem(
+                          icon: SolarIconsOutline.billList,
+                          title: "Daftar Transaksi",
+                        ),
                       ),
                       _SettingPageExtension().settingItem(
                         icon: Icons.star_border,
                         title: "Ulasan",
                       ),
-                      _SettingPageExtension().settingItem(
-                        icon: SolarIconsOutline.heart,
-                        title: "Favorit",
+                      GestureDetector(
+                        onTap: () {
+                          context.read<PageCubit>().setPage(2);
+                          Navigator.pop(context);
+                        },
+                        child: _SettingPageExtension().settingItem(
+                          icon: SolarIconsOutline.heart,
+                          title: "Favorit",
+                        ),
                       ),
                     ],
                   ),

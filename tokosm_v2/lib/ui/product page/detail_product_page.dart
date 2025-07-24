@@ -111,9 +111,9 @@ class _DetailProductPageState extends State<DetailProductPage> {
                       ),
                       if (product.isFlashsale == 1) ...{
                         Positioned(
-                          bottom: 1,
-                          left: 1,
-                          right: 1,
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 10,
