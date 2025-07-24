@@ -15,9 +15,12 @@ import 'package:tokosm_v2/ui/main_page.dart';
 import 'package:tokosm_v2/ui/product%20page/detail_product_page.dart';
 import 'package:tokosm_v2/ui/product_page.dart';
 import 'package:tokosm_v2/ui/setting_page.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // jika di Flutter
+  await initializeDateFormatting('id_ID', null); // inisialisasi locale
+
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp, // Portrait mode
     DeviceOrientation.portraitDown, // Upside-down portrait mode

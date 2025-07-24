@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tokosm_v2/shared/themes.dart';
+import 'package:intl/intl.dart';
 
 String baseURL = "https://apitokosm.share.zrok.io/api/v1";
 String imageURL = "http://10.10.10.98:3000/uploads/images";
@@ -63,4 +64,10 @@ class Utils {
       },
     );
   }
+}
+
+String formatTanggal(String input) {
+  DateTime dateTime = DateTime.parse(input);
+  // Format: 18 April 2025 23:00
+  return DateFormat("d MMMM y HH:mm", "id_ID").format(dateTime);
 }

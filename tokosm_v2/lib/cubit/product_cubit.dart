@@ -50,6 +50,30 @@ class ProductCubit extends Cubit<ProductState> {
     int indexTab =
         state is ProductSuccess ? (state as ProductSuccess).productTabIndex : 0;
 
+    String maxPriceFilter = (state is ProductSuccess)
+        ? (state as ProductSuccess).maxPriceFilter
+        : "";
+
+    String minPriceFilter = (state is ProductSuccess)
+        ? (state as ProductSuccess).minPriceFilter
+        : "";
+
+    String searchKeyword = (state is ProductSuccess)
+        ? (state as ProductSuccess).searchkeyword
+        : "";
+
+    String selectedCategoryFilter = (state is ProductSuccess)
+        ? (state as ProductSuccess).selectedCategoryFilter
+        : "";
+
+    String selectedPromoFilter = (state is ProductSuccess)
+        ? (state as ProductSuccess).selectedPromoFilter
+        : "";
+
+    String selectedRatingFilter = (state is ProductSuccess)
+        ? (state as ProductSuccess).selectedRatingFilter
+        : "";
+
     emit(ProductLoading(indexTab));
     try {
       ProductModel productModel = await ProductService().getProduct(
@@ -61,9 +85,17 @@ class ProductCubit extends Cubit<ProductState> {
         minrating: minrating,
         type: type,
         sort: sort,
+        page: page,
+        limit: limit,
       );
       emit(
         ProductSuccess(
+          maxPriceFilter: maxPriceFilter,
+          minPriceFilter: minPriceFilter,
+          searchkeyword: searchKeyword,
+          selectedCategoryFilter: selectedCategoryFilter,
+          selectedPromoFilter: selectedPromoFilter,
+          selectedRatingFilter: selectedRatingFilter,
           flashSaleProductData: flashSale ?? state.flashSaleProduct,
           discountProductData: discount ?? state.discountProduct,
           promoProductData: promo ?? state.promoProduct,
@@ -127,8 +159,8 @@ class ProductCubit extends Cubit<ProductState> {
 
   void setSearchKeyword(String text) {
     emit(
-      ProductSearchKeyword(
-        searchKeyword: text,
+      ProductSuccess(
+        searchkeyword: text,
         flashSaleProductData: state.flashSaleProduct,
         discountProductData: state.discountProduct,
         promoProductData: state.promoProduct,
@@ -136,6 +168,54 @@ class ProductCubit extends Cubit<ProductState> {
         popularProductData: state.popularProduct,
         wildProductData: state.wildProduct,
         productTabIndexData: state.productTabIndex,
+      ),
+    );
+  }
+
+  void setProductFilter({
+    required String kategori,
+    required String promo,
+    required String rating,
+    required String minPrice,
+    required String maxPrice,
+  }) {
+    emit(
+      ProductSuccess(
+        searchkeyword: (state as ProductSuccess).searchkeyword,
+        selectedCategoryFilter: kategori,
+        maxPriceFilter: maxPrice,
+        minPriceFilter: minPrice,
+        selectedPromoFilter: promo,
+        selectedRatingFilter: rating,
+        flashSaleProductData: state.flashSaleProduct,
+        discountProductData: state.discountProduct,
+        promoProductData: state.promoProduct,
+        bestSellerProductData: state.bestSellerProduct,
+        popularProductData: state.popularProduct,
+        wildProductData: state.wildProduct,
+        productTabIndexData: state.productTabIndex,
+      ),
+    );
+  }
+
+  void selectProduct({required DataProduct product}) {
+    emit(
+      ProductSuccess(
+        flashSaleProductData: (state as ProductSuccess).flashSaleProductData,
+        discountProductData: (state as ProductSuccess).discountProductData,
+        promoProductData: (state as ProductSuccess).promoProductData,
+        bestSellerProductData: (state as ProductSuccess).bestSellerProductData,
+        popularProductData: (state as ProductSuccess).popularProductData,
+        wildProductData: (state as ProductSuccess).wildProductData,
+        productTabIndexData: (state as ProductSuccess).productTabIndexData,
+        maxPriceFilter: (state as ProductSuccess).maxPriceFilter,
+        minPriceFilter: (state as ProductSuccess).minPriceFilter,
+        searchkeyword: (state as ProductSuccess).searchkeyword,
+        selectedCategoryFilter:
+            (state as ProductSuccess).selectedCategoryFilter,
+        selectedPromoFilter: (state as ProductSuccess).selectedPromoFilter,
+        selectedRatingFilter: (state as ProductSuccess).selectedRatingFilter,
+        detailProduct: product,
       ),
     );
   }

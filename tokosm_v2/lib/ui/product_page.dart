@@ -5,6 +5,7 @@ import 'package:tokosm_v2/cubit/cabang_cubit.dart';
 import 'package:tokosm_v2/cubit/category_cubit.dart';
 import 'package:tokosm_v2/cubit/login_cubit.dart';
 import 'package:tokosm_v2/cubit/product_cubit.dart';
+import 'package:tokosm_v2/model/product_model.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 
 class ProductPage extends StatefulWidget {
@@ -22,8 +23,7 @@ class _ProductPageState extends State<ProductPage> {
   @override
   void initState() {
     searchController.text =
-        (context.read<ProductCubit>().state as ProductSearchKeyword)
-            .searchKeyword;
+        (context.read<ProductCubit>().state as ProductSuccess).searchkeyword;
     initProductData();
     super.initState();
   }
@@ -236,35 +236,36 @@ class _ProductPageState extends State<ProductPage> {
                                 .wildProduct
                                 .data;
                             return _ProductPageExtension().bigItemView(
-                              context: context,
-                              imageURL:
-                                  product?[index].gambarProduk?.first ?? "",
-                              productName: product?[index].namaProduk ?? "",
-                              productPrice: product?[index].isFlashsale == 1
-                                  ? "Rp ${product?[index].hargaFlashsale}"
-                                  : product?[index].isDiskon == 1
-                                      ? "Rp ${product?[index].hargaDiskon}"
-                                      : "Rp ${product?[index].hargaJual}",
-                              discountPercentage: product?[index].isFlashsale ==
-                                      1
-                                  ? "${product?[index].persentaseFlashsale}%"
-                                  : product?[index].isDiskon == 1
-                                      ? "${product?[index].persentaseDiskon}%"
-                                      : "",
-                              productPriceColor: colorSuccess,
-                              productRealPrice:
-                                  product?[index].isFlashsale == 1 ||
-                                          product?[index].isDiskon == 1
-                                      ? "Rp ${product?[index].hargaJual}"
-                                      : "",
-                              bonusInformation: product?[index].isPromo == 1
-                                  ? "${product?[index].namaPromo}"
-                                  : "",
-                              isFlashSale: product?[index].isFlashsale == 1
-                                  ? true
-                                  : false,
-                              rating: product?[index].rating ?? "",
-                            );
+                                context: context,
+                                imageURL:
+                                    product?[index].gambarProduk?.first ?? "",
+                                productName: product?[index].namaProduk ?? "",
+                                productPrice: product?[index].isFlashsale == 1
+                                    ? "Rp ${product?[index].hargaFlashsale}"
+                                    : product?[index].isDiskon == 1
+                                        ? "Rp ${product?[index].hargaDiskon}"
+                                        : "Rp ${product?[index].hargaJual}",
+                                discountPercentage: product?[index]
+                                            .isFlashsale ==
+                                        1
+                                    ? "${product?[index].persentaseFlashsale}%"
+                                    : product?[index].isDiskon == 1
+                                        ? "${product?[index].persentaseDiskon}%"
+                                        : "",
+                                productPriceColor: colorSuccess,
+                                productRealPrice:
+                                    product?[index].isFlashsale == 1 ||
+                                            product?[index].isDiskon == 1
+                                        ? "Rp ${product?[index].hargaJual}"
+                                        : "",
+                                bonusInformation: product?[index].isPromo == 1
+                                    ? "${product?[index].namaPromo}"
+                                    : "",
+                                isFlashSale: product?[index].isFlashsale == 1
+                                    ? true
+                                    : false,
+                                rating: product?[index].rating ?? "",
+                                product: product?[index]);
                           }),
                         )
                       ],
@@ -306,6 +307,7 @@ class _ProductPageExtension {
     required String bonusInformation,
     required String rating,
     bool isFlashSale = false,
+    required DataProduct? product,
   }) {
     final screenWidth = MediaQuery.of(context).size.width;
     const horizontalPadding = 32; // 16 left + 16 right
@@ -314,6 +316,9 @@ class _ProductPageExtension {
 
     return GestureDetector(
       onTap: () {
+        context
+            .read<ProductCubit>()
+            .selectProduct(product: product ?? DataProduct());
         Navigator.pushNamed(context, 'product/detail-product');
       },
       child: SizedBox(
@@ -464,6 +469,23 @@ class _ProductPageExtension {
           token: context.read<LoginCubit>().state.loginModel.token ?? "",
         );
 
+    selectedCategory = (context.read<ProductCubit>().state as ProductSuccess)
+        .selectedCategoryFilter;
+
+    selectedPromo = (context.read<ProductCubit>().state as ProductSuccess)
+        .selectedPromoFilter;
+
+    selectedRating = (context.read<ProductCubit>().state as ProductSuccess)
+        .selectedRatingFilter;
+
+    lowestPriceController.text =
+        (context.read<ProductCubit>().state as ProductSuccess).minPriceFilter;
+
+    highestPriceController.text =
+        (context.read<ProductCubit>().state as ProductSuccess).maxPriceFilter;
+
+    print("isi selectedCategory: $selectedCategory");
+
     return showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -471,409 +493,523 @@ class _ProductPageExtension {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (BuildContext context) {
-        return StatefulBuilder(builder: (BuildContext context, setState) {
-          lowestPriceFocusNode.addListener(() {
-            setState(() {}); // Rebuild to reflect focus change
-          });
+        return SafeArea(
+          child: DraggableScrollableSheet(
+            expand: false,
+            // initialChildSize: 0.95,
+            // maxChildSize: 0.95,
+            minChildSize: 0.5,
+            builder: (context, scrollController) {
+              return StatefulBuilder(
+                builder: (BuildContext context, setState) {
+                  lowestPriceFocusNode.addListener(() {
+                    setState(() {}); // Rebuild to reflect focus change
+                  });
 
-          highestPriceFocusNode.addListener(() {
-            setState(() {});
-          });
+                  highestPriceFocusNode.addListener(() {
+                    setState(() {});
+                  });
 
-          return BlocBuilder<CategoryCubit, CategoryState>(
-            builder: (context, state) {
-              return Container(
-                margin: const EdgeInsets.all(16),
-                padding: EdgeInsets.only(
-                  bottom: MediaQuery.of(context).viewInsets.bottom,
-                ),
-                width: double.infinity,
-                child: Column(
-                  spacing: 10,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Filter",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: bold,
-                          ),
+                  return BlocBuilder<CategoryCubit, CategoryState>(
+                    builder: (context, state) {
+                      return Container(
+                        margin: const EdgeInsets.all(16),
+                        padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom,
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Icon(
-                            Icons.close,
-                          ),
-                        ),
-                      ],
-                    ),
-                    //NOTE: Kategori
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Kategori",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: bold,
-                              ),
-                            ),
-                            Text(
-                              "Lihat Semua",
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: bold,
-                                color: colorSuccess,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
+                        width: double.infinity,
+                        child: SingleChildScrollView(
+                          child: Column(
+                            spacing: 10,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              for (var index = 0;
-                                  index <
-                                      ((context
-                                                  .read<CategoryCubit>()
-                                                  .state
-                                                  .categoryModel?["data"] ??
-                                              []) as List)
-                                          .length;
-                                  index++) ...{
-                                for (var index1 = 0;
-                                    index1 <
-                                        (((context
-                                                            .read<CategoryCubit>()
-                                                            .state
-                                                            .categoryModel?[
-                                                        "data"] as List)
-                                                    .map((e) => e
-                                                        as Map<String, dynamic>)
-                                                    .toList()[index]["child"] ??
-                                                []) as List)
-                                            .length;
-                                    index1++) ...{
-                                  GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        selectedCategory =
-                                            "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["child"] ?? []) as List).map((e) => e as Map<String, dynamic>).toList()[index1]["kat2_slug"]}"
-                                                .toLowerCase();
-                                      });
-                                    },
-                                    child: filterItem(
-                                      cardColor:
-                                          "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["child"] ?? []) as List).map((e) => e as Map<String, dynamic>).toList()[index1]["kat2_slug"]}"
-                                                      .toLowerCase() ==
-                                                  selectedCategory
-                                              ? Colors.black
-                                              : null,
-                                      name:
-                                          "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["child"] ?? []) as List).map((e) => e as Map<String, dynamic>).toList()[index1]["kat2"]}",
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "Filter",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: bold,
                                     ),
                                   ),
-                                },
-                              },
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    //NOTE: Promo
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Promo",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: bold,
-                          ),
-                        ),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: [
-                              for (var index = 0;
-                                  index < promoFilter.length;
-                                  index++)
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      selectedPromo =
-                                          promoFilter[index].toLowerCase();
-                                    });
-                                  },
-                                  child: filterItem(
-                                    cardColor:
-                                        promoFilter[index].toLowerCase() ==
-                                                selectedPromo
-                                            ? Colors.black
-                                            : null,
-                                    name: promoFilter[index],
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Icon(
+                                      Icons.close,
+                                    ),
                                   ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    //NOTE: Rating
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Rating",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: bold,
-                          ),
-                        ),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: [
-                              for (var index = 0;
-                                  index < ratingFilter.length;
-                                  index++)
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      selectedRating = ratingFilter[index]
-                                          .replaceAll("≥", "");
-                                    });
-                                  },
-                                  child: filterItem(
-                                    cardColor: ratingFilter[index]
-                                                .replaceAll("≥", "") ==
-                                            selectedRating
-                                        ? Colors.black
-                                        : null,
-                                    name: "",
-                                    content: Row(
-                                      children: [
-                                        Text(
-                                          ratingFilter[index],
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: ratingFilter[index]
-                                                        .replaceAll("≥", "") ==
-                                                    selectedRating
-                                                ? Colors.white
-                                                : Colors.black,
+                                ],
+                              ),
+                              //NOTE: Kategori
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        "Kategori",
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: bold,
+                                        ),
+                                      ),
+                                      // Text(
+                                      //   "Lihat Semua",
+                                      //   style: TextStyle(
+                                      //     fontSize: 12,
+                                      //     fontWeight: bold,
+                                      //     color: colorSuccess,
+                                      //   ),
+                                      // ),
+                                    ],
+                                  ),
+                                  Wrap(
+                                    children: [
+                                      for (var index = 0;
+                                          index <
+                                              ((context
+                                                          .read<CategoryCubit>()
+                                                          .state
+                                                          .categoryModel?["data"] ??
+                                                      []) as List)
+                                                  .length;
+                                          index++) ...{
+                                        for (var index1 = 0;
+                                            index1 <
+                                                (((context
+                                                                    .read<
+                                                                        CategoryCubit>()
+                                                                    .state
+                                                                    .categoryModel?[
+                                                                "data"] as List)
+                                                            .map((e) => e
+                                                                as Map<String,
+                                                                    dynamic>)
+                                                            .toList()[index]["child"] ??
+                                                        []) as List)
+                                                    .length;
+                                            index1++) ...{
+                                          GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                if (selectedCategory ==
+                                                    "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["child"] ?? []) as List).map((e) => e as Map<String, dynamic>).toList()[index1]["kat2_slug"]}"
+                                                        .toLowerCase()) {
+                                                  selectedCategory = "";
+                                                } else {
+                                                  selectedCategory =
+                                                      "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["child"] ?? []) as List).map((e) => e as Map<String, dynamic>).toList()[index1]["kat2_slug"]}"
+                                                          .toLowerCase();
+                                                }
+                                              });
+                                            },
+                                            child: filterItem(
+                                              cardColor:
+                                                  "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["child"] ?? []) as List).map((e) => e as Map<String, dynamic>).toList()[index1]["kat2_slug"]}"
+                                                              .toLowerCase() ==
+                                                          selectedCategory
+                                                      ? Colors.black
+                                                      : null,
+                                              name:
+                                                  "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["child"] ?? []) as List).map((e) => e as Map<String, dynamic>).toList()[index1]["kat2"]}",
+                                            ),
+                                          ),
+                                        },
+                                      },
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              //NOTE: Promo
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Promo",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: bold,
+                                    ),
+                                  ),
+                                  Wrap(
+                                    children: [
+                                      for (var index = 0;
+                                          index < promoFilter.length;
+                                          index++)
+                                        GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              if (selectedPromo ==
+                                                  promoFilter[index]
+                                                      .toLowerCase()) {
+                                                selectedPromo = "";
+                                              } else {
+                                                selectedPromo =
+                                                    promoFilter[index]
+                                                        .toLowerCase();
+                                              }
+                                            });
+                                          },
+                                          child: filterItem(
+                                            cardColor: promoFilter[index]
+                                                        .toLowerCase() ==
+                                                    selectedPromo
+                                                ? Colors.black
+                                                : null,
+                                            name: promoFilter[index],
                                           ),
                                         ),
-                                        Icon(
-                                          Icons.star,
-                                          color: colorWarning,
-                                          size: 14,
-                                        ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              //NOTE: Rating
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Rating",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: bold,
+                                    ),
+                                  ),
+                                  SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: [
+                                        for (var index = 0;
+                                            index < ratingFilter.length;
+                                            index++)
+                                          GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                if (selectedRating ==
+                                                    ratingFilter[index]
+                                                        .replaceAll("≥", "")) {
+                                                  selectedRating = "";
+                                                } else {
+                                                  selectedRating =
+                                                      ratingFilter[index]
+                                                          .replaceAll("≥", "");
+                                                }
+                                              });
+                                            },
+                                            child: filterItem(
+                                              cardColor: ratingFilter[index]
+                                                          .replaceAll(
+                                                              "≥", "") ==
+                                                      selectedRating
+                                                  ? Colors.black
+                                                  : null,
+                                              name: "",
+                                              content: Row(
+                                                children: [
+                                                  Text(
+                                                    ratingFilter[index],
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: ratingFilter[index]
+                                                                  .replaceAll(
+                                                                      "≥",
+                                                                      "") ==
+                                                              selectedRating
+                                                          ? Colors.white
+                                                          : Colors.black,
+                                                    ),
+                                                  ),
+                                                  Icon(
+                                                    Icons.star,
+                                                    color: colorWarning,
+                                                    size: 14,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
                                       ],
                                     ),
                                   ),
-                                ),
+                                ],
+                              ),
+
+                              //NOTE: Harga
+                              Column(
+                                spacing: 10,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Harga",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: bold,
+                                    ),
+                                  ),
+                                  Row(
+                                    spacing: 10,
+                                    children: [
+                                      Expanded(
+                                        child: Container(
+                                          padding: const EdgeInsets.all(5),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color:
+                                                  lowestPriceFocusNode.hasFocus
+                                                      ? Colors.black
+                                                      : Colors.grey,
+                                              width: 1,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          child: Row(
+                                            spacing: 5,
+                                            children: [
+                                              Text(
+                                                "Rp",
+                                                style: TextStyle(
+                                                  fontWeight: bold,
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: TextFormField(
+                                                  focusNode:
+                                                      lowestPriceFocusNode,
+                                                  controller:
+                                                      lowestPriceController,
+                                                  cursorColor: Colors.black,
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                  ),
+                                                  keyboardType:
+                                                      TextInputType.number,
+                                                  decoration:
+                                                      const InputDecoration
+                                                          .collapsed(
+                                                    hintText: 'Terendah',
+                                                    hintStyle: TextStyle(
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      const Text("-"),
+                                      Expanded(
+                                        child: Container(
+                                          padding: const EdgeInsets.all(5),
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                              color:
+                                                  highestPriceFocusNode.hasFocus
+                                                      ? Colors.black
+                                                      : Colors.grey,
+                                              width: 1,
+                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
+                                          child: Row(
+                                            spacing: 5,
+                                            children: [
+                                              Text(
+                                                "Rp",
+                                                style: TextStyle(
+                                                  fontWeight: bold,
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: TextFormField(
+                                                  cursorColor: Colors.black,
+                                                  controller:
+                                                      highestPriceController,
+                                                  focusNode:
+                                                      highestPriceFocusNode,
+                                                  keyboardType:
+                                                      TextInputType.number,
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                  ),
+                                                  decoration:
+                                                      const InputDecoration
+                                                          .collapsed(
+                                                    hintText: 'Tertinggi',
+                                                    hintStyle: TextStyle(
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                spacing: 10,
+                                children: [
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          selectedCategory = "";
+                                          selectedPromo = "";
+                                          selectedRating = "";
+                                          lowestPriceController.text = "";
+                                          highestPriceController.text = "";
+                                        });
+                                        context
+                                            .read<ProductCubit>()
+                                            .setProductFilter(
+                                              kategori: '',
+                                              promo: '',
+                                              rating: '',
+                                              minPrice: '',
+                                              maxPrice: '',
+                                            );
+                                        context
+                                            .read<ProductCubit>()
+                                            .getAllProduct(
+                                              token: context
+                                                      .read<LoginCubit>()
+                                                      .state
+                                                      .loginModel
+                                                      .token ??
+                                                  "",
+                                              cabangId: context
+                                                      .read<CabangCubit>()
+                                                      .state
+                                                      .selectedCabangData
+                                                      .id ??
+                                                  0,
+                                              type: (selectedPromo ==
+                                                      'bundling & hadiah'
+                                                  ? 'promo'
+                                                  : selectedPromo),
+                                              category: selectedCategory,
+                                              minrating: selectedRating,
+                                              maxprice:
+                                                  highestPriceController.text,
+                                              minprice:
+                                                  lowestPriceController.text,
+                                              page: 1,
+                                              limit: 999999999,
+                                              sort: sortBy,
+                                            );
+                                        Navigator.pop(context);
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(5),
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                            color: colorSuccess,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          "Reset",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: colorSuccess,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        context
+                                            .read<ProductCubit>()
+                                            .setProductFilter(
+                                              kategori: selectedCategory,
+                                              promo: selectedPromo,
+                                              rating: selectedRating,
+                                              minPrice:
+                                                  lowestPriceController.text,
+                                              maxPrice:
+                                                  highestPriceController.text,
+                                            );
+
+                                        context
+                                            .read<ProductCubit>()
+                                            .getAllProduct(
+                                              token: context
+                                                      .read<LoginCubit>()
+                                                      .state
+                                                      .loginModel
+                                                      .token ??
+                                                  "",
+                                              cabangId: context
+                                                      .read<CabangCubit>()
+                                                      .state
+                                                      .selectedCabangData
+                                                      .id ??
+                                                  0,
+                                              type: (selectedPromo ==
+                                                      'bundling & hadiah'
+                                                  ? 'promo'
+                                                  : selectedPromo),
+                                              category: selectedCategory,
+                                              minrating: selectedRating,
+                                              maxprice:
+                                                  highestPriceController.text,
+                                              minprice:
+                                                  lowestPriceController.text,
+                                              page: 1,
+                                              limit: 999999999,
+                                              sort: sortBy,
+                                            );
+                                        Navigator.pop(context);
+                                      },
+                                      child: Container(
+                                        padding: const EdgeInsets.all(5),
+                                        decoration: BoxDecoration(
+                                          color: colorSuccess,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        child: const Text(
+                                          "Terapkan",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         ),
-                      ],
-                    ),
-
-                    //NOTE: Harga
-                    Column(
-                      spacing: 10,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Harga",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: bold,
-                          ),
-                        ),
-                        Row(
-                          spacing: 10,
-                          children: [
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: lowestPriceFocusNode.hasFocus
-                                        ? Colors.black
-                                        : Colors.grey,
-                                    width: 1,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  spacing: 5,
-                                  children: [
-                                    Text(
-                                      "Rp",
-                                      style: TextStyle(
-                                        fontWeight: bold,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: TextFormField(
-                                        focusNode: lowestPriceFocusNode,
-                                        controller: lowestPriceController,
-                                        cursorColor: Colors.black,
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                        ),
-                                        keyboardType: TextInputType.number,
-                                        decoration:
-                                            const InputDecoration.collapsed(
-                                          hintText: 'Terendah',
-                                          hintStyle: TextStyle(
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            const Text("-"),
-                            Expanded(
-                              child: Container(
-                                padding: const EdgeInsets.all(5),
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: highestPriceFocusNode.hasFocus
-                                        ? Colors.black
-                                        : Colors.grey,
-                                    width: 1,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  spacing: 5,
-                                  children: [
-                                    Text(
-                                      "Rp",
-                                      style: TextStyle(
-                                        fontWeight: bold,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: TextFormField(
-                                        cursorColor: Colors.black,
-                                        controller: highestPriceController,
-                                        focusNode: highestPriceFocusNode,
-                                        keyboardType: TextInputType.number,
-                                        style: const TextStyle(
-                                          fontSize: 12,
-                                        ),
-                                        decoration:
-                                            const InputDecoration.collapsed(
-                                          hintText: 'Tertinggi',
-                                          hintStyle: TextStyle(
-                                            fontSize: 12,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      spacing: 10,
-                      children: [
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: colorSuccess,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              "Reset",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: colorSuccess,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              print(
-                                  "Filter yang diterapkan adalah: $selectedCategory, $selectedPromo, $selectedRating, ${lowestPriceController.text}, ${highestPriceController.text}");
-                              context.read<ProductCubit>().getAllProduct(
-                                    token: context
-                                            .read<LoginCubit>()
-                                            .state
-                                            .loginModel
-                                            .token ??
-                                        "",
-                                    cabangId: context
-                                            .read<CabangCubit>()
-                                            .state
-                                            .selectedCabangData
-                                            .id ??
-                                        0,
-                                    type: (selectedPromo == 'bundling & hadiah'
-                                        ? 'promo'
-                                        : selectedPromo),
-                                    category: selectedCategory,
-                                    minrating: selectedRating,
-                                    maxprice: highestPriceController.text,
-                                    minprice: lowestPriceController.text,
-                                    page: 1,
-                                    limit: 999999999,
-                                    sort: sortBy,
-                                  );
-                              Navigator.pop(context);
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                color: colorSuccess,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Text(
-                                "Terapkan",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                      );
+                    },
+                  );
+                },
               );
             },
-          );
-        });
+          ),
+        );
       },
     );
   }

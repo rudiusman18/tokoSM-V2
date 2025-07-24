@@ -7,6 +7,7 @@ import 'package:tokosm_v2/cubit/cabang_cubit.dart';
 import 'package:tokosm_v2/cubit/login_cubit.dart';
 import 'package:tokosm_v2/cubit/product_cubit.dart';
 import 'package:tokosm_v2/model/cabang_model.dart';
+import 'package:tokosm_v2/model/product_model.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 
 class HomePage extends StatefulWidget {
@@ -348,30 +349,30 @@ class _HomePageState extends State<HomePage> {
                         index < (product ?? []).length;
                         index++) ...{
                       _HomePageExtension().smallItemView(
-                        context: context,
-                        imageURL: product?[index].gambarProduk?.first ?? "",
-                        productName: product?[index].namaProduk ?? "",
-                        productPrice: product?[index].isFlashsale == 1
-                            ? "Rp ${product?[index].hargaFlashsale}"
-                            : product?[index].isDiskon == 1
-                                ? "Rp ${product?[index].hargaDiskon}"
-                                : "Rp ${product?[index].hargaJual}",
-                        discountPercentage: product?[index].isFlashsale == 1
-                            ? "${product?[index].persentaseFlashsale}%"
-                            : product?[index].isDiskon == 1
-                                ? "${product?[index].persentaseDiskon}%"
-                                : "",
-                        productPriceColor: colorSuccess,
-                        productRealPrice: product?[index].isFlashsale == 1 ||
-                                product?[index].isDiskon == 1
-                            ? "Rp ${product?[index].hargaJual}"
-                            : "",
-                        bonusInformation: product?[index].isPromo == 1
-                            ? "${product?[index].namaPromo}"
-                            : "",
-                        isFlashSale:
-                            product?[index].isFlashsale == 1 ? true : false,
-                      ),
+                          context: context,
+                          imageURL: product?[index].gambarProduk?.first ?? "",
+                          productName: product?[index].namaProduk ?? "",
+                          productPrice: product?[index].isFlashsale == 1
+                              ? "Rp ${product?[index].hargaFlashsale}"
+                              : product?[index].isDiskon == 1
+                                  ? "Rp ${product?[index].hargaDiskon}"
+                                  : "Rp ${product?[index].hargaJual}",
+                          discountPercentage: product?[index].isFlashsale == 1
+                              ? "${product?[index].persentaseFlashsale}%"
+                              : product?[index].isDiskon == 1
+                                  ? "${product?[index].persentaseDiskon}%"
+                                  : "",
+                          productPriceColor: colorSuccess,
+                          productRealPrice: product?[index].isFlashsale == 1 ||
+                                  product?[index].isDiskon == 1
+                              ? "Rp ${product?[index].hargaJual}"
+                              : "",
+                          bonusInformation: product?[index].isPromo == 1
+                              ? "${product?[index].namaPromo}"
+                              : "",
+                          isFlashSale:
+                              product?[index].isFlashsale == 1 ? true : false,
+                          product: product?[index]),
                     }
                   ],
                 ),
@@ -420,30 +421,30 @@ class _HomePageState extends State<HomePage> {
                         index < (product ?? []).length;
                         index++) ...{
                       _HomePageExtension().smallItemView(
-                        context: context,
-                        imageURL: product?[index].gambarProduk?.first ?? "",
-                        productName: product?[index].namaProduk ?? "",
-                        productPrice: product?[index].isFlashsale == 1
-                            ? "Rp ${product?[index].hargaFlashsale}"
-                            : product?[index].isDiskon == 1
-                                ? "Rp ${product?[index].hargaDiskon}"
-                                : "Rp ${product?[index].hargaJual}",
-                        discountPercentage: product?[index].isFlashsale == 1
-                            ? "${product?[index].persentaseFlashsale}%"
-                            : product?[index].isDiskon == 1
-                                ? "${product?[index].persentaseDiskon}%"
-                                : "",
-                        productPriceColor: colorSuccess,
-                        productRealPrice: product?[index].isFlashsale == 1 ||
-                                product?[index].isDiskon == 1
-                            ? "Rp ${product?[index].hargaJual}"
-                            : "",
-                        bonusInformation: product?[index].isPromo == 1
-                            ? "${product?[index].namaPromo}"
-                            : "",
-                        isFlashSale:
-                            product?[index].isFlashsale == 1 ? true : false,
-                      ),
+                          context: context,
+                          imageURL: product?[index].gambarProduk?.first ?? "",
+                          productName: product?[index].namaProduk ?? "",
+                          productPrice: product?[index].isFlashsale == 1
+                              ? "Rp ${product?[index].hargaFlashsale}"
+                              : product?[index].isDiskon == 1
+                                  ? "Rp ${product?[index].hargaDiskon}"
+                                  : "Rp ${product?[index].hargaJual}",
+                          discountPercentage: product?[index].isFlashsale == 1
+                              ? "${product?[index].persentaseFlashsale}%"
+                              : product?[index].isDiskon == 1
+                                  ? "${product?[index].persentaseDiskon}%"
+                                  : "",
+                          productPriceColor: colorSuccess,
+                          productRealPrice: product?[index].isFlashsale == 1 ||
+                                  product?[index].isDiskon == 1
+                              ? "Rp ${product?[index].hargaJual}"
+                              : "",
+                          bonusInformation: product?[index].isPromo == 1
+                              ? "${product?[index].namaPromo}"
+                              : "",
+                          isFlashSale:
+                              product?[index].isFlashsale == 1 ? true : false,
+                          product: product?[index]),
                     }
                   ],
                 ),
@@ -491,30 +492,30 @@ class _HomePageState extends State<HomePage> {
                         index < (product ?? []).length;
                         index++) ...{
                       _HomePageExtension().smallItemView(
-                        context: context,
-                        imageURL: product?[index].gambarProduk?.first ?? "",
-                        productName: product?[index].namaProduk ?? "",
-                        productPrice: product?[index].isFlashsale == 1
-                            ? "Rp ${product?[index].hargaFlashsale}"
-                            : product?[index].isDiskon == 1
-                                ? "Rp ${product?[index].hargaDiskon}"
-                                : "Rp ${product?[index].hargaJual}",
-                        discountPercentage: product?[index].isFlashsale == 1
-                            ? "${product?[index].persentaseFlashsale}%"
-                            : product?[index].isDiskon == 1
-                                ? "${product?[index].persentaseDiskon}%"
-                                : "",
-                        productPriceColor: colorSuccess,
-                        productRealPrice: product?[index].isFlashsale == 1 ||
-                                product?[index].isDiskon == 1
-                            ? "Rp ${product?[index].hargaJual}"
-                            : "",
-                        bonusInformation: product?[index].isPromo == 1
-                            ? "${product?[index].namaPromo}"
-                            : "",
-                        isFlashSale:
-                            product?[index].isFlashsale == 1 ? true : false,
-                      ),
+                          context: context,
+                          imageURL: product?[index].gambarProduk?.first ?? "",
+                          productName: product?[index].namaProduk ?? "",
+                          productPrice: product?[index].isFlashsale == 1
+                              ? "Rp ${product?[index].hargaFlashsale}"
+                              : product?[index].isDiskon == 1
+                                  ? "Rp ${product?[index].hargaDiskon}"
+                                  : "Rp ${product?[index].hargaJual}",
+                          discountPercentage: product?[index].isFlashsale == 1
+                              ? "${product?[index].persentaseFlashsale}%"
+                              : product?[index].isDiskon == 1
+                                  ? "${product?[index].persentaseDiskon}%"
+                                  : "",
+                          productPriceColor: colorSuccess,
+                          productRealPrice: product?[index].isFlashsale == 1 ||
+                                  product?[index].isDiskon == 1
+                              ? "Rp ${product?[index].hargaJual}"
+                              : "",
+                          bonusInformation: product?[index].isPromo == 1
+                              ? "${product?[index].namaPromo}"
+                              : "",
+                          isFlashSale:
+                              product?[index].isFlashsale == 1 ? true : false,
+                          product: product?[index]),
                     }
                   ],
                 ),
@@ -586,6 +587,7 @@ class _HomePageState extends State<HomePage> {
                             : "",
                         isFlashSale:
                             product?[index].isFlashsale == 1 ? true : false,
+                        product: product?[index],
                       ),
                     }
                   ],
@@ -654,6 +656,7 @@ class _HomePageState extends State<HomePage> {
                     rating: product?[index].rating ?? "",
                     isFlashSale:
                         product?[index].isFlashsale == 1 ? true : false,
+                    product: product?[index],
                   );
                 },
               ),
@@ -800,10 +803,14 @@ class _HomePageExtension {
     required String discountPercentage,
     required String productRealPrice,
     required String bonusInformation,
+    required DataProduct? product,
     bool isFlashSale = false,
   }) {
     return GestureDetector(
       onTap: () {
+        context
+            .read<ProductCubit>()
+            .selectProduct(product: product ?? DataProduct());
         Navigator.pushNamed(context, 'product/detail-product');
       },
       child: SizedBox(
@@ -936,6 +943,7 @@ class _HomePageExtension {
     required String productRealPrice,
     required String bonusInformation,
     required String rating,
+    required DataProduct? product,
     bool isFlashSale = false,
   }) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -945,6 +953,9 @@ class _HomePageExtension {
 
     return GestureDetector(
       onTap: () {
+        context
+            .read<ProductCubit>()
+            .selectProduct(product: product ?? DataProduct());
         Navigator.pushNamed(context, 'product/detail-product');
       },
       child: SizedBox(

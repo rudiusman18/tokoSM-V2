@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:tokosm_v2/cubit/cabang_cubit.dart';
 import 'package:tokosm_v2/cubit/login_cubit.dart';
+import 'package:tokosm_v2/cubit/product_cubit.dart';
 import 'package:tokosm_v2/cubit/wishlist_cubit.dart';
+import 'package:tokosm_v2/model/product_model.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 
 class WishlistPage extends StatefulWidget {
@@ -220,6 +222,7 @@ class _WishlistPageState extends State<WishlistPage> {
                                   ? true
                                   : false,
                               rating: product?[index].rating ?? "",
+                              product: product?[index],
                             );
                           }),
                         )
@@ -248,6 +251,7 @@ class _wishlistPageExtension {
     required String productRealPrice,
     required String bonusInformation,
     required String rating,
+    required DataProduct? product,
     bool isFlashSale = false,
   }) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -257,6 +261,9 @@ class _wishlistPageExtension {
 
     return GestureDetector(
       onTap: () {
+        context
+            .read<ProductCubit>()
+            .selectProduct(product: product ?? DataProduct());
         Navigator.pushNamed(context, 'product/detail-product');
       },
       child: SizedBox(

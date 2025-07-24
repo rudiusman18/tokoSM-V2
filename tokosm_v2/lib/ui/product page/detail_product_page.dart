@@ -1,8 +1,11 @@
-
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:solar_icons/solar_icons.dart';
+import 'package:tokosm_v2/cubit/product_cubit.dart';
+import 'package:tokosm_v2/model/product_model.dart';
 import 'package:tokosm_v2/shared/themes.dart';
+import 'package:tokosm_v2/shared/utils.dart';
 
 class DetailProductPage extends StatefulWidget {
   const DetailProductPage({super.key});
@@ -14,6 +17,10 @@ class DetailProductPage extends StatefulWidget {
 class _DetailProductPageState extends State<DetailProductPage> {
   @override
   Widget build(BuildContext context) {
+    DataProduct product =
+        (context.read<ProductCubit>().state as ProductSuccess).detailProduct ??
+            DataProduct();
+
     Widget header() {
       return Container(
         margin: const EdgeInsets.only(top: 10),
@@ -88,10 +95,76 @@ class _DetailProductPageState extends State<DetailProductPage> {
             Expanded(
               child: ListView(
                 children: [
-                  Container(
-                    width: 390,
-                    height: 390,
-                    color: Colors.grey,
+                  Stack(
+                    children: [
+                      Container(
+                        height: 390,
+                        decoration: BoxDecoration(
+                          color: Colors.grey,
+                          image: DecorationImage(
+                            image: NetworkImage(
+                              product.gambarProduk?.first ?? "",
+                            ),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      if (product.isFlashsale == 1) ...{
+                        Positioned(
+                          bottom: 1,
+                          left: 1,
+                          right: 1,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            color: colorError,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Wrap(
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Fla",
+                                      style: TextStyle(
+                                        fontWeight: bold,
+                                        fontStyle: FontStyle.italic,
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    const Icon(
+                                      SolarIconsBold.bolt,
+                                      size: 12,
+                                      color: Colors.white,
+                                    ),
+                                    Text(
+                                      "h Sale",
+                                      style: TextStyle(
+                                        fontWeight: bold,
+                                        fontStyle: FontStyle.italic,
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  "Berakhir ${formatTanggal(product.flashsaleEnd ?? "")}",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: bold,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      }
+                    ],
                   ),
                   const SizedBox(
                     height: 10,
@@ -103,16 +176,74 @@ class _DetailProductPageState extends State<DetailProductPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "Rp 2000",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: bold,
-                            color: colorError,
-                          ),
+                        Row(
+                          spacing: 10,
+                          children: [
+                            Text(
+                              "Rp ${product.isFlashsale == 1 ? product.hargaFlashsale : product.isDiskon == 1 ? product.hargaDiskon : product.hargaJual}",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: bold,
+                                color: colorError,
+                              ),
+                            ),
+                            if (product.isFlashsale == 1 ||
+                                product.isDiskon == 1) ...{
+                              Text(
+                                "Rp ${product.hargaJual}",
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                  decoration: TextDecoration.lineThrough,
+                                  decorationThickness: 3,
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  color: colorError,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Text(
+                                  "${product.isFlashsale == 1 ? product.persentaseFlashsale : product.isDiskon == 1 ? product.persentaseDiskon : ""}%",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              )
+                            },
+                          ],
                         ),
+                        if (product.isFlashsale == 1) ...{
+                          Row(
+                            spacing: 10,
+                            children: [
+                              Expanded(
+                                // terjual/limit
+                                child: LinearProgressIndicator(
+                                  value: double.parse(
+                                          "${product.flashsaleLimit - product.flashsaleTerjual}") /
+                                      100, // Ensure it stays between 0 and 1
+                                  minHeight: 10,
+                                  borderRadius: BorderRadius.circular(999),
+                                  backgroundColor: Colors.grey[300],
+                                  valueColor:
+                                      AlwaysStoppedAnimation<Color>(colorError),
+                                ),
+                              ),
+                              Text(
+                                // limit - terjual
+                                "Tersisa ${product.flashsaleLimit - product.flashsaleTerjual} ${product.flashsaleSatuan}",
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        },
                         Text(
-                          "Lorem ipsum dolor sit amet",
+                          "${product.namaProduk}",
                           style: TextStyle(
                             fontWeight: bold,
                           ),
@@ -124,8 +255,8 @@ class _DetailProductPageState extends State<DetailProductPage> {
                               color: colorWarning,
                               size: 14,
                             ),
-                            const Text(
-                              "4.7",
+                            Text(
+                              "${product.rating ?? 0}",
                             ),
                             const SizedBox(
                               width: 10,
@@ -166,22 +297,24 @@ class _DetailProductPageState extends State<DetailProductPage> {
                           ),
                         ),
                         _DetailProductExtension().detailProductItem(
-                            title: "Merk", value: "Unilever"),
-                        const SizedBox(
-                          height: 2,
-                        ),
-                        _DetailProductExtension()
-                            .detailProductItem(title: "Satuan", value: "Pcs"),
+                            title: "Merk", value: "${product.merkProduk}"),
                         const SizedBox(
                           height: 2,
                         ),
                         _DetailProductExtension().detailProductItem(
-                            title: "Kategori", value: "Makanan Ringan"),
+                            title: "Satuan", value: "${product.satuanProduk}"),
                         const SizedBox(
                           height: 2,
                         ),
                         _DetailProductExtension().detailProductItem(
-                            title: "Grosir", value: "3≥  12≥  50≥"),
+                            title: "Kategori",
+                            value: "${product.produkKategoriId}"),
+                        const SizedBox(
+                          height: 2,
+                        ),
+                        _DetailProductExtension().detailProductItem(
+                            title: "Grosir",
+                            value: "${product.multisatuanUnit}"),
                         const SizedBox(
                           height: 2,
                         ),
@@ -191,9 +324,9 @@ class _DetailProductPageState extends State<DetailProductPage> {
                             fontWeight: bold,
                           ),
                         ),
-                        const Text(
-                          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-                          style: TextStyle(
+                        Text(
+                          product.deskripsiProduk ?? "Tidak ada deskripsi",
+                          style: const TextStyle(
                             fontSize: 12,
                           ),
                         )

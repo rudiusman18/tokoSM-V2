@@ -39,6 +39,32 @@ class ProductService {
     }
   }
 
+  Future<ProductModel> getDetailProduct({
+    required String token,
+    required String productId,
+    required int cabangId,
+  }) async {
+    var url = Uri.parse("$baseURL/produk/detail/$productId?cabang=$cabangId");
+    var header = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    var response = await http.get(
+      url,
+      headers: header,
+    );
+
+    if (response.statusCode >= 200 && response.statusCode <= 299) {
+      var data = jsonDecode(response.body);
+      final ProductModel productModel = ProductModel.fromJson(data);
+      return productModel;
+    } else {
+      var data = jsonDecode(response.body);
+      throw ("${data['message']}");
+    }
+  }
+
   Future<ProductModel> getWishlistProduct({
     required String token,
     required int cabangId,

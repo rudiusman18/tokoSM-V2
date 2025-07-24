@@ -56,6 +56,15 @@ class ProductSuccess extends ProductState {
   final ProductModel wildProductData;
   final int productTabIndexData;
 
+  // Hanya muncul saat state success
+  final String searchkeyword;
+  final String selectedCategoryFilter;
+  final String selectedPromoFilter;
+  final String selectedRatingFilter;
+  final String minPriceFilter;
+  final String maxPriceFilter;
+  final DataProduct? detailProduct;
+
   ProductSuccess({
     required this.flashSaleProductData,
     required this.discountProductData,
@@ -64,6 +73,13 @@ class ProductSuccess extends ProductState {
     required this.popularProductData,
     required this.wildProductData,
     required this.productTabIndexData,
+    this.searchkeyword = "",
+    this.selectedCategoryFilter = "",
+    this.selectedPromoFilter = "",
+    this.selectedRatingFilter = "",
+    this.minPriceFilter = "",
+    this.maxPriceFilter = "",
+    this.detailProduct,
   }) : super(
           flashSaleProduct: flashSaleProductData,
           discountProduct: discountProductData,
@@ -86,34 +102,5 @@ class ProductFailure extends ProductState {
           popularProduct: ProductModel(),
           wildProduct: ProductModel(),
           productTabIndex: 0,
-        );
-}
-
-class ProductSearchKeyword extends ProductState {
-  final ProductModel flashSaleProductData;
-  final ProductModel discountProductData;
-  final ProductModel promoProductData;
-  final ProductModel bestSellerProductData;
-  final ProductModel popularProductData;
-  final ProductModel wildProductData;
-  final int productTabIndexData;
-  String searchKeyword;
-  ProductSearchKeyword({
-    required this.searchKeyword,
-    required this.flashSaleProductData,
-    required this.discountProductData,
-    required this.promoProductData,
-    required this.bestSellerProductData,
-    required this.popularProductData,
-    required this.wildProductData,
-    required this.productTabIndexData,
-  }) : super(
-          flashSaleProduct: flashSaleProductData,
-          discountProduct: discountProductData,
-          promoProduct: promoProductData,
-          bestSellerProduct: bestSellerProductData,
-          popularProduct: popularProductData,
-          wildProduct: wildProductData,
-          productTabIndex: productTabIndexData,
         );
 }

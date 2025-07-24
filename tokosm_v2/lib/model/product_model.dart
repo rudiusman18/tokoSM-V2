@@ -1,15 +1,15 @@
 class ProductModel {
   String? message;
-  List<Data>? data;
+  List<DataProduct>? data;
 
   ProductModel({this.message, this.data});
 
   ProductModel.fromJson(Map<String, dynamic> json) {
     message = json['message'];
     if (json['data'] != null) {
-      data = <Data>[];
+      data = <DataProduct>[];
       json['data'].forEach((v) {
-        data!.add(Data.fromJson(v));
+        data!.add(DataProduct.fromJson(v));
       });
     }
   }
@@ -24,7 +24,7 @@ class ProductModel {
   }
 }
 
-class Data {
+class DataProduct {
   dynamic id;
   dynamic produkKategoriId;
   String? kodeProduk;
@@ -70,7 +70,7 @@ class Data {
   dynamic hargaFlashsale;
   dynamic persentaseDiskon;
 
-  Data(
+  DataProduct(
       {this.id,
       this.produkKategoriId,
       this.kodeProduk,
@@ -116,7 +116,7 @@ class Data {
       this.hargaFlashsale,
       this.persentaseDiskon});
 
-  Data.fromJson(Map<String, dynamic> json) {
+  DataProduct.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     produkKategoriId = json['produk_kategori_id'];
     kodeProduk = json['kode_produk'];
