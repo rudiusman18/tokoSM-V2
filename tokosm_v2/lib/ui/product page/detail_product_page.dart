@@ -215,6 +215,23 @@ class _DetailProductPageState extends State<DetailProductPage> {
                             },
                           ],
                         ),
+                        if (product.keteranganPromo != null) ...{
+                          Container(
+                            padding: const EdgeInsets.all(
+                              5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colorWarning.withAlpha(30),
+                            ),
+                            child: Text(
+                              "*${product.keteranganPromo}",
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.orange,
+                              ),
+                            ),
+                          ),
+                        },
                         if (product.isFlashsale == 1) ...{
                           Row(
                             spacing: 10,
@@ -308,13 +325,15 @@ class _DetailProductPageState extends State<DetailProductPage> {
                         ),
                         _DetailProductExtension().detailProductItem(
                             title: "Kategori",
-                            value: "${product.kategoriProduk}"),
+                            value:
+                                product.kategoriProduk ?? "tidak ada kategori"),
                         const SizedBox(
                           height: 2,
                         ),
                         _DetailProductExtension().detailProductItem(
-                            title: "Grosir",
-                            value: "${product.multisatuanUnit}"),
+                          title: "Grosir",
+                          value: product.grosirProduk ?? "Tidak ada",
+                        ),
                         const SizedBox(
                           height: 2,
                         ),
