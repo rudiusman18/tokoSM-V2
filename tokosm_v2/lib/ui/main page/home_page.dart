@@ -911,7 +911,10 @@ class _HomePageExtension {
                           borderRadius: BorderRadius.circular(10),
                           image: DecorationImage(
                             image: NetworkImage(
-                                product?.gambarProduk?.first ?? ""),
+                              (product?.gambarProduk ?? []).isEmpty
+                                  ? ""
+                                  : (product?.gambarProduk ?? []).first,
+                            ),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -1087,5 +1090,4 @@ class _HomePageExtension {
       ),
     );
   }
-
 }
