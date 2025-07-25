@@ -299,32 +299,48 @@ class _wishlistPageExtension {
                   style: const TextStyle(fontSize: 12),
                   overflow: TextOverflow.ellipsis,
                 ),
+                if (product?.isFlashsale == 1 &&
+                    product?.satuanProduk != product?.flashsaleSatuan) ...{
+                  Text(
+                    "Rp ${product?.hargaProduk}",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colorSuccess,
+                      fontWeight: bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                },
                 Row(
-                  spacing: 10,
+                  spacing: 5,
                   children: [
                     Flexible(
                       child: Text(
                         product?.isFlashsale == 1
-                            ? "Rp ${product?.hargaFlashsale}"
+                            ? "Rp ${product?.hargaDiskonFlashsale ?? 0}"
                             : product?.isDiskon == 1
                                 ? "Rp ${product?.hargaDiskon}"
-                                : "Rp ${product?.hargaJual}",
+                                : "Rp ${product?.hargaProduk}",
                         style: TextStyle(
                           fontSize: 12,
-                          color: colorSuccess,
+                          color: product?.isFlashsale == 1
+                              ? colorError
+                              : colorSuccess,
                           fontWeight: bold,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     if ((product?.isFlashsale == 1 || product?.isDiskon == 1
-                            ? "Rp ${product?.hargaJual}"
+                            ? "Rp ${product?.hargaProduk}"
                             : "") !=
                         "") ...{
                       Text(
-                        product?.isFlashsale == 1 || product?.isDiskon == 1
-                            ? "Rp ${product?.hargaJual}"
-                            : "",
+                        product?.isFlashsale == 1
+                            ? "Rp ${product?.hargaProdukFlashsale ?? 0}"
+                            : product?.isDiskon == 1
+                                ? "Rp ${product?.hargaDiskon ?? 0}"
+                                : "",
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey,
@@ -370,6 +386,23 @@ class _wishlistPageExtension {
                           ],
                         ),
                       ),
+                      if (product?.isFlashsale == 1) ...{
+                        Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Text(
+                            product?.flashsaleSatuan ?? "",
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.white,
+                              fontWeight: bold,
+                            ),
+                          ),
+                        ),
+                      },
                     },
                   ],
                 ),
@@ -380,7 +413,7 @@ class _wishlistPageExtension {
                 children: [
                   Icon(Icons.star, size: 12, color: colorWarning),
                   Text(
-                    product?.rating ?? "",
+                    "${product?.rating ?? ""}",
                     style: const TextStyle(fontSize: 12),
                   ),
                 ],
@@ -391,5 +424,4 @@ class _wishlistPageExtension {
       ),
     );
   }
-
 }

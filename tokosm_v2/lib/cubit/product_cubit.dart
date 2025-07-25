@@ -153,6 +153,7 @@ class ProductCubit extends Cubit<ProductState> {
         ),
       );
     } catch (e) {
+      print("gagal dengan error $e");
       emit(ProductFailure(e.toString()));
     }
   }

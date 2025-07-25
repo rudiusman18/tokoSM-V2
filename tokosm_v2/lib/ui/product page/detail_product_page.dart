@@ -180,7 +180,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                           spacing: 10,
                           children: [
                             Text(
-                              "Rp ${product.isFlashsale == 1 ? product.hargaFlashsale : product.isDiskon == 1 ? product.hargaDiskon : product.hargaJual}",
+                              "Rp ${product.isFlashsale == 1 ? product.hargaDiskonFlashsale : product.isDiskon == 1 ? product.hargaDiskon : product.hargaProduk}",
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: bold,
@@ -190,7 +190,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                             if (product.isFlashsale == 1 ||
                                 product.isDiskon == 1) ...{
                               Text(
-                                "Rp ${product.hargaJual}",
+                                "Rp ${product.hargaProduk}",
                                 style: const TextStyle(
                                   fontSize: 16,
                                   color: Colors.grey,
@@ -223,7 +223,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                 // terjual/limit
                                 child: LinearProgressIndicator(
                                   value: double.parse(
-                                          "${product.flashsaleLimit - product.flashsaleTerjual}") /
+                                          "${(product.flashsaleLimit ?? 0) - (product.hargaProduk ?? 0)}") /
                                       100, // Ensure it stays between 0 and 1
                                   minHeight: 10,
                                   borderRadius: BorderRadius.circular(999),
@@ -234,7 +234,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                               ),
                               Text(
                                 // limit - terjual
-                                "Tersisa ${product.flashsaleLimit - product.flashsaleTerjual} ${product.flashsaleSatuan}",
+                                "Tersisa ${(product.flashsaleLimit ?? 0) - (product.flashsaleTerjual ?? 0)} ${product.flashsaleSatuan}",
                                 style: const TextStyle(
                                   fontSize: 12,
                                 ),
@@ -308,7 +308,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                         ),
                         _DetailProductExtension().detailProductItem(
                             title: "Kategori",
-                            value: "${product.produkKategoriId}"),
+                            value: "${product.kategoriProduk}"),
                         const SizedBox(
                           height: 2,
                         ),

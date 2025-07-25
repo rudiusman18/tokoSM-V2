@@ -683,7 +683,6 @@ class _HomePageExtension {
   Widget smallItemView({
     required BuildContext context,
     required DataProduct? product,
-    bool isFlashSale = false,
   }) {
     return GestureDetector(
       onTap: () {
@@ -721,19 +720,33 @@ class _HomePageExtension {
                   style: const TextStyle(fontSize: 12),
                   overflow: TextOverflow.ellipsis,
                 ),
+                if (product?.isFlashsale == 1 &&
+                    product?.satuanProduk != product?.flashsaleSatuan) ...{
+                  Text(
+                    "Rp ${product?.hargaProduk}",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colorSuccess,
+                      fontWeight: bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                },
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
                       child: Text(
                         product?.isFlashsale == 1
-                            ? "Rp ${product?.hargaFlashsale}"
+                            ? "Rp ${product?.hargaDiskonFlashsale ?? 0}"
                             : product?.isDiskon == 1
                                 ? "Rp ${product?.hargaDiskon}"
-                                : "Rp ${product?.hargaJual}",
+                                : "Rp ${product?.hargaProduk}",
                         style: TextStyle(
                           fontSize: 12,
-                          color: colorSuccess,
+                          color: product?.isFlashsale == 1
+                              ? colorError
+                              : colorSuccess,
                           fontWeight: bold,
                         ),
                         overflow: TextOverflow.ellipsis,
@@ -754,7 +767,7 @@ class _HomePageExtension {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            if (isFlashSale)
+                            if (product?.isFlashsale == 1)
                               const Icon(
                                 SolarIconsBold.bolt,
                                 size: 10,
@@ -781,20 +794,49 @@ class _HomePageExtension {
               ],
             ),
             if ((product?.isFlashsale == 1 || product?.isDiskon == 1
-                    ? "Rp ${product?.hargaJual}"
+                    ? "Rp ${product?.hargaProduk ?? 0}"
                     : "") !=
                 "") ...{
-              Text(
-                product?.isFlashsale == 1 || product?.isDiskon == 1
-                    ? "Rp ${product?.hargaJual}"
-                    : "",
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                  fontWeight: bold,
-                  decoration: TextDecoration.lineThrough,
-                  decorationThickness: 3,
-                ),
+              const SizedBox(
+                height: 2,
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      product?.isFlashsale == 1
+                          ? "Rp ${product?.hargaProdukFlashsale}"
+                          : product?.isDiskon == 1
+                              ? "Rp ${product?.hargaDiskon}"
+                              : "",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey,
+                        fontWeight: bold,
+                        decoration: TextDecoration.lineThrough,
+                        decorationThickness: 3,
+                      ),
+                    ),
+                  ),
+                  if (product?.isFlashsale == 1) ...{
+                    Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Text(
+                        product?.isFlashsale == 1
+                            ? product?.flashsaleSatuan ?? ""
+                            : "",
+                        style: const TextStyle(
+                          fontSize: 12,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  },
+                ],
               ),
             },
             if ((product?.isPromo == 1 ? "${product?.namaPromo}" : "") !=
@@ -920,32 +962,48 @@ class _HomePageExtension {
                   style: const TextStyle(fontSize: 12),
                   overflow: TextOverflow.ellipsis,
                 ),
+                if (product?.isFlashsale == 1 &&
+                    product?.satuanProduk != product?.flashsaleSatuan) ...{
+                  Text(
+                    "Rp ${product?.hargaProduk}",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colorSuccess,
+                      fontWeight: bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                },
                 Row(
-                  spacing: 10,
+                  spacing: 5,
                   children: [
                     Flexible(
                       child: Text(
                         product?.isFlashsale == 1
-                            ? "Rp ${product?.hargaFlashsale}"
+                            ? "Rp ${product?.hargaDiskonFlashsale ?? 0}"
                             : product?.isDiskon == 1
                                 ? "Rp ${product?.hargaDiskon}"
-                                : "Rp ${product?.hargaJual}",
+                                : "Rp ${product?.hargaProduk}",
                         style: TextStyle(
                           fontSize: 12,
-                          color: colorSuccess,
+                          color: product?.isFlashsale == 1
+                              ? colorError
+                              : colorSuccess,
                           fontWeight: bold,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     if ((product?.isFlashsale == 1 || product?.isDiskon == 1
-                            ? "Rp ${product?.hargaJual}"
+                            ? "Rp ${product?.hargaProduk}"
                             : "") !=
                         "") ...{
                       Text(
-                        product?.isFlashsale == 1 || product?.isDiskon == 1
-                            ? "Rp ${product?.hargaJual}"
-                            : "",
+                        product?.isFlashsale == 1
+                            ? "Rp ${product?.hargaProdukFlashsale ?? 0}"
+                            : product?.isDiskon == 1
+                                ? "Rp ${product?.hargaDiskon ?? 0}"
+                                : "",
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey,
@@ -991,6 +1049,23 @@ class _HomePageExtension {
                           ],
                         ),
                       ),
+                      if (product?.isFlashsale == 1) ...{
+                        Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Text(
+                            product?.flashsaleSatuan ?? "",
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.white,
+                              fontWeight: bold,
+                            ),
+                          ),
+                        ),
+                      },
                     },
                   ],
                 ),
@@ -1001,7 +1076,7 @@ class _HomePageExtension {
                 children: [
                   Icon(Icons.star, size: 12, color: colorWarning),
                   Text(
-                    product?.rating ?? "",
+                    "${product?.rating ?? ""}",
                     style: const TextStyle(fontSize: 12),
                   ),
                 ],

@@ -357,32 +357,48 @@ class _ProductPageExtension {
                   style: const TextStyle(fontSize: 12),
                   overflow: TextOverflow.ellipsis,
                 ),
+                if (product?.isFlashsale == 1 &&
+                    product?.satuanProduk != product?.flashsaleSatuan) ...{
+                  Text(
+                    "Rp ${product?.hargaProduk}",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colorSuccess,
+                      fontWeight: bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                },
                 Row(
-                  spacing: 10,
+                  spacing: 5,
                   children: [
                     Flexible(
                       child: Text(
                         product?.isFlashsale == 1
-                            ? "Rp ${product?.hargaFlashsale}"
+                            ? "Rp ${product?.hargaDiskonFlashsale ?? 0}"
                             : product?.isDiskon == 1
                                 ? "Rp ${product?.hargaDiskon}"
-                                : "Rp ${product?.hargaJual}",
+                                : "Rp ${product?.hargaProduk}",
                         style: TextStyle(
                           fontSize: 12,
-                          color: colorSuccess,
+                          color: product?.isFlashsale == 1
+                              ? colorError
+                              : colorSuccess,
                           fontWeight: bold,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     if ((product?.isFlashsale == 1 || product?.isDiskon == 1
-                            ? "Rp ${product?.hargaJual}"
+                            ? "Rp ${product?.hargaProduk}"
                             : "") !=
                         "") ...{
                       Text(
-                        product?.isFlashsale == 1 || product?.isDiskon == 1
-                            ? "Rp ${product?.hargaJual}"
-                            : "",
+                        product?.isFlashsale == 1
+                            ? "Rp ${product?.hargaProdukFlashsale ?? 0}"
+                            : product?.isDiskon == 1
+                                ? "Rp ${product?.hargaDiskon ?? 0}"
+                                : "",
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey,
@@ -428,6 +444,23 @@ class _ProductPageExtension {
                           ],
                         ),
                       ),
+                      if (product?.isFlashsale == 1) ...{
+                        Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Text(
+                            product?.flashsaleSatuan ?? "",
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.white,
+                              fontWeight: bold,
+                            ),
+                          ),
+                        ),
+                      },
                     },
                   ],
                 ),
@@ -438,7 +471,7 @@ class _ProductPageExtension {
                 children: [
                   Icon(Icons.star, size: 12, color: colorWarning),
                   Text(
-                    product?.rating ?? "",
+                    "${product?.rating ?? ""}",
                     style: const TextStyle(fontSize: 12),
                   ),
                 ],
@@ -1042,11 +1075,15 @@ class CategoryFilterPage extends StatefulWidget {
 }
 
 class _CategoryFilterPageState extends State<CategoryFilterPage> {
+  String? newSelectedCategory = "";
+
   @override
   void initState() {
     context.read<CategoryCubit>().getProductCategory(
         token: context.read<LoginCubit>().state.loginModel.token ?? "",
         filter: "all");
+
+    newSelectedCategory = widget.selectedCategory;
     super.initState();
   }
 
@@ -1068,82 +1105,100 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
                   left: 16,
                   right: 16,
                 ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    spacing: 10,
-                    children: [
-                      //NOTE: header
-                      Row(
-                        spacing: 5,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context, widget.selectedCategory);
-                            },
-                            child: const Icon(
-                              SolarIconsOutline.arrowLeft,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          spacing: 10,
+                          children: [
+                            //NOTE: header
+                            Row(
+                              spacing: 5,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(
+                                        context, widget.selectedCategory);
+                                  },
+                                  child: const Icon(
+                                    SolarIconsOutline.arrowLeft,
+                                  ),
+                                ),
+                                Text(
+                                  "Kategori Produk",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: bold,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                          Text(
-                            "Kategori Produk",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      //NOTE: content
-                      for (var index = 0;
-                          index <
-                              ((context
-                                          .read<CategoryCubit>()
-                                          .state
-                                          .categoryModel?['data'] ??
-                                      []) as List)
-                                  .length;
-                          index++) ...{
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              // context.read<ProductCubit>().setProductFilter(
-                              //     kategori: ((context
-                              //             .read<CategoryCubit>()
-                              //             .state
-                              //             .categoryModel?['data'] ??
-                              //         []) as List)[index]['kat2_slug'],
-                              //     promo: "",
-                              //     rating: "",
-                              //     minPrice: "",
-                              //     maxPrice: "");
-
-                              widget.selectedCategory = ((context
-                                      .read<CategoryCubit>()
-                                      .state
-                                      .categoryModel?['data'] ??
-                                  []) as List)[index]['kat2_slug'];
-                            });
-                          },
-                          child: _CategoryFilterPageExtension()
-                              .productCategoryItem(
-                            categoryData: ((context
-                                    .read<CategoryCubit>()
-                                    .state
-                                    .categoryModel?['data'] ??
-                                []) as List)[index],
-                            isSelected: widget.selectedCategory ==
+                            //NOTE: content
+                            for (var index = 0;
+                                index <
                                     ((context
+                                                .read<CategoryCubit>()
+                                                .state
+                                                .categoryModel?['data'] ??
+                                            []) as List)
+                                        .length;
+                                index++) ...{
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    newSelectedCategory = ((context
                                             .read<CategoryCubit>()
                                             .state
                                             .categoryModel?['data'] ??
-                                        []) as List)[index]['kat2_slug']
-                                ? true
-                                : false,
+                                        []) as List)[index]['kat2_slug'];
+                                  });
+                                },
+                                child: _CategoryFilterPageExtension()
+                                    .productCategoryItem(
+                                  categoryData: ((context
+                                          .read<CategoryCubit>()
+                                          .state
+                                          .categoryModel?['data'] ??
+                                      []) as List)[index],
+                                  isSelected: newSelectedCategory ==
+                                          ((context
+                                                  .read<CategoryCubit>()
+                                                  .state
+                                                  .categoryModel?['data'] ??
+                                              []) as List)[index]['kat2_slug']
+                                      ? true
+                                      : false,
+                                ),
+                              ),
+                            },
+                          ],
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        widget.selectedCategory = newSelectedCategory;
+                        Navigator.pop(context, widget.selectedCategory);
+                      },
+                      child: Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.symmetric(vertical: 10),
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: colorSuccess,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Text(
+                          "Simpan",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
                           ),
                         ),
-                      },
-                    ],
-                  ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
