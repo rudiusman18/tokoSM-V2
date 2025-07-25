@@ -193,35 +193,6 @@ class _WishlistPageState extends State<WishlistPage> {
 
                             return _wishlistPageExtension().bigItemView(
                               context: context,
-                              imageURL: ((product?[index].gambarProduk ?? [])
-                                      .isNotEmpty
-                                  ? product![index].gambarProduk!.first
-                                  : ""),
-                              productName: product?[index].namaProduk ?? "",
-                              productPrice: product?[index].isFlashsale == 1
-                                  ? "Rp ${product?[index].hargaFlashsale}"
-                                  : product?[index].isDiskon == 1
-                                      ? "Rp ${product?[index].hargaDiskon}"
-                                      : "Rp ${product?[index].hargaJual}",
-                              discountPercentage: product?[index].isFlashsale ==
-                                      1
-                                  ? "${product?[index].persentaseFlashsale}%"
-                                  : product?[index].isDiskon == 1
-                                      ? "${product?[index].persentaseDiskon}%"
-                                      : "",
-                              productPriceColor: colorSuccess,
-                              productRealPrice:
-                                  product?[index].isFlashsale == 1 ||
-                                          product?[index].isDiskon == 1
-                                      ? "Rp ${product?[index].hargaJual}"
-                                      : "",
-                              bonusInformation: product?[index].isPromo == 1
-                                  ? "${product?[index].namaPromo}"
-                                  : "",
-                              isFlashSale: product?[index].isFlashsale == 1
-                                  ? true
-                                  : false,
-                              rating: product?[index].rating ?? "",
                               product: product?[index],
                             );
                           }),
@@ -243,16 +214,7 @@ class _WishlistPageState extends State<WishlistPage> {
 class _wishlistPageExtension {
   Widget bigItemView({
     required BuildContext context,
-    required String imageURL,
-    required String productName,
-    required String productPrice,
-    required Color productPriceColor,
-    required String discountPercentage,
-    required String productRealPrice,
-    required String bonusInformation,
-    required String rating,
     required DataProduct? product,
-    bool isFlashSale = false,
   }) {
     final screenWidth = MediaQuery.of(context).size.width;
     const horizontalPadding = 32; // 16 left + 16 right
@@ -285,12 +247,16 @@ class _wishlistPageExtension {
                           color: Colors.grey,
                           borderRadius: BorderRadius.circular(10),
                           image: DecorationImage(
-                            image: NetworkImage(imageURL),
+                            image: NetworkImage(
+                                product?.gambarProduk?.first ?? ""),
                             fit: BoxFit.cover,
                           ),
                         ),
                       ),
-                      if (bonusInformation != "") ...{
+                      if ((product?.isPromo == 1
+                              ? "${product?.namaPromo}"
+                              : "") !=
+                          "") ...{
                         Positioned(
                           bottom: 5,
                           left: 5,
@@ -311,7 +277,9 @@ class _wishlistPageExtension {
                                   color: Colors.white,
                                 ),
                                 Text(
-                                  bonusInformation,
+                                  product?.isPromo == 1
+                                      ? "${product?.namaPromo}"
+                                      : "",
                                   style: TextStyle(
                                     fontSize: 10,
                                     color: Colors.white,
@@ -327,7 +295,7 @@ class _wishlistPageExtension {
                   ),
                 ),
                 Text(
-                  productName,
+                  product?.namaProduk ?? "",
                   style: const TextStyle(fontSize: 12),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -336,18 +304,27 @@ class _wishlistPageExtension {
                   children: [
                     Flexible(
                       child: Text(
-                        productPrice,
+                        product?.isFlashsale == 1
+                            ? "Rp ${product?.hargaFlashsale}"
+                            : product?.isDiskon == 1
+                                ? "Rp ${product?.hargaDiskon}"
+                                : "Rp ${product?.hargaJual}",
                         style: TextStyle(
                           fontSize: 12,
-                          color: productPriceColor,
+                          color: colorSuccess,
                           fontWeight: bold,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    if (productRealPrice != "") ...{
+                    if ((product?.isFlashsale == 1 || product?.isDiskon == 1
+                            ? "Rp ${product?.hargaJual}"
+                            : "") !=
+                        "") ...{
                       Text(
-                        productRealPrice,
+                        product?.isFlashsale == 1 || product?.isDiskon == 1
+                            ? "Rp ${product?.hargaJual}"
+                            : "",
                         style: TextStyle(
                           fontSize: 12,
                           color: Colors.grey,
@@ -357,7 +334,12 @@ class _wishlistPageExtension {
                         ),
                       ),
                     },
-                    if (discountPercentage != "") ...{
+                    if ((product?.isFlashsale == 1
+                            ? "${product?.persentaseFlashsale}%"
+                            : product?.isDiskon == 1
+                                ? "${product?.persentaseDiskon}%"
+                                : "") !=
+                        "") ...{
                       Container(
                         padding: const EdgeInsets.all(2),
                         decoration: BoxDecoration(
@@ -367,14 +349,18 @@ class _wishlistPageExtension {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            if (isFlashSale)
+                            if (product?.isFlashsale == 1)
                               const Icon(
                                 SolarIconsBold.bolt,
                                 size: 10,
                                 color: Colors.white,
                               ),
                             Text(
-                              discountPercentage,
+                              product?.isFlashsale == 1
+                                  ? "${product?.persentaseFlashsale}%"
+                                  : product?.isDiskon == 1
+                                      ? "${product?.persentaseDiskon}%"
+                                      : "",
                               style: TextStyle(
                                 fontSize: 10,
                                 color: Colors.white,
@@ -389,12 +375,12 @@ class _wishlistPageExtension {
                 ),
               ],
             ),
-            if (rating != "") ...{
+            if ((product?.rating ?? "") != "") ...{
               Row(
                 children: [
                   Icon(Icons.star, size: 12, color: colorWarning),
                   Text(
-                    rating,
+                    product?.rating ?? "",
                     style: const TextStyle(fontSize: 12),
                   ),
                 ],
@@ -405,4 +391,5 @@ class _wishlistPageExtension {
       ),
     );
   }
+
 }

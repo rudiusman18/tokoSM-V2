@@ -94,9 +94,15 @@ class ProductService {
     }
   }
 
-  Future<Map<String, dynamic>> getProductCategory(
-      {required String token}) async {
-    var url = Uri.parse("$baseURL/produk/kategori?tree=1");
+  Future<Map<String, dynamic>> getProductCategory({
+    required String token,
+    required String filter,
+  }) async {
+    var url = Uri.parse(
+      filter == ""
+          ? "$baseURL/produk/kategori?tree=1"
+          : "$baseURL/produk/kategori?filter=$filter",
+    );
     var header = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
