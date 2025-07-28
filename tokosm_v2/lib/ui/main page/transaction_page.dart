@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_icons/solar_icons.dart';
+import 'package:tokosm_v2/cubit/cabang_cubit.dart';
+import 'package:tokosm_v2/cubit/login_cubit.dart';
 import 'package:tokosm_v2/cubit/transaction_cubit.dart';
+import 'package:tokosm_v2/model/transaction_model.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 
 class TransactionPage extends StatefulWidget {
@@ -22,6 +25,24 @@ class _TransactionPageState extends State<TransactionPage> {
     "Dibatalkan",
     "Dikembalikan",
   ];
+
+  @override
+  void initState() {
+    initTransactionData();
+    super.initState();
+  }
+
+  void initTransactionData() {
+    context.read<TransactionCubit>().getTransactionData(
+          token: context.read<AuthCubit>().state.loginModel.token ?? "",
+          status:
+              "${(context.read<TransactionCubit>().state.transactionTabIndex - 1) == -1 ? "" : context.read<TransactionCubit>().state.transactionTabIndex - 1}",
+          cabangId:
+              "${context.read<CabangCubit>().state.selectedCabangData.id ?? 0}",
+          page: 1,
+          limit: 999999999,
+        );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,9 +107,8 @@ class _TransactionPageState extends State<TransactionPage> {
                   for (var i = 0; i < tabFilter.length; i++) ...{
                     GestureDetector(
                       onTap: () {
-                        context
-                            .read<TransactionTabFilterCubit>()
-                            .setTabIndex(i);
+                        context.read<TransactionCubit>().setTabIndex(i);
+                        initTransactionData();
                       },
                       child: Container(
                         padding: const EdgeInsets.only(
@@ -98,8 +118,9 @@ class _TransactionPageState extends State<TransactionPage> {
                             bottom: BorderSide(
                               color: i ==
                                       context
-                                          .read<TransactionTabFilterCubit>()
+                                          .read<TransactionCubit>()
                                           .state
+                                          .transactionTabIndex
                                   ? Colors.black
                                   : colorSecondary, // Warna border
                               width: 2.0, // Ketebalan border
@@ -112,8 +133,9 @@ class _TransactionPageState extends State<TransactionPage> {
                           style: TextStyle(
                             color: i ==
                                     context
-                                        .read<TransactionTabFilterCubit>()
+                                        .read<TransactionCubit>()
                                         .state
+                                        .transactionTabIndex
                                 ? Colors.black
                                 : colorSecondary,
                             fontSize: 12,
@@ -130,7 +152,7 @@ class _TransactionPageState extends State<TransactionPage> {
       );
     }
 
-    return BlocBuilder<TransactionTabFilterCubit, int>(
+    return BlocBuilder<TransactionCubit, TransactionState>(
       builder: (context, state) {
         return Scaffold(
           body: SafeArea(
@@ -145,15 +167,24 @@ class _TransactionPageState extends State<TransactionPage> {
               Expanded(
                 child: ListView(
                   children: [
-                    for (var i = 0; i < 20; i++) ...{
+                    for (var i = 0;
+                        i <
+                            (context
+                                        .read<TransactionCubit>()
+                                        .state
+                                        .transactionModel
+                                        ?.data ??
+                                    [])
+                                .length;
+                        i++) ...{
                       _TransactionPageExtension().transactionItemView(
                         context: context,
-                        cabangName: "Cabang Pusat",
-                        dateString: "8 Mar 25",
-                        status: "Belum Dibayar",
-                        productImageURL: "",
-                        productName: "Wafer Tango",
-                        productPrice: "Rp 12000",
+                        transactionModel: context
+                                .read<TransactionCubit>()
+                                .state
+                                .transactionModel
+                                ?.data?[i] ??
+                            TransactionData(),
                       ),
                     },
                     Container(
@@ -174,12 +205,7 @@ class _TransactionPageState extends State<TransactionPage> {
 class _TransactionPageExtension {
   Widget transactionItemView({
     required BuildContext context,
-    required String cabangName,
-    required String dateString,
-    required String status,
-    required String productImageURL,
-    required String productName,
-    required String productPrice,
+    required TransactionData transactionModel,
   }) {
     return Column(
       spacing: 10,
@@ -191,6 +217,7 @@ class _TransactionPageExtension {
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 10,
             children: [
               Row(
@@ -201,14 +228,14 @@ class _TransactionPageExtension {
                     size: 18,
                   ),
                   Text(
-                    cabangName,
+                    "Cabang ${transactionModel.namaCabang ?? "-"}",
                     style: TextStyle(
                       fontWeight: bold,
                       fontSize: 14,
                     ),
                   ),
                   Text(
-                    dateString,
+                    transactionModel.tglJatuhTempo ?? "",
                     style: const TextStyle(
                       fontSize: 10,
                     ),
@@ -223,7 +250,8 @@ class _TransactionPageExtension {
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: Text(
-                      status,
+                      transactionModel.keteranganStatus ??
+                          "Status tidak ditemukan",
                       style: TextStyle(
                         color: colorError,
                         fontSize: 12,
@@ -249,21 +277,21 @@ class _TransactionPageExtension {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          productName,
+                          transactionModel.namaProduk?.first ?? "-",
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: bold,
                           ),
                         ),
-                        Row(
+                        const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              productPrice,
-                              style: const TextStyle(fontSize: 12),
+                              "Rp Belum ada harganya",
+                              style: TextStyle(fontSize: 12),
                             ),
-                            const Text(
-                              "x1",
+                            Text(
+                              "x Belum jumlah satuannya",
                               style: TextStyle(fontSize: 12),
                             ),
                           ],
@@ -273,21 +301,29 @@ class _TransactionPageExtension {
                   ),
                 ],
               ),
+              (transactionModel.jumlahProduk ?? 0) - 1 < 1
+                  ? const SizedBox()
+                  : Text(
+                      "+${(transactionModel.jumlahProduk ?? 0) - 1} produk lainnya",
+                      style: const TextStyle(fontSize: 12),
+                    ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   RichText(
-                    text: const TextSpan(
-                      style: TextStyle(
+                    text: TextSpan(
+                      style: const TextStyle(
                         color: Colors.black,
                         fontSize: 14,
                       ), // default style
                       children: [
-                        TextSpan(text: 'Total (1 Produk): '),
                         TextSpan(
-                          text: 'Rp 12000',
-                          style: TextStyle(
+                            text:
+                                'Total (${transactionModel.jumlahProduk} Produk): '),
+                        TextSpan(
+                          text: 'Rp ${transactionModel.total}',
+                          style: const TextStyle(
                             fontWeight: FontWeight.bold,
                           ),
                         ),

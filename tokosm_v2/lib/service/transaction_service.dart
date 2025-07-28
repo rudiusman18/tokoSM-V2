@@ -1,39 +1,41 @@
 // import 'package:tokosm_v2/shared/utils.dart';
 
-// class TransactionService {
-//   Future<ProductModel> getProduct({
-//     required String token,
-//     required String search,
-//     required int cabangId,
-//     required String type,
-//     required String sort,
-//     required String cat,
-//     required String minrating,
-//     required String minprice,
-//     required String maxprice,
-//     int page = 1,
-//     int limit = 10,
-//   }) async {
-//     var url = Uri.parse(
-//       "$baseURL/produk?cabang=$cabangId&type=$type&page=$page&limit=$limit&sort=$sort&cat=$cat&minrating=$minrating&minprice=$minprice&maxprice=$maxprice&q=$search",
-//     );
-//     var header = {
-//       'Content-Type': 'application/json',
-//       'Authorization': 'Bearer $token',
-//     };
+import 'dart:convert';
 
-//     var response = await http.get(
-//       url,
-//       headers: header,
-//     );
+import 'package:http/http.dart' as http;
+import 'package:tokosm_v2/model/transaction_model.dart';
+import 'package:tokosm_v2/shared/utils.dart';
 
-//     if (response.statusCode >= 200 && response.statusCode <= 299) {
-//       var data = jsonDecode(response.body);
-//       final ProductModel productModel = ProductModel.fromJson(data);
-//       return productModel;
-//     } else {
-//       var data = jsonDecode(response.body);
-//       throw ("${data['message']}");
-//     }
-//   }
-// }
+class TransactionService {
+  Future<TransactionModel> getTransaction({
+    required String token,
+    required String cabangId,
+    required String status,
+    int page = 1,
+    int limit = 10,
+  }) async {
+    var url = Uri.parse(
+      "$baseURL/transaksi?cabang=$cabangId&status=$status&page=$page&limit=$limit",
+    );
+
+    var header = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    var response = await http.get(
+      url,
+      headers: header,
+    );
+
+    if (response.statusCode >= 200 && response.statusCode <= 299) {
+      var data = jsonDecode(response.body);
+      final TransactionModel productModel = TransactionModel.fromJson(data);
+
+      return productModel;
+    } else {
+      var data = jsonDecode(response.body);
+      throw ("${data['message']}");
+    }
+  }
+}

@@ -45,7 +45,7 @@ class MainApp extends StatelessWidget {
           create: (context) => WishlistCubit(),
         ),
         BlocProvider(
-          create: (context) => TransactionTabFilterCubit(),
+          create: (context) => TransactionCubit(),
         ),
         BlocProvider(
           create: (context) => ProductCubit(),
