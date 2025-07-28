@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tokosm_v2/cubit/category_cubit.dart';
 import 'package:tokosm_v2/cubit/login_cubit.dart';
+import 'package:tokosm_v2/cubit/product_cubit.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 
 class CategoryPage extends StatefulWidget {
@@ -90,12 +91,31 @@ class _CategoryPageState extends State<CategoryPage> {
                                                   []) as List)
                                               .length;
                                       index1++) ...{
-                                    Card(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Text(
-                                          "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["child"] ?? []) as List).map((e) => e as Map<String, dynamic>).toList()[index1]["kat2"]}",
-                                          style: const TextStyle(fontSize: 10),
+                                    GestureDetector(
+                                      onTap: () {
+                                        context
+                                            .read<ProductCubit>()
+                                            .setProductFilter(
+                                                kategori:
+                                                    "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["child"] ?? []) as List).map((e) => e as Map<String, dynamic>).toList()[index1]["kat2_slug"]}",
+                                                promo: "",
+                                                rating: "",
+                                                minPrice: "",
+                                                maxPrice: "");
+                                        Navigator.pushNamed(
+                                                context, 'product-page')
+                                            .then((_) {
+                                          initCategory();
+                                        });
+                                      },
+                                      child: Card(
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                            "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["child"] ?? []) as List).map((e) => e as Map<String, dynamic>).toList()[index1]["kat2"]}",
+                                            style:
+                                                const TextStyle(fontSize: 10),
+                                          ),
                                         ),
                                       ),
                                     ),

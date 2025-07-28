@@ -17,9 +17,10 @@ class _TransactionPageState extends State<TransactionPage> {
     "Belum bayar",
     "Diproses",
     "Dikirim",
+    "Diterima",
     "Selesai",
     "Dibatalkan",
-    "Pengembalian",
+    "Dikembalikan",
   ];
 
   @override

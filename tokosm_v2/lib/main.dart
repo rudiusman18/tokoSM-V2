@@ -51,6 +51,9 @@ class MainApp extends StatelessWidget {
           create: (context) => ProductCubit(),
         ),
         BlocProvider(
+          create: (context) => DetailProductCubit(),
+        ),
+        BlocProvider(
           create: (context) => CategoryCubit(),
         ),
         BlocProvider(

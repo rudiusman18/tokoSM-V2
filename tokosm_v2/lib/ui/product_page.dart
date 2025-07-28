@@ -23,6 +23,7 @@ class _ProductPageState extends State<ProductPage> {
 
   @override
   void initState() {
+    context.read<ProductCubit>().productTabIndex(0);
     searchController.text =
         (context.read<ProductCubit>().state as ProductSuccess).searchkeyword;
     initProductData();
@@ -30,15 +31,24 @@ class _ProductPageState extends State<ProductPage> {
   }
 
   void initProductData() async {
-    context.read<ProductCubit>().productTabIndex(0);
     context.read<ProductCubit>().getAllProduct(
           token: context.read<AuthCubit>().state.loginModel.token ?? "",
           cabangId:
               context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
-          type: '',
-          sort: tabFilter.first.toLowerCase(),
+          type: (context.read<ProductCubit>().state as ProductSuccess)
+              .selectedPromoFilter,
+          category: (context.read<ProductCubit>().state as ProductSuccess)
+              .selectedCategoryFilter,
+          minrating: (context.read<ProductCubit>().state as ProductSuccess)
+              .selectedRatingFilter,
+          maxprice: (context.read<ProductCubit>().state as ProductSuccess)
+              .maxPriceFilter,
+          minprice: (context.read<ProductCubit>().state as ProductSuccess)
+              .minPriceFilter,
           page: 1,
           limit: 999999999,
+          sort: tabFilter[context.read<ProductCubit>().state.productTabIndex]
+              .toLowerCase(),
         );
   }
 
@@ -104,10 +114,32 @@ class _ProductPageState extends State<ProductPage> {
                                               .selectedCabangData
                                               .id ??
                                           0,
-                                      type: '',
-                                      sort: tabFilter.first.toLowerCase(),
+                                      type: (context.read<ProductCubit>().state
+                                              as ProductSuccess)
+                                          .selectedPromoFilter,
+                                      category: (context
+                                              .read<ProductCubit>()
+                                              .state as ProductSuccess)
+                                          .selectedCategoryFilter,
+                                      minrating: (context
+                                              .read<ProductCubit>()
+                                              .state as ProductSuccess)
+                                          .selectedRatingFilter,
+                                      maxprice: (context
+                                              .read<ProductCubit>()
+                                              .state as ProductSuccess)
+                                          .maxPriceFilter,
+                                      minprice: (context
+                                              .read<ProductCubit>()
+                                              .state as ProductSuccess)
+                                          .minPriceFilter,
                                       page: 1,
                                       limit: 999999999,
+                                      sort: tabFilter[context
+                                              .read<ProductCubit>()
+                                              .state
+                                              .productTabIndex]
+                                          .toLowerCase(),
                                     );
                               },
                               style: const TextStyle(fontSize: 12),
@@ -172,10 +204,28 @@ class _ProductPageState extends State<ProductPage> {
                                       .selectedCabangData
                                       .id ??
                                   0,
-                              type: '',
-                              sort: tabFilter[i].toLowerCase(),
+                              type: (context.read<ProductCubit>().state
+                                      as ProductSuccess)
+                                  .selectedPromoFilter,
+                              category: (context.read<ProductCubit>().state
+                                      as ProductSuccess)
+                                  .selectedCategoryFilter,
+                              minrating: (context.read<ProductCubit>().state
+                                      as ProductSuccess)
+                                  .selectedRatingFilter,
+                              maxprice: (context.read<ProductCubit>().state
+                                      as ProductSuccess)
+                                  .maxPriceFilter,
+                              minprice: (context.read<ProductCubit>().state
+                                      as ProductSuccess)
+                                  .minPriceFilter,
                               page: 1,
                               limit: 999999999,
+                              sort: tabFilter[context
+                                      .read<ProductCubit>()
+                                      .state
+                                      .productTabIndex]
+                                  .toLowerCase(),
                             );
                       },
                       child: Container(
@@ -224,52 +274,58 @@ class _ProductPageState extends State<ProductPage> {
     return BlocBuilder<ProductCubit, ProductState>(
       builder: (context, state) {
         return Scaffold(
-          body: SafeArea(
-            child: Column(
-              children: [
-                Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                  ),
-                  child: header(),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Expanded(
-                  child: Container(
+          body: RefreshIndicator(
+            color: colorSuccess,
+            onRefresh: () async {
+              initProductData();
+            },
+            child: SafeArea(
+              child: Column(
+                children: [
+                  Container(
                     margin: const EdgeInsets.symmetric(
                       horizontal: 16,
                     ),
-                    child: ListView(
-                      children: [
-                        Wrap(
-                          spacing: 10,
-                          runSpacing: 10,
-                          children: List.generate(
-                              (context
-                                          .read<ProductCubit>()
-                                          .state
-                                          .wildProduct
-                                          .data ??
-                                      [])
-                                  .length, (index) {
-                            var product = context
-                                .read<ProductCubit>()
-                                .state
-                                .wildProduct
-                                .data;
-                            return _ProductPageExtension().bigItemView(
-                              context: context,
-                              product: product?[index],
-                            );
-                          }),
-                        )
-                      ],
+                    child: header(),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                      ),
+                      child: ListView(
+                        children: [
+                          Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: List.generate(
+                                (context
+                                            .read<ProductCubit>()
+                                            .state
+                                            .wildProduct
+                                            .data ??
+                                        [])
+                                    .length, (index) {
+                              var product = context
+                                  .read<ProductCubit>()
+                                  .state
+                                  .wildProduct
+                                  .data;
+                              return _ProductPageExtension().bigItemView(
+                                context: context,
+                                product: product?[index],
+                              );
+                            }),
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );

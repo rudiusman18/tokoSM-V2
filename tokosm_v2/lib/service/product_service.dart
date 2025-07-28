@@ -41,7 +41,7 @@ class ProductService {
     }
   }
 
-  Future<ProductModel> getDetailProduct({
+  Future<DetailProductModel> getDetailProduct({
     required String token,
     required String productId,
     required int cabangId,
@@ -59,10 +59,13 @@ class ProductService {
 
     if (response.statusCode >= 200 && response.statusCode <= 299) {
       var data = jsonDecode(response.body);
-      final ProductModel productModel = ProductModel.fromJson(data);
+      final DetailProductModel productModel = DetailProductModel.fromJson(data);
+
+      print("berhasil diambil dengan $data");
       return productModel;
     } else {
       var data = jsonDecode(response.body);
+      print("berhasil diambil dengan error $data");
       throw ("${data['message']}");
     }
   }

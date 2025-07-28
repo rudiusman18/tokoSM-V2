@@ -158,7 +158,7 @@ class DataProduct {
     multisatuanUnit =
         json['multisatuan_unit'] is String ? json['multisatuan_unit'] : null;
     multisatuanJumlahList = (json['multisatuan_jumlah'] is List)
-        ? List<double>.from(json['multisatuan_jumlah'])
+        ? List.from(json['multisatuan_jumlah'])
         : null;
     multisatuanUnitList = (json['multisatuan_unit'] is List)
         ? List<String>.from(json['multisatuan_unit'])
@@ -243,6 +243,24 @@ class DataProduct {
     data['persentase_flashsale'] = persentaseFlashsale;
     data['rating'] = rating;
     data['grosir_produk'] = grosirProduk;
+    return data;
+  }
+}
+
+class DetailProductModel {
+  String? message;
+  DataProduct? data;
+
+  DetailProductModel({this.message, this.data});
+
+  DetailProductModel.fromJson(Map<String, dynamic> json) {
+    message = json['message'];
+    data = json['data'] != null ? DataProduct.fromJson(json['data']) : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['message'] = message;
     return data;
   }
 }

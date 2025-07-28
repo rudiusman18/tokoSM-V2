@@ -17,6 +17,12 @@ class ProductCubit extends Cubit<ProductState> {
         popularProductData: state.popularProduct,
         wildProductData: state.wildProduct,
         productTabIndexData: index,
+        maxPriceFilter: (state as ProductSuccess).maxPriceFilter,
+        minPriceFilter: (state as ProductSuccess).minPriceFilter,
+        selectedCategoryFilter:
+            (state as ProductSuccess).selectedCategoryFilter,
+        selectedPromoFilter: (state as ProductSuccess).selectedPromoFilter,
+        selectedRatingFilter: (state as ProductSuccess).selectedRatingFilter,
       ),
     );
   }
@@ -74,8 +80,6 @@ class ProductCubit extends Cubit<ProductState> {
     String selectedRatingFilter = (state is ProductSuccess)
         ? (state as ProductSuccess).selectedRatingFilter
         : "";
-
-    print("isi search keyword adalah: ${searchKeyword}");
 
     emit(ProductLoading(indexTab));
     try {
@@ -174,6 +178,21 @@ class ProductCubit extends Cubit<ProductState> {
         popularProductData: state.popularProduct,
         wildProductData: state.wildProduct,
         productTabIndexData: state.productTabIndex,
+        maxPriceFilter: state is ProductSuccess
+            ? (state as ProductSuccess).maxPriceFilter
+            : "",
+        minPriceFilter: state is ProductSuccess
+            ? (state as ProductSuccess).minPriceFilter
+            : "",
+        selectedCategoryFilter: state is ProductSuccess
+            ? (state as ProductSuccess).selectedCategoryFilter
+            : "",
+        selectedPromoFilter: state is ProductSuccess
+            ? (state as ProductSuccess).selectedPromoFilter
+            : "",
+        selectedRatingFilter: state is ProductSuccess
+            ? (state as ProductSuccess).selectedRatingFilter
+            : "",
       ),
     );
   }
@@ -224,5 +243,27 @@ class ProductCubit extends Cubit<ProductState> {
         detailProduct: product,
       ),
     );
+  }
+}
+
+class DetailProductCubit extends Cubit<DetailProductState> {
+  DetailProductCubit() : super(DetailProductInitial());
+
+  void getDetailproduct(
+      {required String token,
+      required int cabangId,
+      required String productId}) async {
+    emit(DetailProductLoading());
+    print("productId:${productId}");
+    try {
+      DetailProductModel detailProduct = await ProductService()
+          .getDetailProduct(
+              token: token, productId: productId, cabangId: cabangId);
+      print("detail product ${detailProduct}");
+      emit(DetailProductSuccess(detailProduct));
+    } catch (e) {
+      print("detail product error ${e.toString()}");
+      emit(DetailProductFailure(e.toString()));
+    }
   }
 }

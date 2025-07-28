@@ -33,6 +33,8 @@ class _WishlistPageState extends State<WishlistPage> {
               context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
           sort: tabFilter.first.toLowerCase(),
           page: 1,
+          search: (context.read<ProductCubit>().state as ProductSuccess)
+              .searchkeyword,
           limit: 999999999,
         );
   }
@@ -125,6 +127,9 @@ class _WishlistPageState extends State<WishlistPage> {
                       onTap: () {
                         context.read<WishlistCubit>().setTabIndex(i);
                         context.read<WishlistCubit>().getWishlistProduct(
+                              search: (context.read<ProductCubit>().state
+                                      as ProductSuccess)
+                                  .searchkeyword,
                               token: context
                                       .read<AuthCubit>()
                                       .state
@@ -137,7 +142,9 @@ class _WishlistPageState extends State<WishlistPage> {
                                       .selectedCabangData
                                       .id ??
                                   0,
-                              sort: tabFilter[i].toLowerCase(),
+                              sort: tabFilter.first.toLowerCase(),
+                              page: 1,
+                              limit: 999999999,
                             );
                       },
                       child: Container(
@@ -183,53 +190,60 @@ class _WishlistPageState extends State<WishlistPage> {
     return BlocBuilder<WishlistCubit, WishlistState>(
       builder: (context, state) {
         return Scaffold(
-          body: SafeArea(
-            child: Column(
-              children: [
-                Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                  ),
-                  child: header(),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Expanded(
-                  child: Container(
+          body: RefreshIndicator(
+            color: colorSuccess,
+            onRefresh: () async {
+              initWishlistProduct();
+            },
+            child: SafeArea(
+              child: Column(
+                children: [
+                  Container(
                     margin: const EdgeInsets.symmetric(
                       horizontal: 16,
                     ),
-                    child: ListView(
-                      children: [
-                        Wrap(
-                          spacing: 10,
-                          runSpacing: 10,
-                          children: List.generate(
-                              (context
-                                          .read<WishlistCubit>()
-                                          .state
-                                          .wishlistProduct
-                                          .data ??
-                                      [])
-                                  .length, (index) {
-                            var product = context
-                                .read<WishlistCubit>()
-                                .state
-                                .wishlistProduct
-                                .data;
+                    child: header(),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                      ),
+                      child: ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          Wrap(
+                            spacing: 10,
+                            runSpacing: 10,
+                            children: List.generate(
+                                (context
+                                            .read<WishlistCubit>()
+                                            .state
+                                            .wishlistProduct
+                                            .data ??
+                                        [])
+                                    .length, (index) {
+                              var product = context
+                                  .read<WishlistCubit>()
+                                  .state
+                                  .wishlistProduct
+                                  .data;
 
-                            return _wishlistPageExtension().bigItemView(
-                              context: context,
-                              product: product?[index],
-                            );
-                          }),
-                        )
-                      ],
+                              return _wishlistPageExtension().bigItemView(
+                                context: context,
+                                product: product?[index],
+                              );
+                            }),
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );

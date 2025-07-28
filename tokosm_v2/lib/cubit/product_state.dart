@@ -104,3 +104,29 @@ class ProductFailure extends ProductState {
           productTabIndex: 0,
         );
 }
+
+// NOTE: Detail Product State
+abstract class DetailProductState {
+  final DetailProductModel detailProductModel;
+  DetailProductState({required this.detailProductModel});
+}
+
+final class DetailProductInitial extends DetailProductState {
+  DetailProductInitial() : super(detailProductModel: DetailProductModel());
+}
+
+final class DetailProductLoading extends DetailProductState {
+  DetailProductLoading() : super(detailProductModel: DetailProductModel());
+}
+
+final class DetailProductSuccess extends DetailProductState {
+  final DetailProductModel detailProductData;
+  DetailProductSuccess(this.detailProductData)
+      : super(detailProductModel: detailProductData);
+}
+
+final class DetailProductFailure extends DetailProductState {
+  final String error;
+  DetailProductFailure(this.error)
+      : super(detailProductModel: DetailProductModel());
+}

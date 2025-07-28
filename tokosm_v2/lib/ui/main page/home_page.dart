@@ -570,79 +570,85 @@ class _HomePageState extends State<HomePage> {
         return BlocBuilder<ProductCubit, ProductState>(
           builder: (context, state) {
             return Scaffold(
-              body: SafeArea(
-                child: Column(
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 16,
+              body: RefreshIndicator(
+                color: colorSuccess,
+                onRefresh: () async {
+                  initCabangData();
+                },
+                child: SafeArea(
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                        ),
+                        child: header(),
                       ),
-                      child: header(),
-                    ),
-                    Expanded(
-                      child: ListView(
-                        children: [
-                          Container(
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 16,
+                      Expanded(
+                        child: ListView(
+                          children: [
+                            Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
+                                child: carouselBanner()),
+                            if ((context
+                                        .read<ProductCubit>()
+                                        .state
+                                        .flashSaleProduct
+                                        .data ??
+                                    [])
+                                .isNotEmpty) ...{
+                              const SizedBox(
+                                height: 10,
                               ),
-                              child: carouselBanner()),
-                          if ((context
-                                      .read<ProductCubit>()
-                                      .state
-                                      .flashSaleProduct
-                                      .data ??
-                                  [])
-                              .isNotEmpty) ...{
+                              flashSaleSection(),
+                            },
+                            if ((context
+                                        .read<ProductCubit>()
+                                        .state
+                                        .discountProduct
+                                        .data ??
+                                    [])
+                                .isNotEmpty) ...{
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              discountSection(),
+                            },
+                            if ((context
+                                        .read<ProductCubit>()
+                                        .state
+                                        .promoProduct
+                                        .data ??
+                                    [])
+                                .isNotEmpty) ...{
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              promoSection(),
+                            },
+                            if ((context
+                                        .read<ProductCubit>()
+                                        .state
+                                        .bestSellerProduct
+                                        .data ??
+                                    [])
+                                .isNotEmpty) ...{
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              terlarisSection(),
+                            },
                             const SizedBox(
                               height: 10,
                             ),
-                            flashSaleSection(),
-                          },
-                          if ((context
-                                      .read<ProductCubit>()
-                                      .state
-                                      .discountProduct
-                                      .data ??
-                                  [])
-                              .isNotEmpty) ...{
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            discountSection(),
-                          },
-                          if ((context
-                                      .read<ProductCubit>()
-                                      .state
-                                      .promoProduct
-                                      .data ??
-                                  [])
-                              .isNotEmpty) ...{
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            promoSection(),
-                          },
-                          if ((context
-                                      .read<ProductCubit>()
-                                      .state
-                                      .bestSellerProduct
-                                      .data ??
-                                  [])
-                              .isNotEmpty) ...{
-                            const SizedBox(
-                              height: 10,
-                            ),
-                            terlarisSection(),
-                          },
-                          const SizedBox(
-                            height: 10,
-                          ),
-                          popularSection(),
-                        ],
-                      ),
-                    )
-                  ],
+                            popularSection(),
+                          ],
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             );
