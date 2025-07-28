@@ -36,30 +36,31 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void initState() {
+    context.read<ProductCubit>().setSearchKeyword("");
     initCabangData();
     super.initState();
   }
 
   void initProductData() async {
     context.read<ProductCubit>().getProducts(
-        token: context.read<LoginCubit>().state.loginModel.token ?? "",
+        token: context.read<AuthCubit>().state.loginModel.token ?? "",
         cabangId: context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
         type: 'flashsale');
     context.read<ProductCubit>().getProducts(
-        token: context.read<LoginCubit>().state.loginModel.token ?? "",
+        token: context.read<AuthCubit>().state.loginModel.token ?? "",
         cabangId: context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
         type: 'diskon');
     context.read<ProductCubit>().getProducts(
-        token: context.read<LoginCubit>().state.loginModel.token ?? "",
+        token: context.read<AuthCubit>().state.loginModel.token ?? "",
         cabangId: context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
         type: 'promo');
     context.read<ProductCubit>().getProducts(
-        token: context.read<LoginCubit>().state.loginModel.token ?? "",
+        token: context.read<AuthCubit>().state.loginModel.token ?? "",
         cabangId: context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
         type: 'terlaris',
         sort: 'terlaris');
     context.read<ProductCubit>().getProducts(
-          token: context.read<LoginCubit>().state.loginModel.token ?? "",
+          token: context.read<AuthCubit>().state.loginModel.token ?? "",
           cabangId:
               context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
           type: 'populer',
@@ -70,7 +71,7 @@ class _HomePageState extends State<HomePage> {
 
   void initCabangData() async {
     context.read<CabangCubit>().getCabangData(
-        token: context.read<LoginCubit>().state.loginModel.token ?? "");
+        token: context.read<AuthCubit>().state.loginModel.token ?? "");
   }
 
   @override

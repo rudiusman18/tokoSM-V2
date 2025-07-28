@@ -111,6 +111,33 @@ class Utils {
     );
   }
 
+  void loadingDialog({
+    required BuildContext context,
+  }) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Center(
+          // Ensures the dialog is centered and sized exactly
+          child: Container(
+            width: 60,
+            height: 60,
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const CircularProgressIndicator(
+              color: Colors.green, // replace with colorSuccess if needed
+              strokeWidth: 3,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   String formatTanggal(String input) {
     DateTime dateTime = DateTime.parse(input);
     // Format: 18 April 2025 23:00

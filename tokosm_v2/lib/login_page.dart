@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<LoginCubit, LoginState>(
+    return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is LoginFailure) {
           Utils().scaffoldMessenger(context, state.error);
@@ -111,8 +111,8 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 GestureDetector(
                   onTap: () {
-                    if (context.read<LoginCubit>().state is! LoginLoading) {
-                      context.read<LoginCubit>().postLogin(
+                    if (context.read<AuthCubit>().state is! LoginLoading) {
+                      context.read<AuthCubit>().postLogin(
                           email: emailController.text,
                           password: passwordController.text);
                     }
@@ -125,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                       color: colorSuccess,
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: (context.read<LoginCubit>().state is LoginLoading)
+                    child: (context.read<AuthCubit>().state is LoginLoading)
                         ? const Center(
                             child: CircularProgressIndicator(
                               color: Colors.white,

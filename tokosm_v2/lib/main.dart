@@ -39,7 +39,7 @@ class MainApp extends StatelessWidget {
           create: (context) => PageCubit(),
         ),
         BlocProvider(
-          create: (context) => LoginCubit(),
+          create: (context) => AuthCubit(),
         ),
         BlocProvider(
           create: (context) => WishlistCubit(),

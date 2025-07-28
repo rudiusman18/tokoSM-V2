@@ -21,7 +21,7 @@ class _CategoryPageState extends State<CategoryPage> {
 
   void initCategory() async {
     context.read<CategoryCubit>().getProductCategory(
-        token: context.read<LoginCubit>().state.loginModel.token ?? "");
+        token: context.read<AuthCubit>().state.loginModel.token ?? "");
   }
 
   @override

@@ -22,14 +22,14 @@ class _SplashPageState extends State<SplashPage> {
   void initLogin() async {
     final prefs = await SharedPreferences.getInstance();
     final userCredential = prefs.getString('user credential');
-    context.read<LoginCubit>().postLogin(
+    context.read<AuthCubit>().postLogin(
         email: (userCredential ?? "").split("||").first,
         password: (userCredential ?? "").split("||").last);
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<LoginCubit, LoginState>(
+    return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is LoginFailure) {
           Navigator.pushNamedAndRemoveUntil(

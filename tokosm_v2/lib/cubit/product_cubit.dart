@@ -9,6 +9,7 @@ class ProductCubit extends Cubit<ProductState> {
   void productTabIndex(int index) {
     emit(
       ProductSuccess(
+        searchkeyword: (state as ProductSuccess).searchkeyword,
         flashSaleProductData: state.flashSaleProduct,
         discountProductData: state.discountProduct,
         promoProductData: state.promoProduct,
@@ -74,10 +75,13 @@ class ProductCubit extends Cubit<ProductState> {
         ? (state as ProductSuccess).selectedRatingFilter
         : "";
 
+    print("isi search keyword adalah: ${searchKeyword}");
+
     emit(ProductLoading(indexTab));
     try {
       ProductModel productModel = await ProductService().getProduct(
         token: token,
+        search: searchKeyword,
         cabangId: cabangId,
         cat: category,
         maxprice: maxprice,
@@ -122,6 +126,7 @@ class ProductCubit extends Cubit<ProductState> {
     try {
       ProductModel productModel = await ProductService().getProduct(
         token: token,
+        search: "",
         cabangId: cabangId,
         type: type,
         page: page,

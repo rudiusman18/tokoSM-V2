@@ -16,6 +16,7 @@ class WishlistCubit extends Cubit<WishlistState> {
     required String token,
     required int cabangId,
     required String sort,
+    String search = "",
     int page = 1,
     int limit = 10,
   }) async {
@@ -25,6 +26,7 @@ class WishlistCubit extends Cubit<WishlistState> {
         token: token,
         cabangId: cabangId,
         sort: sort,
+        search: search,
         page: page,
         limit: limit,
       );

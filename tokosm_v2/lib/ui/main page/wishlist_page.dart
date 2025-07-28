@@ -17,19 +17,23 @@ class WishlistPage extends StatefulWidget {
 
 class _WishlistPageState extends State<WishlistPage> {
   var tabFilter = ["Terbaru", "Terlaris", "Termahal", "Termurah"];
+  TextEditingController searchController = TextEditingController(text: "");
 
   @override
   void initState() {
+    context.read<ProductCubit>().setSearchKeyword("");
     initWishlistProduct();
     super.initState();
   }
 
   void initWishlistProduct() async {
     context.read<WishlistCubit>().getWishlistProduct(
-          token: context.read<LoginCubit>().state.loginModel.token ?? "",
+          token: context.read<AuthCubit>().state.loginModel.token ?? "",
           cabangId:
               context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
           sort: tabFilter.first.toLowerCase(),
+          page: 1,
+          limit: 999999999,
         );
   }
 
@@ -74,6 +78,30 @@ class _WishlistPageState extends State<WishlistPage> {
                         left: 10,
                       ),
                       child: TextFormField(
+                        onFieldSubmitted: (value) {
+                          context.read<ProductCubit>().setSearchKeyword(value);
+                          context.read<WishlistCubit>().getWishlistProduct(
+                                search: (context.read<ProductCubit>().state
+                                        as ProductSuccess)
+                                    .searchkeyword,
+                                token: context
+                                        .read<AuthCubit>()
+                                        .state
+                                        .loginModel
+                                        .token ??
+                                    "",
+                                cabangId: context
+                                        .read<CabangCubit>()
+                                        .state
+                                        .selectedCabangData
+                                        .id ??
+                                    0,
+                                sort: tabFilter.first.toLowerCase(),
+                                page: 1,
+                                limit: 999999999,
+                              );
+                        },
+                        controller: searchController,
                         style: const TextStyle(fontSize: 12),
                         decoration: const InputDecoration.collapsed(
                           hintText: "Cari Produk",
@@ -98,7 +126,7 @@ class _WishlistPageState extends State<WishlistPage> {
                         context.read<WishlistCubit>().setTabIndex(i);
                         context.read<WishlistCubit>().getWishlistProduct(
                               token: context
-                                      .read<LoginCubit>()
+                                      .read<AuthCubit>()
                                       .state
                                       .loginModel
                                       .token ??
@@ -427,5 +455,4 @@ class _wishlistPageExtension {
       ),
     );
   }
-
 }

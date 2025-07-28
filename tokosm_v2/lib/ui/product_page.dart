@@ -32,7 +32,7 @@ class _ProductPageState extends State<ProductPage> {
   void initProductData() async {
     context.read<ProductCubit>().productTabIndex(0);
     context.read<ProductCubit>().getAllProduct(
-          token: context.read<LoginCubit>().state.loginModel.token ?? "",
+          token: context.read<AuthCubit>().state.loginModel.token ?? "",
           cabangId:
               context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
           type: '',
@@ -87,6 +87,29 @@ class _ProductPageState extends State<ProductPage> {
                               left: 10,
                             ),
                             child: TextFormField(
+                              onFieldSubmitted: (value) {
+                                context
+                                    .read<ProductCubit>()
+                                    .setSearchKeyword(value);
+                                context.read<ProductCubit>().getAllProduct(
+                                      token: context
+                                              .read<AuthCubit>()
+                                              .state
+                                              .loginModel
+                                              .token ??
+                                          "",
+                                      cabangId: context
+                                              .read<CabangCubit>()
+                                              .state
+                                              .selectedCabangData
+                                              .id ??
+                                          0,
+                                      type: '',
+                                      sort: tabFilter.first.toLowerCase(),
+                                      page: 1,
+                                      limit: 999999999,
+                                    );
+                              },
                               style: const TextStyle(fontSize: 12),
                               controller: searchController,
                               decoration: const InputDecoration.collapsed(
@@ -138,7 +161,7 @@ class _ProductPageState extends State<ProductPage> {
                         context.read<ProductCubit>().productTabIndex(i);
                         context.read<ProductCubit>().getAllProduct(
                               token: context
-                                      .read<LoginCubit>()
+                                      .read<AuthCubit>()
                                       .state
                                       .loginModel
                                       .token ??
@@ -491,7 +514,7 @@ class _ProductPageExtension {
     required String sortBy,
   }) {
     context.read<CategoryCubit>().getProductCategory(
-          token: context.read<LoginCubit>().state.loginModel.token ?? "",
+          token: context.read<AuthCubit>().state.loginModel.token ?? "",
           filter: 'populer',
           selectedCategory: (context.read<ProductCubit>().state
                           as ProductSuccess)
@@ -609,7 +632,7 @@ class _ProductPageExtension {
                                               .read<CategoryCubit>()
                                               .getProductCategory(
                                                   token: context
-                                                          .read<LoginCubit>()
+                                                          .read<AuthCubit>()
                                                           .state
                                                           .loginModel
                                                           .token ??
@@ -931,7 +954,7 @@ class _ProductPageExtension {
                                         );
                                     context.read<ProductCubit>().getAllProduct(
                                           token: context
-                                                  .read<LoginCubit>()
+                                                  .read<AuthCubit>()
                                                   .state
                                                   .loginModel
                                                   .token ??
@@ -989,7 +1012,7 @@ class _ProductPageExtension {
 
                                     context.read<ProductCubit>().getAllProduct(
                                           token: context
-                                                  .read<LoginCubit>()
+                                                  .read<AuthCubit>()
                                                   .state
                                                   .loginModel
                                                   .token ??
@@ -1083,7 +1106,7 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
   @override
   void initState() {
     context.read<CategoryCubit>().getProductCategory(
-        token: context.read<LoginCubit>().state.loginModel.token ?? "",
+        token: context.read<AuthCubit>().state.loginModel.token ?? "",
         filter: "all");
 
     newSelectedCategory = widget.selectedCategory;

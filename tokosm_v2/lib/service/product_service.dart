@@ -7,6 +7,7 @@ import 'package:tokosm_v2/shared/utils.dart';
 class ProductService {
   Future<ProductModel> getProduct({
     required String token,
+    required String search,
     required int cabangId,
     required String type,
     required String sort,
@@ -18,7 +19,8 @@ class ProductService {
     int limit = 10,
   }) async {
     var url = Uri.parse(
-        "$baseURL/produk?cabang=$cabangId&type=$type&page=$page&limit=$limit&sort=$sort&cat=$cat&minrating=$minrating&minprice=$minprice&maxprice=$maxprice");
+      "$baseURL/produk?cabang=$cabangId&type=$type&page=$page&limit=$limit&sort=$sort&cat=$cat&minrating=$minrating&minprice=$minprice&maxprice=$maxprice&q=$search",
+    );
     var header = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
@@ -69,11 +71,12 @@ class ProductService {
     required String token,
     required int cabangId,
     required String sort,
+    String search = "",
     int page = 1,
     limit = 10,
   }) async {
     var url = Uri.parse(
-        "$baseURL/favorit?cabang=$cabangId&page=$page&limit=$limit&sort=$sort");
+        "$baseURL/favorit?cabang=$cabangId&page=$page&limit=$limit&sort=$sort&q=$search");
     var header = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
