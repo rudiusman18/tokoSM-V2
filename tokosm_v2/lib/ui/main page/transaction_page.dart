@@ -6,6 +6,7 @@ import 'package:tokosm_v2/cubit/login_cubit.dart';
 import 'package:tokosm_v2/cubit/transaction_cubit.dart';
 import 'package:tokosm_v2/model/transaction_model.dart';
 import 'package:tokosm_v2/shared/themes.dart';
+import 'package:tokosm_v2/shared/utils.dart';
 
 class TransactionPage extends StatefulWidget {
   const TransactionPage({super.key});
@@ -26,10 +27,15 @@ class _TransactionPageState extends State<TransactionPage> {
     "Dikembalikan",
   ];
 
+  var isEnableLoading = true;
+
   @override
   void initState() {
-    initTransactionData();
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      initTransactionData(); // Panggil juga di sini kalau perlu context
+    });
   }
 
   void initTransactionData() {
@@ -152,7 +158,19 @@ class _TransactionPageState extends State<TransactionPage> {
       );
     }
 
-    return BlocBuilder<TransactionCubit, TransactionState>(
+    return BlocConsumer<TransactionCubit, TransactionState>(
+      listener: (context, state) {
+        if (state is TransactionLoading) {
+          Utils().loadingDialog(context: context);
+          isEnableLoading = true;
+        }
+        if (state is TransactionSuccess) {
+          if (isEnableLoading) {
+            isEnableLoading = false;
+            Navigator.pop(context);
+          }
+        }
+      },
       builder: (context, state) {
         return Scaffold(
           body: SafeArea(
@@ -165,34 +183,63 @@ class _TransactionPageState extends State<TransactionPage> {
                 height: 10,
               ),
               Expanded(
-                child: ListView(
-                  children: [
-                    for (var i = 0;
-                        i <
-                            (context
-                                        .read<TransactionCubit>()
-                                        .state
-                                        .transactionModel
-                                        ?.data ??
-                                    [])
-                                .length;
-                        i++) ...{
-                      _TransactionPageExtension().transactionItemView(
-                        context: context,
-                        transactionModel: context
+                child: (context
                                 .read<TransactionCubit>()
                                 .state
                                 .transactionModel
-                                ?.data?[i] ??
-                            TransactionData(),
+                                ?.data ??
+                            [])
+                        .isEmpty
+                    ? const Center(
+                        child: Text(
+                          "Data tidak ditemukan",
+                        ),
+                      )
+                    : ListView(
+                        children: [
+                          for (var i = 0;
+                              i <
+                                  (context
+                                              .read<TransactionCubit>()
+                                              .state
+                                              .transactionModel
+                                              ?.data ??
+                                          [])
+                                      .length;
+                              i++) ...{
+                            GestureDetector(
+                              onTap: () {
+                                context
+                                    .read<TransactionCubit>()
+                                    .selectTransaction(
+                                      transaction: context
+                                              .read<TransactionCubit>()
+                                              .state
+                                              .transactionModel
+                                              ?.data?[i] ??
+                                          TransactionData(),
+                                    );
+                                Navigator.pushNamed(
+                                    context, 'transaction/detail-transaction');
+                              },
+                              child: _TransactionPageExtension()
+                                  .transactionItemView(
+                                context: context,
+                                transactionModel: context
+                                        .read<TransactionCubit>()
+                                        .state
+                                        .transactionModel
+                                        ?.data?[i] ??
+                                    TransactionData(),
+                              ),
+                            ),
+                          },
+                          Container(
+                            height: 5,
+                            color: greyBase300,
+                          ),
+                        ],
                       ),
-                    },
-                    Container(
-                      height: 5,
-                      color: greyBase300,
-                    ),
-                  ],
-                ),
               ),
             ],
           )),
@@ -207,152 +254,190 @@ class _TransactionPageExtension {
     required BuildContext context,
     required TransactionData transactionModel,
   }) {
-    return Column(
-      spacing: 10,
-      children: [
-        Container(
-          height: 5,
-          color: greyBase300,
-        ),
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 10,
-            children: [
-              Row(
-                spacing: 5,
-                children: [
-                  const Icon(
-                    SolarIconsOutline.shopMinimalistic,
-                    size: 18,
-                  ),
-                  Text(
-                    "Cabang ${transactionModel.namaCabang ?? "-"}",
-                    style: TextStyle(
-                      fontWeight: bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                  Text(
-                    transactionModel.tglJatuhTempo ?? "",
-                    style: const TextStyle(
-                      fontSize: 10,
-                    ),
-                  ),
-                  const Spacer(),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorError.withAlpha(50),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Text(
-                      transactionModel.keteranganStatus ??
-                          "Status tidak ditemukan",
-                      style: TextStyle(
-                        color: colorError,
-                        fontSize: 12,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                spacing: 5,
-                children: [
-                  Container(
-                    height: 48,
-                    width: 48,
-                    decoration: BoxDecoration(
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          transactionModel.namaProduk?.first ?? "-",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: bold,
-                          ),
-                        ),
-                        const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "Rp Belum ada harganya",
-                              style: TextStyle(fontSize: 12),
-                            ),
-                            Text(
-                              "x Belum jumlah satuannya",
-                              style: TextStyle(fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              (transactionModel.jumlahProduk ?? 0) - 1 < 1
-                  ? const SizedBox()
-                  : Text(
-                      "+${(transactionModel.jumlahProduk ?? 0) - 1} produk lainnya",
-                      style: const TextStyle(fontSize: 12),
-                    ),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  RichText(
-                    text: TextSpan(
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                      ), // default style
-                      children: [
-                        TextSpan(
-                            text:
-                                'Total (${transactionModel.jumlahProduk} Produk): '),
-                        TextSpan(
-                          text: 'Rp ${transactionModel.total}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colorSuccess,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: const Text(
-                      "Bayar",
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ],
+    return Container(
+      color: Colors.transparent,
+      child: Column(
+        spacing: 10,
+        children: [
+          Container(
+            height: 5,
+            color: greyBase300,
           ),
-        ),
-        const SizedBox()
-      ],
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 10,
+              children: [
+                Row(
+                  spacing: 5,
+                  children: [
+                    const Icon(
+                      SolarIconsOutline.shopMinimalistic,
+                      size: 18,
+                    ),
+                    Text(
+                      "Cabang ${transactionModel.namaCabang ?? "-"}",
+                      style: TextStyle(
+                        fontWeight: bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                    Text(
+                      (transactionModel.tglJatuhTempo ?? "") != ""
+                          ? Utils().formatTanggal(
+                              transactionModel.tglJatuhTempo ?? "")
+                          : "",
+                      style: const TextStyle(
+                        fontSize: 10,
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color:
+                            transactionModel.keteranganStatus?.toLowerCase() ==
+                                    'belum dibayar'
+                                ? colorError.withAlpha(50)
+                                : transactionModel.keteranganStatus
+                                            ?.toLowerCase() ==
+                                        'diproses'
+                                    ? colorWarning.withAlpha(50)
+                                    : transactionModel.keteranganStatus
+                                                ?.toLowerCase() ==
+                                            'dikirim'
+                                        ? colorInfo.withAlpha(50)
+                                        : transactionModel.keteranganStatus
+                                                    ?.toLowerCase() ==
+                                                'selesai'
+                                            ? colorSuccess.withAlpha(50)
+                                            : colorError.withAlpha(50),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Text(
+                        transactionModel.keteranganStatus ??
+                            "Status tidak ditemukan",
+                        style: TextStyle(
+                          color: transactionModel.keteranganStatus
+                                      ?.toLowerCase() ==
+                                  'belum dibayar'
+                              ? colorError
+                              : transactionModel.keteranganStatus
+                                          ?.toLowerCase() ==
+                                      'diproses'
+                                  ? Colors.orange
+                                  : transactionModel.keteranganStatus
+                                              ?.toLowerCase() ==
+                                          'dikirim'
+                                      ? colorInfo
+                                      : transactionModel.keteranganStatus
+                                                  ?.toLowerCase() ==
+                                              'selesai'
+                                          ? colorSuccess
+                                          : colorError,
+                          fontSize: 12,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  spacing: 5,
+                  children: [
+                    Container(
+                      height: 48,
+                      width: 48,
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            transactionModel.namaProduk?.first ?? "-",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: bold,
+                            ),
+                          ),
+                          const Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Rp Belum ada harganya",
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              Text(
+                                "x Belum jumlah satuannya",
+                                style: TextStyle(fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                (transactionModel.jumlahProduk ?? 0) - 1 < 1
+                    ? const SizedBox()
+                    : Text(
+                        "+${(transactionModel.jumlahProduk ?? 0) - 1} produk lainnya",
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 14,
+                        ), // default style
+                        children: [
+                          TextSpan(
+                              text:
+                                  'Total (${transactionModel.jumlahProduk} Produk): '),
+                          TextSpan(
+                            text: 'Rp ${transactionModel.total}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      decoration: BoxDecoration(
+                        color: colorSuccess,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: const Text(
+                        "Bayar",
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox()
+        ],
+      ),
     );
   }
 }

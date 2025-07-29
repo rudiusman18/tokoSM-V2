@@ -16,6 +16,7 @@ import 'package:tokosm_v2/ui/product%20page/detail_product_page.dart';
 import 'package:tokosm_v2/ui/product_page.dart';
 import 'package:tokosm_v2/ui/setting_page.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:tokosm_v2/ui/transaction%20page/detail_transaction_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // jika di Flutter
@@ -59,6 +60,9 @@ class MainApp extends StatelessWidget {
         BlocProvider(
           create: (context) => CabangCubit(),
         ),
+        BlocProvider(
+          create: (context) => DetailTransactionCubit(),
+        ),
       ],
       child: MaterialApp(
         onGenerateRoute: (RouteSettings settings) {
@@ -92,6 +96,14 @@ class MainApp extends StatelessWidget {
                 type: PageTransitionType.rightToLeft,
                 childCurrent: context.currentRoute,
                 child: const DetailProductPage(),
+                settings: settings,
+              );
+
+            case 'transaction/detail-transaction':
+              return PageTransition(
+                type: PageTransitionType.rightToLeft,
+                childCurrent: context.currentRoute,
+                child: const DetailTransactionPage(),
                 settings: settings,
               );
 

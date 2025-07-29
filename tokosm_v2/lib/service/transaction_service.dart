@@ -30,9 +30,38 @@ class TransactionService {
 
     if (response.statusCode >= 200 && response.statusCode <= 299) {
       var data = jsonDecode(response.body);
-      final TransactionModel productModel = TransactionModel.fromJson(data);
+      final TransactionModel transactionModel = TransactionModel.fromJson(data);
 
-      return productModel;
+      return transactionModel;
+    } else {
+      var data = jsonDecode(response.body);
+      throw ("${data['message']}");
+    }
+  }
+
+  Future<TransactionModel> getDetailTransaction({
+    required String token,
+    required String noInvoice,
+  }) async {
+    var url = Uri.parse(
+      "$baseURL/transaksi/detail/$noInvoice",
+    );
+
+    var header = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    var response = await http.get(
+      url,
+      headers: header,
+    );
+
+    if (response.statusCode >= 200 && response.statusCode <= 299) {
+      var data = jsonDecode(response.body);
+      final TransactionModel transactionModel = TransactionModel.fromJson(data);
+
+      return transactionModel;
     } else {
       var data = jsonDecode(response.body);
       throw ("${data['message']}");

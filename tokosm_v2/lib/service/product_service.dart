@@ -61,11 +61,9 @@ class ProductService {
       var data = jsonDecode(response.body);
       final DetailProductModel productModel = DetailProductModel.fromJson(data);
 
-      print("berhasil diambil dengan $data");
       return productModel;
     } else {
       var data = jsonDecode(response.body);
-      print("berhasil diambil dengan error $data");
       throw ("${data['message']}");
     }
   }

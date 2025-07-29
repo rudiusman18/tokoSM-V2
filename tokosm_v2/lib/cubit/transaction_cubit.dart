@@ -34,4 +34,33 @@ class TransactionCubit extends Cubit<TransactionState> {
       emit(TransactionFailure(state.transactionTabIndex, e.toString()));
     }
   }
+
+  void selectTransaction({required TransactionData transaction}) {
+    emit(TransactionSuccess(
+      tabIndex: state.transactionTabIndex,
+      transactionModelData: state.transactionModel,
+      selectedTransactionData: transaction,
+    ));
+  }
+}
+
+class DetailTransactionCubit extends Cubit<DetailTransactionState> {
+  DetailTransactionCubit() : super(DetailTransactionInitial());
+
+  void getDetailTransactionData(
+      {required String token, required String noInvoice}) async {
+    emit(DetailTransactionLoading());
+    try {
+      TransactionModel detailTransaction = await TransactionService()
+          .getDetailTransaction(token: token, noInvoice: noInvoice);
+
+      emit(
+        DetailTransactionSuccess(
+          detailTransaction,
+        ),
+      );
+    } catch (e) {
+      emit(DetailTransactionFailure(e.toString()));
+    }
+  }
 }

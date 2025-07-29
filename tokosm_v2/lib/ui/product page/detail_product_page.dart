@@ -18,6 +18,7 @@ class DetailProductPage extends StatefulWidget {
 
 class _DetailProductPageState extends State<DetailProductPage> {
   DetailProductModel detailProductModel = DetailProductModel();
+  TextEditingController searchController = TextEditingController(text: "");
 
   bool enableLoading = false;
 
@@ -80,6 +81,16 @@ class _DetailProductPageState extends State<DetailProductPage> {
                           left: 10,
                         ),
                         child: TextFormField(
+                          controller: searchController,
+                          onFieldSubmitted: (value) {
+                            if (value != "") {
+                              context
+                                  .read<ProductCubit>()
+                                  .setSearchKeyword(searchController.text);
+                              searchController.text = "";
+                              Navigator.pushNamed(context, 'product-page');
+                            }
+                          },
                           style: const TextStyle(fontSize: 12),
                           decoration: const InputDecoration.collapsed(
                             hintText: "Cari Produk",
@@ -122,7 +133,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
             (context.read<ProductCubit>().state as ProductSuccess)
                 .detailProduct ??
             DataProduct();
-            
+
         return Scaffold(
           body: RefreshIndicator(
             color: colorSuccess,
