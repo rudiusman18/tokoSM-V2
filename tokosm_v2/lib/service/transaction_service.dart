@@ -11,11 +11,12 @@ class TransactionService {
     required String token,
     required String cabangId,
     required String status,
+    required String search,
     int page = 1,
     int limit = 10,
   }) async {
     var url = Uri.parse(
-      "$baseURL/transaksi?cabang=$cabangId&status=$status&page=$page&limit=$limit",
+      "$baseURL/transaksi?cabang=$cabangId&status=$status&q=$search&page=$page&limit=$limit",
     );
 
     var header = {

@@ -149,12 +149,12 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                                               .detailTransactionModel
                                               ?.data
                                               ?.first
-                                              .tglJatuhTempo ??
+                                              .createdAt ??
                                           "") ==
                                       ""
                                   ? "Tidak ada data"
                                   : Utils().formatTanggal(
-                                      "${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.tglJatuhTempo}",
+                                      "${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.createdAt}",
                                     ),
                             ),
                             _DetailTransactionPageExtension().itemView(
@@ -212,7 +212,14 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                             ),
                             _DetailTransactionPageExtension().itemView(
                               title: "Batas Pembayaran",
-                              value: "batas pembayaran tidak ada",
+                              value: context
+                                      .read<DetailTransactionCubit>()
+                                      .state
+                                      .detailTransactionModel
+                                      ?.data
+                                      ?.first
+                                      .tglJatuhTempo ??
+                                  "-",
                             ),
                           ],
                         ),
@@ -229,79 +236,312 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                       const SizedBox(
                         height: 10,
                       ),
-                      // NOTE: Info Pengiriman
+                      if ((context
+                                  .read<DetailTransactionCubit>()
+                                  .state
+                                  .detailTransactionModel
+                                  ?.data
+                                  ?.first
+                                  .pengiriman
+                                  ?.kurir ??
+                              "") !=
+                          "") ...{
+                        // NOTE: Info Pengiriman
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                          ),
+                          child: Column(
+                            spacing: 5,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "info Pengiriman",
+                                style: TextStyle(
+                                  fontWeight: bold,
+                                ),
+                              ),
+                              _DetailTransactionPageExtension().itemView(
+                                title: "Kurir",
+                                value: context
+                                        .read<DetailTransactionCubit>()
+                                        .state
+                                        .detailTransactionModel
+                                        ?.data
+                                        ?.first
+                                        .pengiriman
+                                        ?.kurir ??
+                                    "",
+                              ),
+                              Row(
+                                spacing: 5,
+                                children: [
+                                  Expanded(
+                                    child: _DetailTransactionPageExtension()
+                                        .itemView(
+                                      title: "no Resi",
+                                      value: context
+                                              .read<DetailTransactionCubit>()
+                                              .state
+                                              .detailTransactionModel
+                                              ?.data
+                                              ?.first
+                                              .pengiriman
+                                              ?.noresi ??
+                                          "",
+                                    ),
+                                  ),
+                                  const Icon(
+                                    SolarIconsOutline.copy,
+                                    size: 14,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+
+                        Container(
+                          height: 5,
+                          width: double.infinity,
+                          color: greyBase300,
+                        ),
+                        // ignore: equal_elements_in_set
+                        const SizedBox(
+                          height: 10,
+                        ),
+
+                        // NOTE: Alamat Pengiriman
+                        Container(
+                          margin: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            spacing: 5,
+                            children: [
+                              Text(
+                                "Alamat Pengiriman",
+                                style: TextStyle(
+                                  fontWeight: bold,
+                                ),
+                              ),
+                              _DetailTransactionPageExtension().addressItemView(
+                                transaction: context
+                                        .read<DetailTransactionCubit>()
+                                        .state
+                                        .detailTransactionModel
+                                        ?.data
+                                        ?.first ??
+                                    TransactionData(),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // ignore: equal_elements_in_set
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Container(
+                          height: 5,
+                          width: double.infinity,
+                          color: greyBase300,
+                        ),
+                        // ignore: equal_elements_in_set
+                        const SizedBox(
+                          height: 10,
+                        ),
+                      },
+
+                      //NOTE: Produk dan cabangnya
                       Container(
                         margin: const EdgeInsets.symmetric(
                           horizontal: 16,
                         ),
                         child: Column(
+                          spacing: 10,
+                          children: [
+                            Row(
+                              spacing: 5,
+                              children: [
+                                const Icon(
+                                  SolarIconsOutline.shopMinimalistic,
+                                  size: 18,
+                                ),
+                                Text(
+                                  "Cabang ${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.namaCabang ?? "-"}",
+                                  style: TextStyle(
+                                    fontWeight: bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                Text(
+                                  (context
+                                                  .read<
+                                                      DetailTransactionCubit>()
+                                                  .state
+                                                  .detailTransactionModel
+                                                  ?.data
+                                                  ?.first
+                                                  .createdAt ??
+                                              "") !=
+                                          ""
+                                      ? Utils().formatTanggal(context
+                                              .read<DetailTransactionCubit>()
+                                              .state
+                                              .detailTransactionModel
+                                              ?.data
+                                              ?.first
+                                              .createdAt ??
+                                          "")
+                                      : "",
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            for (var index = 0;
+                                index <
+                                    (context
+                                                .read<DetailTransactionCubit>()
+                                                .state
+                                                .detailTransactionModel
+                                                ?.data
+                                                ?.first
+                                                .produk ??
+                                            [])
+                                        .length;
+                                index++)
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                spacing: 5,
+                                children: [
+                                  Container(
+                                    height: 48,
+                                    width: 48,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey,
+                                      image: DecorationImage(
+                                          image: NetworkImage(context
+                                                  .read<
+                                                      DetailTransactionCubit>()
+                                                  .state
+                                                  .detailTransactionModel
+                                                  ?.data
+                                                  ?.first
+                                                  .produk?[index]
+                                                  .gambarProduk ??
+                                              "")),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          context
+                                                  .read<
+                                                      DetailTransactionCubit>()
+                                                  .state
+                                                  .detailTransactionModel
+                                                  ?.data
+                                                  ?.first
+                                                  .produk?[index]
+                                                  .namaProduk ??
+                                              "-",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: bold,
+                                          ),
+                                        ),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                "Rp ${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.produk?[index].hargaProduk ?? ""}",
+                                                style: const TextStyle(
+                                                    fontSize: 12),
+                                              ),
+                                            ),
+                                            Text(
+                                              "x ${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.produk?[index].jumlah ?? ""}",
+                                              style:
+                                                  const TextStyle(fontSize: 12),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(
+                        height: 10,
+                      ),
+
+                      Container(
+                        height: 5,
+                        width: double.infinity,
+                        color: greyBase300,
+                      ),
+                      // ignore: equal_elements_in_set
+                      const SizedBox(
+                        height: 10,
+                      ),
+
+                      //NOTE: rincian pembayaran
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
                           spacing: 5,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "info Pengiriman",
+                              "Rincian Pembayaran",
                               style: TextStyle(
                                 fontWeight: bold,
                               ),
                             ),
                             _DetailTransactionPageExtension().itemView(
-                              title: "Kurir",
-                              value: "kurir tidak ditemukan",
-                            ),
+                                title: "Total harga",
+                                value:
+                                    "Rp ${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.subtotal ?? 0}"),
+                            _DetailTransactionPageExtension().itemView(
+                                title: "Total Ongkos Kirim",
+                                value:
+                                    "Rp ${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.totalOngkosKirim ?? 0}"),
+                            _DetailTransactionPageExtension().itemView(
+                                title: "Total Diskon",
+                                value:
+                                    "Rp ${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.totalDiskon ?? 0}"),
                             Row(
-                              spacing: 5,
                               children: [
                                 Expanded(
-                                  child: _DetailTransactionPageExtension()
-                                      .itemView(
-                                    title: "no Resi",
-                                    value: "Resi tidak ditemukan",
+                                  child: Text(
+                                    "Total Pesanan",
+                                    style: TextStyle(
+                                      fontWeight: bold,
+                                    ),
                                   ),
                                 ),
-                                const Icon(
-                                  SolarIconsOutline.copy,
-                                  size: 14,
+                                Text(
+                                  "Rp ${(context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.total ?? 0)}",
+                                  style: TextStyle(
+                                    fontWeight: bold,
+                                  ),
                                 ),
                               ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Container(
-                        height: 5,
-                        width: double.infinity,
-                        color: greyBase300,
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-
-                      // NOTE: Alamat Pengiriman
-                      Container(
-                        margin: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          spacing: 5,
-                          children: [
-                            Text(
-                              "Alamat Pengiriman",
-                              style: TextStyle(
-                                fontWeight: bold,
-                              ),
-                            ),
-                            _DetailTransactionPageExtension().addressItemView(
-                              transaction: context
-                                      .read<DetailTransactionCubit>()
-                                      .state
-                                      .detailTransactionModel
-                                      ?.data
-                                      ?.first ??
-                                  TransactionData(),
                             ),
                           ],
                         ),

@@ -18,13 +18,21 @@ class TransactionCubit extends Cubit<TransactionState> {
     required String token,
     required String status,
     required String cabangId,
+    required String search,
     required int page,
     required int limit,
   }) async {
     emit(TransactionLoading(state.transactionTabIndex));
     try {
-      TransactionModel transactionModel = await TransactionService()
-          .getTransaction(token: token, cabangId: cabangId, status: status);
+      TransactionModel transactionModel =
+          await TransactionService().getTransaction(
+        token: token,
+        cabangId: cabangId,
+        status: status,
+        search: search,
+        page: page,
+        limit: limit,
+      );
 
       emit(TransactionSuccess(
         tabIndex: state.transactionTabIndex,

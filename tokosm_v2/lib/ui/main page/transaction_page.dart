@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:tokosm_v2/cubit/cabang_cubit.dart';
 import 'package:tokosm_v2/cubit/login_cubit.dart';
+import 'package:tokosm_v2/cubit/product_cubit.dart';
 import 'package:tokosm_v2/cubit/transaction_cubit.dart';
 import 'package:tokosm_v2/model/transaction_model.dart';
 import 'package:tokosm_v2/shared/themes.dart';
@@ -27,10 +28,13 @@ class _TransactionPageState extends State<TransactionPage> {
     "Dikembalikan",
   ];
 
+  TextEditingController searchController = TextEditingController(text: "");
+
   var isEnableLoading = true;
 
   @override
   void initState() {
+    context.read<ProductCubit>().setSearchKeyword("");
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -45,6 +49,8 @@ class _TransactionPageState extends State<TransactionPage> {
               "${(context.read<TransactionCubit>().state.transactionTabIndex - 1) == -1 ? "" : context.read<TransactionCubit>().state.transactionTabIndex - 1}",
           cabangId:
               "${context.read<CabangCubit>().state.selectedCabangData.id ?? 0}",
+          search: (context.read<ProductCubit>().state as ProductSuccess)
+              .searchkeyword,
           page: 1,
           limit: 999999999,
         );
@@ -85,6 +91,13 @@ class _TransactionPageState extends State<TransactionPage> {
                               left: 10,
                             ),
                             child: TextFormField(
+                              controller: searchController,
+                              onFieldSubmitted: (value) {
+                                context
+                                    .read<ProductCubit>()
+                                    .setSearchKeyword(value);
+                                initTransactionData();
+                              },
                               style: const TextStyle(fontSize: 12),
                               decoration: const InputDecoration.collapsed(
                                 hintText: "Cari Transaksi",
@@ -284,9 +297,9 @@ class _TransactionPageExtension {
                       ),
                     ),
                     Text(
-                      (transactionModel.tglJatuhTempo ?? "") != ""
-                          ? Utils().formatTanggal(
-                              transactionModel.tglJatuhTempo ?? "")
+                      (transactionModel.createdAt ?? "") != ""
+                          ? Utils()
+                              .formatTanggal(transactionModel.createdAt ?? "")
                           : "",
                       style: const TextStyle(
                         fontSize: 10,
@@ -353,6 +366,10 @@ class _TransactionPageExtension {
                       width: 48,
                       decoration: BoxDecoration(
                         color: Colors.grey,
+                        image: DecorationImage(
+                            image: NetworkImage(
+                                transactionModel.produk?.first.gambarProduk ??
+                                    "")),
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
@@ -367,16 +384,16 @@ class _TransactionPageExtension {
                               fontWeight: bold,
                             ),
                           ),
-                          const Row(
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "Rp Belum ada harganya",
-                                style: TextStyle(fontSize: 12),
+                                "Rp ${transactionModel.produk?.first.hargaProduk ?? ""}",
+                                style: const TextStyle(fontSize: 12),
                               ),
                               Text(
-                                "x Belum jumlah satuannya",
-                                style: TextStyle(fontSize: 12),
+                                "x ${transactionModel.produk?.first.jumlah ?? ""}",
+                                style: const TextStyle(fontSize: 12),
                               ),
                             ],
                           ),
@@ -423,9 +440,24 @@ class _TransactionPageExtension {
                         color: colorSuccess,
                         borderRadius: BorderRadius.circular(5),
                       ),
-                      child: const Text(
-                        "Bayar",
-                        style: TextStyle(
+                      child: Text(
+                        transactionModel.keteranganStatus?.toLowerCase() ==
+                                'belum dibayar'
+                            ? "Bayar"
+                            : transactionModel.keteranganStatus
+                                        ?.toLowerCase() ==
+                                    'diproses'
+                                ? "Detail"
+                                : transactionModel.keteranganStatus
+                                            ?.toLowerCase() ==
+                                        'dikirim'
+                                    ? "Lacak"
+                                    : transactionModel.keteranganStatus
+                                                ?.toLowerCase() ==
+                                            'selesai'
+                                        ? "Beli Lagi"
+                                        : "Bayar",
+                        style: const TextStyle(
                           color: Colors.white,
                         ),
                       ),

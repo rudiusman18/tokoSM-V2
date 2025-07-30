@@ -286,6 +286,8 @@ class Pengiriman {
   String? telpPenerima;
   String? alamatLengkap;
   String? catatan;
+  String? kurir;
+  String? noresi;
   double? lat;
   double? lng;
 
@@ -294,6 +296,8 @@ class Pengiriman {
     telpPenerima = json['telp_penerima'];
     alamatLengkap = json['alamat_lengkap'];
     catatan = json['catatan'];
+    kurir = json['kurir'];
+    noresi = json['no_resi'];
     lat = (json['lat'] is int) ? (json['lat'] as int).toDouble() : json['lat'];
     lng = (json['lng'] is int) ? (json['lng'] as int).toDouble() : json['lng'];
   }
@@ -306,6 +310,8 @@ class Pengiriman {
       'catatan': catatan,
       'lat': lat,
       'lng': lng,
+      'kurir': kurir,
+      'no_resi': noresi,
     };
   }
 }
