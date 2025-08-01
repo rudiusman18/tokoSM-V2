@@ -8,7 +8,9 @@ class AuthService {
   Future<LoginModel> postLogin(
       {required String email, required String password}) async {
     var url = Uri.parse("$baseURL/auth/login");
-    var header = {'Content-Type': 'application/json'};
+    var header = {
+      'Content-Type': 'application/json',
+    };
     Map data = {
       "email": email,
       "password": password,
@@ -19,6 +21,9 @@ class AuthService {
       headers: header,
       body: body,
     );
+
+    print(
+        'isi response adalah: ${response.statusCode} dengan pesan ${response.body}');
 
     if (response.statusCode >= 200 && response.statusCode <= 299) {
       var data = jsonDecode(response.body);

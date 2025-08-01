@@ -3,7 +3,6 @@ import 'package:tokosm_v2/shared/themes.dart';
 import 'package:intl/intl.dart';
 
 String baseURL = "https://apitokosm.share.zrok.io/api/v1";
-String imageURL = "http://10.10.10.98:3000/uploads/images";
 
 class Utils {
   void scaffoldMessenger(
