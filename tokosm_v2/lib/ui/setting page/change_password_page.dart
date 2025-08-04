@@ -81,6 +81,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 spacing: 10,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(
+                    height: 10,
+                  ),
                   Row(
                     spacing: 10,
                     children: [
@@ -101,6 +104,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       ),
                     ],
                   ),
+                  
                   Expanded(
                     child: ListView(
                       children: [

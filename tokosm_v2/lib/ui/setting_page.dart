@@ -128,9 +128,14 @@ class _SettingPageState extends State<SettingPage> {
                 ],
               ),
             ),
-            const Icon(
-              SolarIconsOutline.pen2,
-              size: 20,
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, 'setting-page/edit-profile');
+              },
+              child: const Icon(
+                SolarIconsOutline.pen2,
+                size: 20,
+              ),
             ),
           ],
         ),

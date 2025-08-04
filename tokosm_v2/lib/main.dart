@@ -16,6 +16,7 @@ import 'package:tokosm_v2/ui/main_page.dart';
 import 'package:tokosm_v2/ui/product%20page/detail_product_page.dart';
 import 'package:tokosm_v2/ui/product_page.dart';
 import 'package:tokosm_v2/ui/setting%20page/change_password_page.dart';
+import 'package:tokosm_v2/ui/setting%20page/edit_profile_page.dart';
 import 'package:tokosm_v2/ui/setting_page.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:tokosm_v2/ui/transaction%20page/detail_transaction_page.dart';
@@ -122,6 +123,14 @@ class MainApp extends StatelessWidget {
                 type: PageTransitionType.rightToLeft,
                 childCurrent: context.currentRoute,
                 child: const ChangePasswordPage(),
+                settings: settings,
+              );
+
+            case 'setting-page/edit-profile':
+              return PageTransition(
+                type: PageTransitionType.rightToLeft,
+                childCurrent: context.currentRoute,
+                child: const EditProfilePage(),
                 settings: settings,
               );
 
