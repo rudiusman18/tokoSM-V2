@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:tokosm_v2/cubit/cabang_cubit.dart';
-import 'package:tokosm_v2/cubit/login_cubit.dart';
+import 'package:tokosm_v2/cubit/auth_cubit.dart';
 import 'package:tokosm_v2/cubit/product_cubit.dart';
 import 'package:tokosm_v2/cubit/transaction_cubit.dart';
 import 'package:tokosm_v2/model/transaction_model.dart';

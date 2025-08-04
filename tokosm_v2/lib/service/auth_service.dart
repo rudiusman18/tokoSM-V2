@@ -64,4 +64,38 @@ class AuthService {
       throw ("${data['message']}");
     }
   }
+
+  Future<Map<String, dynamic>> postRegister({
+    required String fullName,
+    required String phoneNumber,
+    required String email,
+    required String userName,
+    required String password,
+  }) async {
+    var url = Uri.parse("$baseURL/auth/register");
+    var header = {
+      'Content-Type': 'application/json',
+    };
+    Map data = {
+      "nama_lengkap": fullName,
+      "telp": phoneNumber,
+      "email": email,
+      "username": fullName,
+      "password": password,
+    };
+    var body = jsonEncode(data);
+    var response = await http.post(
+      url,
+      headers: header,
+      body: body,
+    );
+
+    if (response.statusCode >= 200 && response.statusCode <= 299) {
+      var data = jsonDecode(response.body);
+      return data;
+    } else {
+      var data = jsonDecode(response.body);
+      throw ("${data['message']}");
+    }
+  }
 }

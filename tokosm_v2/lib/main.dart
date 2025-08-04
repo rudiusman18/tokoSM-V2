@@ -4,16 +4,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:tokosm_v2/cubit/cabang_cubit.dart';
 import 'package:tokosm_v2/cubit/category_cubit.dart';
-import 'package:tokosm_v2/cubit/login_cubit.dart';
+import 'package:tokosm_v2/cubit/auth_cubit.dart';
 import 'package:tokosm_v2/cubit/page_cubit.dart';
 import 'package:tokosm_v2/cubit/product_cubit.dart';
 import 'package:tokosm_v2/cubit/transaction_cubit.dart';
 import 'package:tokosm_v2/cubit/wishlist_cubit.dart';
 import 'package:tokosm_v2/login_page.dart';
+import 'package:tokosm_v2/register_page.dart';
 import 'package:tokosm_v2/splash_page.dart';
 import 'package:tokosm_v2/ui/main_page.dart';
 import 'package:tokosm_v2/ui/product%20page/detail_product_page.dart';
 import 'package:tokosm_v2/ui/product_page.dart';
+import 'package:tokosm_v2/ui/setting%20page/change_password_page.dart';
 import 'package:tokosm_v2/ui/setting_page.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:tokosm_v2/ui/transaction%20page/detail_transaction_page.dart';
@@ -104,6 +106,22 @@ class MainApp extends StatelessWidget {
                 type: PageTransitionType.rightToLeft,
                 childCurrent: context.currentRoute,
                 child: const DetailTransactionPage(),
+                settings: settings,
+              );
+
+            case 'register':
+              return PageTransition(
+                type: PageTransitionType.rightToLeft,
+                childCurrent: context.currentRoute,
+                child: const RegisterPage(),
+                settings: settings,
+              );
+
+            case 'setting-page/change-password':
+              return PageTransition(
+                type: PageTransitionType.rightToLeft,
+                childCurrent: context.currentRoute,
+                child: const ChangePasswordPage(),
                 settings: settings,
               );
 

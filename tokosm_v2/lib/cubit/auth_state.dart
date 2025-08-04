@@ -1,27 +1,28 @@
-part of 'login_cubit.dart';
+part of 'auth_cubit.dart';
 
 abstract class AuthState {
   final LoginModel loginModel;
   const AuthState({required this.loginModel});
 }
 
-class LoginInitial extends AuthState {
-  LoginInitial() : super(loginModel: LoginModel());
+// NOTE: State untuk login
+class AuthInitial extends AuthState {
+  AuthInitial() : super(loginModel: LoginModel());
 }
 
-class LoginLoading extends AuthState {
-  LoginLoading() : super(loginModel: LoginModel());
+class AuthLoading extends AuthState {
+  AuthLoading() : super(loginModel: LoginModel());
 }
 
-class LoginSuccess extends AuthState {
+class AuthSuccess extends AuthState {
   LoginModel loginModelData;
-  LoginSuccess({required this.loginModelData})
+  AuthSuccess({required this.loginModelData})
       : super(loginModel: loginModelData);
 }
 
-class LoginFailure extends AuthState {
+class AuthFailure extends AuthState {
   String error;
-  LoginFailure({required this.error}) : super(loginModel: LoginModel());
+  AuthFailure({required this.error}) : super(loginModel: LoginModel());
 }
 
 // NOTE: State untuk change password

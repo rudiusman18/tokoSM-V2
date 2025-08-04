@@ -6,14 +6,20 @@ import 'package:tokosm_v2/cubit/auth_cubit.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 import 'package:tokosm_v2/shared/utils.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
+  TextEditingController fullNameController = TextEditingController(text: "");
+  FocusNode fullNameFocusNode = FocusNode();
+
+  TextEditingController phoneNumberController = TextEditingController(text: "");
+  FocusNode phoneNumberFocusNode = FocusNode();
+
   TextEditingController emailController = TextEditingController(text: "");
   FocusNode emailFocusNode = FocusNode();
 
@@ -23,6 +29,15 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+
+    fullNameFocusNode.addListener(() {
+      setState(() {}); // Rebuild to reflect focus change
+    });
+
+    phoneNumberFocusNode.addListener(() {
+      setState(() {}); // Rebuild to reflect focus change
+    });
+
     emailFocusNode.addListener(() {
       setState(() {}); // Rebuild to reflect focus change
     });
@@ -34,6 +49,12 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
+    fullNameController.dispose();
+    fullNameFocusNode.dispose();
+
+    phoneNumberController.dispose();
+    phoneNumberFocusNode.dispose();
+
     emailController.dispose();
     emailFocusNode.dispose();
 
@@ -47,15 +68,13 @@ class _LoginPageState extends State<LoginPage> {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
         if (state is AuthFailure) {
+          print("auth failure jalan");
           Utils().scaffoldMessenger(context, state.error);
         }
 
         if (state is AuthSuccess) {
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            "main-page",
-            (route) => false,
-          );
+          Utils().scaffoldMessenger(context, "Pendaftaran berhasil");
+          Navigator.pushReplacementNamed(context, 'login');
         }
       },
       builder: (context, state) {
@@ -73,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      "Masuk",
+                      "Daftar",
                       style: TextStyle(
                         fontSize: 48,
                         fontWeight: FontWeight.w900,
@@ -89,17 +108,40 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(
                   height: 30,
                 ),
-                _LoginPageExtension().loginItem(
+                _RegisterPageExtension().loginItem(
+                  title: "Nama Lengkap",
+                  controller: fullNameController,
+                  focus: fullNameFocusNode,
+                  placeholder: 'Nama Lengkap',
+                  icon: SolarIconsBold.user,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                _RegisterPageExtension().loginItem(
+                  title: "Nomor Hp",
+                  controller: phoneNumberController,
+                  focus: phoneNumberFocusNode,
+                  placeholder: 'Nomor Hp',
+                  icon: null,
+                  textIcon: "+62",
+                  keyboardType: TextInputType.number,
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                _RegisterPageExtension().loginItem(
                   title: "Email",
                   controller: emailController,
                   focus: emailFocusNode,
                   placeholder: 'Email',
                   icon: SolarIconsOutline.letter,
+                  keyboardType: TextInputType.emailAddress,
                 ),
                 const SizedBox(
                   height: 10,
                 ),
-                _LoginPageExtension().loginItem(
+                _RegisterPageExtension().loginItem(
                   title: "Password",
                   controller: passwordController,
                   focus: passwordFocusNode,
@@ -113,9 +155,12 @@ class _LoginPageState extends State<LoginPage> {
                 GestureDetector(
                   onTap: () {
                     if (context.read<AuthCubit>().state is! AuthLoading) {
-                      context.read<AuthCubit>().postLogin(
-                          email: emailController.text,
-                          password: passwordController.text);
+                      context.read<AuthCubit>().postRegister(
+                            fullName: fullNameController.text,
+                            phoneNumber: "+62${phoneNumberController.text}",
+                            email: emailController.text,
+                            password: passwordController.text,
+                          );
                     }
                   },
                   child: Container(
@@ -133,7 +178,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           )
                         : Text(
-                            "Login",
+                            "Daftar",
                             style: TextStyle(
                               fontSize: 18,
                               color: Colors.white,
@@ -149,22 +194,22 @@ class _LoginPageState extends State<LoginPage> {
                 Center(
                   child: RichText(
                     text: TextSpan(
-                      text: "Belum punya akun? ",
+                      text: "Sudah punya akun? ",
                       style: const TextStyle(
                         color: Colors.black,
                       ),
                       children: [
                         TextSpan(
-                            text: "Daftar Sekarang",
-                            style: TextStyle(
-                              fontWeight: bold,
-                              color: colorSuccess,
-                            ),
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                Navigator.pushReplacementNamed(
-                                    context, 'register');
-                              }),
+                          text: "Login",
+                          style: TextStyle(
+                            fontWeight: bold,
+                            color: colorSuccess,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.pushReplacementNamed(context, 'login');
+                            },
+                        ),
                       ],
                     ),
                   ),
@@ -178,7 +223,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-class _LoginPageExtension {
+class _RegisterPageExtension {
   bool isPasswordVisible = true;
 
   Widget loginItem({
@@ -186,7 +231,9 @@ class _LoginPageExtension {
     required TextEditingController controller,
     required FocusNode focus,
     required String placeholder,
-    required IconData icon,
+    required IconData? icon,
+    TextInputType keyboardType = TextInputType.text,
+    String textIcon = "",
     bool isPassword = false,
   }) {
     return StatefulBuilder(
@@ -216,12 +263,21 @@ class _LoginPageExtension {
               child: Row(
                 spacing: 10,
                 children: [
-                  Icon(
-                    icon,
-                    size: 14,
-                  ),
+                  textIcon != ""
+                      ? Text(
+                          textIcon,
+                          style: TextStyle(
+                            fontWeight: bold,
+                            color: Colors.black,
+                          ),
+                        )
+                      : Icon(
+                          icon,
+                          size: 14,
+                        ),
                   Expanded(
                     child: TextFormField(
+                      keyboardType: keyboardType,
                       autocorrect: false,
                       controller: controller,
                       cursorColor: Colors.black,

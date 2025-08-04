@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_icons/solar_icons.dart';
-import 'package:tokosm_v2/cubit/login_cubit.dart';
+import 'package:tokosm_v2/cubit/auth_cubit.dart';
 import 'package:tokosm_v2/cubit/page_cubit.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 import 'package:tokosm_v2/shared/utils.dart';
@@ -14,12 +14,6 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
-  TextEditingController oldPasswordController = TextEditingController(text: "");
-  TextEditingController newPasswordController = TextEditingController(text: "");
-
-  FocusNode oldPasswordFocusNode = FocusNode();
-  FocusNode newPasswordFocusNode = FocusNode();
-
   @override
   Widget build(BuildContext context) {
     Widget header() {
@@ -59,61 +53,77 @@ class _SettingPageState extends State<SettingPage> {
                       fontWeight: bold,
                     ),
                   ),
-                  Text(
-                    context
-                            .read<AuthCubit>()
-                            .state
-                            .loginModel
-                            .data
-                            ?.emailPelanggan ??
-                        "",
-                    style: const TextStyle(
-                      color: Colors.blueGrey,
-                      fontSize: 12,
-                    ),
-                  ),
-                  Text(
-                    context
-                            .read<AuthCubit>()
-                            .state
-                            .loginModel
-                            .data
-                            ?.telpPelanggan ??
-                        "",
-                    style: const TextStyle(
-                      color: Colors.blueGrey,
-                      fontSize: 12,
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: colorWarning,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Text(
-                      "Saldo: Rp ${context.read<AuthCubit>().state.loginModel.data?.nominal ?? 0}",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: bold,
+                  Row(
+                    children: [
+                      Text(
+                        context
+                                .read<AuthCubit>()
+                                .state
+                                .loginModel
+                                .data
+                                ?.emailPelanggan ??
+                            "",
+                        style: const TextStyle(
+                          color: Colors.blueGrey,
+                          fontSize: 12,
+                        ),
                       ),
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: BoxDecoration(
-                      color: colorWarning,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Text(
-                      "Poin: ${context.read<AuthCubit>().state.loginModel.data?.nominal ?? 0}",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: bold,
+                      const Text(
+                        " | ",
+                        style: TextStyle(
+                          color: Colors.blueGrey,
+                          fontSize: 12,
+                        ),
                       ),
-                    ),
+                      Text(
+                        context
+                                .read<AuthCubit>()
+                                .state
+                                .loginModel
+                                .data
+                                ?.telpPelanggan ??
+                            "",
+                        style: const TextStyle(
+                          color: Colors.blueGrey,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    spacing: 5,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: colorWarning,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Text(
+                          "Saldo: Rp ${context.read<AuthCubit>().state.loginModel.data?.nominal ?? 0}",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: bold,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: colorSuccess,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Text(
+                          "Poin: ${context.read<AuthCubit>().state.loginModel.data?.nominal ?? 0}",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -179,45 +189,8 @@ class _SettingPageState extends State<SettingPage> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            oldPasswordController.text = "";
-                            newPasswordController.text = "";
-                            Utils().customAlertDialog(
-                              context: context,
-                              title: "Ubah Kata Sandi",
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  _SettingPageExtension().formItem(
-                                    title: "Password Lama",
-                                    controller: oldPasswordController,
-                                    focus: oldPasswordFocusNode,
-                                    placeholder: 'password lama',
-                                    icon: SolarIconsOutline.lockPassword,
-                                    isPassword: true,
-                                  ),
-                                  _SettingPageExtension().formItem(
-                                    title: "Password Baru",
-                                    controller: newPasswordController,
-                                    focus: newPasswordFocusNode,
-                                    placeholder: 'password Baru',
-                                    icon: SolarIconsOutline.lockPassword,
-                                    isPassword: true,
-                                  )
-                                ],
-                              ),
-                              confirmationFunction: () {
-                                Navigator.pop(context);
-                                context.read<AuthCubit>().postChangePassword(
-                                    token: context
-                                            .read<AuthCubit>()
-                                            .state
-                                            .loginModel
-                                            .token ??
-                                        "",
-                                    oldPassword: oldPasswordController.text,
-                                    newPassword: newPasswordController.text);
-                              },
-                            );
+                            Navigator.pushNamed(
+                                context, 'setting-page/change-password');
                           },
                           child: _SettingPageExtension().settingItem(
                             icon: SolarIconsOutline.lockPassword,
@@ -337,88 +310,6 @@ class _SettingPageExtension {
           height: 5,
         ),
       ],
-    );
-  }
-
-  bool isPasswordVisible = true;
-
-  Widget formItem({
-    required String title,
-    required TextEditingController controller,
-    required FocusNode focus,
-    required String placeholder,
-    required IconData icon,
-    bool isPassword = false,
-  }) {
-    return StatefulBuilder(
-      builder: (context, setState) {
-        return Column(
-          spacing: 5,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontWeight: bold,
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 5,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: focus.hasFocus ? Colors.black : Colors.grey,
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                spacing: 10,
-                children: [
-                  Icon(
-                    icon,
-                    size: 14,
-                  ),
-                  Expanded(
-                    child: TextFormField(
-                      autocorrect: false,
-                      controller: controller,
-                      cursorColor: Colors.black,
-                      obscureText:
-                          isPassword && isPasswordVisible ? true : false,
-                      focusNode: focus,
-                      decoration: InputDecoration.collapsed(
-                        hintText: placeholder,
-                        focusColor: Colors.black,
-                        hintStyle: const TextStyle(fontSize: 14),
-                      ),
-                    ),
-                  ),
-                  if (isPassword) ...{
-                    GestureDetector(
-                      onTap: () {
-                        setState(
-                          () {
-                            isPasswordVisible = !isPasswordVisible;
-                          },
-                        );
-                      },
-                      child: Icon(
-                        isPasswordVisible
-                            ? SolarIconsOutline.eye
-                            : SolarIconsOutline.eyeClosed,
-                        size: 20,
-                      ),
-                    ),
-                  },
-                ],
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 }

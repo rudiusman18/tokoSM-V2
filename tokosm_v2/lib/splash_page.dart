@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tokosm_v2/cubit/login_cubit.dart';
+import 'package:tokosm_v2/cubit/auth_cubit.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 
 class SplashPage extends StatefulWidget {
@@ -31,7 +31,7 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     return BlocListener<AuthCubit, AuthState>(
       listener: (context, state) {
-        if (state is LoginFailure) {
+        if (state is AuthFailure) {
           Navigator.pushNamedAndRemoveUntil(
             context,
             'login',
@@ -39,7 +39,7 @@ class _SplashPageState extends State<SplashPage> {
           );
         }
 
-        if (state is LoginSuccess) {
+        if (state is AuthSuccess) {
           Navigator.pushNamedAndRemoveUntil(
             context,
             'main-page',

@@ -2,21 +2,42 @@ import 'package:bloc/bloc.dart';
 import 'package:tokosm_v2/model/login_model.dart';
 import 'package:tokosm_v2/service/auth_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-part 'login_state.dart';
+part 'auth_state.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit() : super(LoginInitial());
+  AuthCubit() : super(AuthInitial());
 
   void postLogin({required String email, required String password}) async {
-    emit(LoginLoading());
+    emit(AuthLoading());
     try {
       var loginData =
           await AuthService().postLogin(email: email, password: password);
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('user credential', "$email||$password");
-      emit(LoginSuccess(loginModelData: loginData));
+      emit(AuthSuccess(loginModelData: loginData));
     } catch (e) {
-      emit(LoginFailure(error: e.toString()));
+      emit(AuthFailure(error: e.toString()));
+    }
+  }
+
+  void postRegister({
+    required String fullName,
+    required String phoneNumber,
+    required String email,
+    required String password,
+  }) async {
+    emit(AuthLoading());
+    try {
+      var _ = await AuthService().postRegister(
+        fullName: fullName,
+        phoneNumber: phoneNumber,
+        email: email,
+        userName: "",
+        password: password,
+      );
+      emit(AuthSuccess(loginModelData: LoginModel()));
+    } catch (e) {
+      emit(AuthFailure(error: e.toString()));
     }
   }
 
