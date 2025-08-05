@@ -8,6 +8,8 @@ import 'package:tokosm_v2/cubit/auth_cubit.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 import 'package:tokosm_v2/shared/utils.dart';
 
+final GlobalKey _genderFieldKey = GlobalKey(); // Buat di luar widget tree
+
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
 
@@ -133,6 +135,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     onSelectionChanged: (args) {
                                       datetime = args.value;
                                     },
+                                    initialSelectedDate:
+                                        DateFormat("dd/MM/yyyy")
+                                            .parse(tglLahirController.text),
                                     maxDate: DateTime.now(),
                                   ),
                                 ),
@@ -148,17 +153,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                       Expanded(
                         child: _EditProfilePageExtension().formItem(
-                            title: "Jenis Kelamin",
-                            controller: genderController,
-                            focus: genderFocusNode,
-                            placeholder: 'Jenis Kelamin',
-                            icon: null,
-                            rightIcon: SolarIconsBold.altArrowDown,
-                            enableForm: false,
-                            onItemTapped: () {
-                              _EditProfilePageExtension()
-                                  ._showDropdownMenu(context, TapDownDetails());
-                            }),
+                          title: "Jenis Kelamin",
+                          controller: genderController,
+                          focus: genderFocusNode,
+                          placeholder: 'Jenis Kelamin',
+                          icon: null,
+                          rightIcon: SolarIconsBold.altArrowDown,
+                          enableForm: false,
+                          onItemTapped: () {
+                            _EditProfilePageExtension()._showDropdownMenu(
+                                context, genderController, _genderFieldKey);
+                          },
+                          key: _genderFieldKey,
+                        ),
                       ),
                     ],
                   ),
@@ -273,6 +280,7 @@ class _EditProfilePageExtension {
     IconData? rightIcon,
     bool isPassword = false,
     Function? onItemTapped,
+    Key? key,
   }) {
     bool isPasswordVisible = true;
     return StatefulBuilder(
@@ -289,6 +297,7 @@ class _EditProfilePageExtension {
             ),
             GestureDetector(
               child: Container(
+                key: key,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
                   vertical: 5,
@@ -373,21 +382,23 @@ class _EditProfilePageExtension {
     );
   }
 
-  String selectedValue = 'Option 1';
-  final List<String> options = ['Option 1', 'Option 2', 'Option 3'];
-
-  void _showDropdownMenu(BuildContext context, TapDownDetails details) async {
-    final RenderBox overlay =
-        Overlay.of(context).context.findRenderObject() as RenderBox;
+// Dropdown laki laki perempuan
+  void _showDropdownMenu(BuildContext context, TextEditingController controller,
+      GlobalKey key) async {
+    final RenderBox renderBox =
+        key.currentContext!.findRenderObject() as RenderBox;
+    final Offset position = renderBox.localToGlobal(Offset.zero);
+    final Size size = renderBox.size;
 
     final String? result = await showMenu<String>(
       context: context,
-      position: RelativeRect.fromRect(
-        details.globalPosition &
-            const Size(40, 40), // position where the menu will appear
-        Offset.zero & overlay.size,
+      position: RelativeRect.fromLTRB(
+        position.dx,
+        position.dy + size.height,
+        position.dx + size.width,
+        position.dy,
       ),
-      items: options.map((String value) {
+      items: ['Laki-laki', 'Perempuan'].map((String value) {
         return PopupMenuItem<String>(
           value: value,
           child: Text(value),
@@ -395,6 +406,8 @@ class _EditProfilePageExtension {
       }).toList(),
     );
 
-    if (result != null) {}
+    if (result != null) {
+      controller.text = result;
+    }
   }
 }
