@@ -1,8 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:solar_icons/solar_icons.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:tokosm_v2/cubit/auth_cubit.dart';
 import 'package:tokosm_v2/shared/themes.dart';
+import 'package:tokosm_v2/shared/utils.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -102,26 +106,48 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     spacing: 10,
                     children: [
                       Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            print("kalender ditekan");
-                          },
-                          child: _EditProfilePageExtension().formItem(
+                        child: _EditProfilePageExtension().formItem(
                             title: "Tanggal Lahir",
                             controller: tglLahirController,
                             focus: tglLahirFocusNode,
                             placeholder: 'dd/mm/yyyy',
                             icon: SolarIconsOutline.calendar,
                             enableForm: false,
-                          ),
-                        ),
+                            onItemTapped: () {
+                              var datetime = DateTime.now();
+                              Utils().customAlertDialog(
+                                context: context,
+                                title: 'Tanggal Lahir',
+                                content: SizedBox(
+                                  height: 400,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.8,
+                                  child: SfDateRangePicker(
+                                    todayHighlightColor: colorSuccess,
+                                    selectionColor: colorSuccess,
+                                    startRangeSelectionColor: colorSuccess,
+                                    endRangeSelectionColor: colorSuccess,
+                                    rangeSelectionColor: colorSuccess,
+                                    selectionMode:
+                                        DateRangePickerSelectionMode.single,
+                                    onSelectionChanged: (args) {
+                                      datetime = args.value;
+                                    },
+                                    maxDate: DateTime.now(),
+                                  ),
+                                ),
+                                confirmationFunction: () {
+                                  Navigator.pop(context);
+                                  String formatted =
+                                      DateFormat('dd/MM/yyyy').format(datetime);
+                                  tglLahirController.text =
+                                      formatted.toString();
+                                },
+                              );
+                            }),
                       ),
                       Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            print("gender ditekan");
-                          },
-                          child: _EditProfilePageExtension().formItem(
+                        child: _EditProfilePageExtension().formItem(
                             title: "Jenis Kelamin",
                             controller: genderController,
                             focus: genderFocusNode,
@@ -129,8 +155,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             icon: null,
                             rightIcon: SolarIconsBold.altArrowDown,
                             enableForm: false,
-                          ),
-                        ),
+                            onItemTapped: () {
+                              _EditProfilePageExtension()
+                                  ._showDropdownMenu(context, TapDownDetails());
+                            }),
                       ),
                     ],
                   ),
@@ -244,6 +272,7 @@ class _EditProfilePageExtension {
     String? textIcon,
     IconData? rightIcon,
     bool isPassword = false,
+    Function? onItemTapped,
   }) {
     bool isPasswordVisible = true;
     return StatefulBuilder(
@@ -258,82 +287,114 @@ class _EditProfilePageExtension {
                 fontWeight: bold,
               ),
             ),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: 5,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: focus.hasFocus ? Colors.black : Colors.grey,
-                  width: 1,
+            GestureDetector(
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
                 ),
-              ),
-              child: Row(
-                spacing: icon == null && textIcon == null ? 0 : 10,
-                children: [
-                  icon == null && textIcon != null
-                      ? Text(
-                          textIcon,
-                          style: TextStyle(
-                            fontWeight: bold,
-                          ),
-                        )
-                      : Icon(
-                          icon,
-                          size: 14,
-                        ),
-                  Expanded(
-                    child: SizedBox(
-                      height: descriptionForm ? 100 : null,
-                      child: TextFormField(
-                        keyboardType: keyboardType,
-                        enabled: enableForm,
-                        maxLines: descriptionForm ? 5 : null,
-                        autocorrect: false,
-                        controller: controller,
-                        cursorColor: Colors.black,
-                        obscureText:
-                            isPassword && isPasswordVisible ? true : false,
-                        focusNode: focus,
-                        decoration: InputDecoration.collapsed(
-                          hintText: placeholder,
-                          focusColor: Colors.black,
-                          hintStyle: const TextStyle(fontSize: 14),
-                        ),
-                      ),
-                    ),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: focus.hasFocus ? Colors.black : Colors.grey,
+                    width: 1,
                   ),
-                  if (isPassword) ...{
-                    GestureDetector(
-                      onTap: () {
-                        setState(
-                          () {
-                            isPasswordVisible = !isPasswordVisible;
+                ),
+                child: Row(
+                  spacing: icon == null && textIcon == null ? 0 : 10,
+                  children: [
+                    icon == null && textIcon != null
+                        ? Text(
+                            textIcon,
+                            style: TextStyle(
+                              fontWeight: bold,
+                            ),
+                          )
+                        : Icon(
+                            icon,
+                            size: 14,
+                          ),
+                    Expanded(
+                      child: SizedBox(
+                        height: descriptionForm ? 100 : null,
+                        child: TextFormField(
+                          keyboardType: keyboardType,
+                          readOnly: !enableForm,
+                          onTap: () {
+                            if (onItemTapped != null) {
+                              onItemTapped();
+                            }
                           },
-                        );
-                      },
-                      child: Icon(
-                        isPasswordVisible
-                            ? SolarIconsOutline.eye
-                            : SolarIconsOutline.eyeClosed,
-                        size: 20,
+                          maxLines: descriptionForm ? 5 : null,
+                          autocorrect: false,
+                          controller: controller,
+                          cursorColor: Colors.black,
+                          obscureText:
+                              isPassword && isPasswordVisible ? true : false,
+                          focusNode: focus,
+                          decoration: InputDecoration.collapsed(
+                            hintText: placeholder,
+                            focusColor: Colors.black,
+                            hintStyle: const TextStyle(fontSize: 14),
+                          ),
+                        ),
                       ),
                     ),
-                  },
-                  if (rightIcon != null) ...{
-                    Icon(
-                      rightIcon,
-                      size: 14,
-                    ),
-                  },
-                ],
+                    if (isPassword) ...{
+                      GestureDetector(
+                        onTap: () {
+                          setState(
+                            () {
+                              isPasswordVisible = !isPasswordVisible;
+                            },
+                          );
+                        },
+                        child: Icon(
+                          isPasswordVisible
+                              ? SolarIconsOutline.eye
+                              : SolarIconsOutline.eyeClosed,
+                          size: 20,
+                        ),
+                      ),
+                    },
+                    if (rightIcon != null) ...{
+                      Icon(
+                        rightIcon,
+                        size: 14,
+                      ),
+                    },
+                  ],
+                ),
               ),
             ),
           ],
         );
       },
     );
+  }
+
+  String selectedValue = 'Option 1';
+  final List<String> options = ['Option 1', 'Option 2', 'Option 3'];
+
+  void _showDropdownMenu(BuildContext context, TapDownDetails details) async {
+    final RenderBox overlay =
+        Overlay.of(context).context.findRenderObject() as RenderBox;
+
+    final String? result = await showMenu<String>(
+      context: context,
+      position: RelativeRect.fromRect(
+        details.globalPosition &
+            const Size(40, 40), // position where the menu will appear
+        Offset.zero & overlay.size,
+      ),
+      items: options.map((String value) {
+        return PopupMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+    );
+
+    if (result != null) {}
   }
 }
