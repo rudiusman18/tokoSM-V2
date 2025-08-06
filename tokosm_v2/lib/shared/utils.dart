@@ -108,7 +108,6 @@ class Utils {
         );
       },
     );
-  
   }
 
   void loadingDialog({
@@ -142,5 +141,29 @@ class Utils {
     DateTime dateTime = DateTime.parse(input);
     // Format: 18 April 2025 23:00
     return DateFormat("d MMMM y HH:mm", "id_ID").format(dateTime);
+  }
+
+ DateTime? normalizeToDateTime(String dateString) {
+    final List<String> knownFormats = [
+      "dd/MM/yyyy",
+      "MM/dd/yyyy",
+      "yyyy-MM-dd",
+      "dd-MM-yyyy",
+      "d MMM yyyy",
+      "MMM d, yyyy",
+      "d/M/yyyy",
+      "d-MM-yyyy",
+    ];
+
+    for (var format in knownFormats) {
+      try {
+        final date = DateFormat(format).parseStrict(dateString);
+        return date;
+      } catch (_) {
+        // Coba format selanjutnya
+      }
+    }
+
+    return null; // Tidak ada format cocok
   }
 }

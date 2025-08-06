@@ -98,4 +98,46 @@ class AuthService {
       throw ("${data['message']}");
     }
   }
+
+  Future<Map<String, dynamic>> updateProfile({
+    required String token,
+    required String cabangID,
+    required String username,
+    required String email,
+    required String phoneNumber,
+    required String address,
+    required String area,
+    required String birthDate,
+    required String gender,
+  }) async {
+    var url = Uri.parse("$baseURL/akun/profil");
+    var header = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    Map data = {
+      "cabang_id": cabangID,
+      "username": username,
+      "email": email,
+      "telp": phoneNumber,
+      "alamat": address,
+      "wilayah": area,
+      "tgl_lahir": birthDate,
+      "jenis_kelamin": gender,
+    };
+    var body = jsonEncode(data);
+    var response = await http.put(
+      url,
+      headers: header,
+      body: body,
+    );
+
+    if (response.statusCode >= 200 && response.statusCode <= 299) {
+      var data = jsonDecode(response.body);
+      return data;
+    } else {
+      var data = jsonDecode(response.body);
+      throw ("${data['message']}");
+    }
+  }
 }

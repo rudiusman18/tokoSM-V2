@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:tokosm_v2/cubit/auth_cubit.dart';
+import 'package:tokosm_v2/cubit/cabang_cubit.dart';
+import 'package:tokosm_v2/cubit/setting_cubit.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 import 'package:tokosm_v2/shared/utils.dart';
 
@@ -43,6 +45,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    var userData = context.read<AuthCubit>().state.loginModel.data;
+    tglLahirController.text = userData?.tglLahirPelanggan ?? "";
+    genderController.text = userData?.jenisKelaminPelanggan ?? "";
+    emailController.text = userData?.emailPelanggan ?? "";
+    addressController.text = userData?.alamatPelanggan ?? "";
+    cityProvinceController.text = userData?.provinsi ?? "";
+    districtSubDistrictController.text = userData?.kabkota ?? "";
+    phoneNumberController.text =
+        (userData?.telpPelanggan ?? "").replaceAll("+62", "");
+
     return Scaffold(
       body: SafeArea(
           child: Container(
@@ -136,15 +148,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       datetime = args.value;
                                     },
                                     initialSelectedDate:
-                                        DateFormat("dd/MM/yyyy")
-                                            .parse(tglLahirController.text),
+                                        tglLahirController.text == ""
+                                            ? null
+                                            : Utils().normalizeToDateTime(
+                                                tglLahirController.text,
+                                              ),
                                     maxDate: DateTime.now(),
                                   ),
                                 ),
                                 confirmationFunction: () {
                                   Navigator.pop(context);
                                   String formatted =
-                                      DateFormat('dd/MM/yyyy').format(datetime);
+                                      DateFormat('yyyy-MM-dd').format(datetime);
                                   tglLahirController.text =
                                       formatted.toString();
                                 },
@@ -206,36 +221,194 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   const SizedBox(
                     height: 10,
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      print("provinsi kota ditekan");
+                  _EditProfilePageExtension().formItem(
+                    title: "Provinsi, Kota",
+                    controller: cityProvinceController,
+                    focus: cityProvinceFocusNode,
+                    placeholder: 'Provinsi, Kota',
+                    icon: null,
+                    rightIcon: SolarIconsBold.altArrowDown,
+                    enableForm: false,
+                    onItemTapped: () {
+                      String selectedCity = cityProvinceController.text;
+                      Utils().loadingDialog(context: context);
+                      context
+                          .read<AreaSettingCubit>()
+                          .getAreaData(
+                              token: context
+                                      .read<AuthCubit>()
+                                      .state
+                                      .loginModel
+                                      .token ??
+                                  "")
+                          .then((_) {
+                        Navigator.pop(context);
+                        Utils().customAlertDialog(
+                            context: context,
+                            confirmationFunction: () {
+                              Navigator.pop(context);
+                              districtSubDistrictController.text = "";
+                              cityProvinceController.text = selectedCity;
+                            },
+                            content: SizedBox(
+                              height: 300,
+                              width: MediaQuery.sizeOf(context).width * 0.8,
+                              child: StatefulBuilder(
+                                builder: (context, setState) {
+                                  return ListView(
+                                    children: [
+                                      for (var i = 0;
+                                          i <
+                                              (context
+                                                          .read<
+                                                              AreaSettingCubit>()
+                                                          .state
+                                                          .areaModel
+                                                          ?.data ??
+                                                      [])
+                                                  .length;
+                                          i++) ...{
+                                        GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              selectedCity =
+                                                  "${context.read<AreaSettingCubit>().state.areaModel?.data?[i].provinsi ?? ""}, ${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kota ?? ""}";
+                                            });
+                                          },
+                                          child: Container(
+                                            margin: const EdgeInsets.only(
+                                              bottom: 10,
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 5,
+                                              horizontal: 10,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: selectedCity ==
+                                                      "${context.read<AreaSettingCubit>().state.areaModel?.data?[i].provinsi ?? ""}, ${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kota ?? ""}"
+                                                  ? colorSuccess
+                                                  : greyBase300,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            child: Text(
+                                              "${context.read<AreaSettingCubit>().state.areaModel?.data?[i].provinsi ?? ""}, ${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kota ?? ""}",
+                                              style: TextStyle(
+                                                color: selectedCity ==
+                                                        "${context.read<AreaSettingCubit>().state.areaModel?.data?[i].provinsi ?? ""}, ${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kota ?? ""}"
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      }
+                                    ],
+                                  );
+                                },
+                              ),
+                            ),
+                            title: "Pilih Provinsi, Kota");
+                      });
                     },
-                    child: _EditProfilePageExtension().formItem(
-                      title: "Provinsi, Kota",
-                      controller: cityProvinceController,
-                      focus: cityProvinceFocusNode,
-                      placeholder: 'Provinsi, Kota',
-                      icon: null,
-                      rightIcon: SolarIconsBold.altArrowDown,
-                      enableForm: false,
-                    ),
                   ),
                   const SizedBox(
                     height: 10,
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      print("Kecamatan kelurahan ditekan");
+                  _EditProfilePageExtension().formItem(
+                    title: "Kecamatan, Kelurahan",
+                    controller: districtSubDistrictController,
+                    focus: districtSubDistrictFocusNode,
+                    placeholder: 'Kecamatan, Kelurahan',
+                    icon: null,
+                    rightIcon: SolarIconsBold.altArrowDown,
+                    enableForm: false,
+                    onItemTapped: () {
+                      String selectedDistrict =
+                          districtSubDistrictController.text;
+                      Utils().loadingDialog(context: context);
+                      context
+                          .read<AreaSettingCubit>()
+                          .getAreaData(
+                            token: context
+                                    .read<AuthCubit>()
+                                    .state
+                                    .loginModel
+                                    .token ??
+                                "",
+                            kabKota:
+                                cityProvinceController.text.split(", ").last,
+                          )
+                          .then((_) {
+                        Navigator.pop(context);
+                        Utils().customAlertDialog(
+                            context: context,
+                            confirmationFunction: () {
+                              Navigator.pop(context);
+                              districtSubDistrictController.text =
+                                  selectedDistrict;
+                            },
+                            content: SizedBox(
+                              height: 300,
+                              width: MediaQuery.sizeOf(context).width * 0.8,
+                              child: StatefulBuilder(
+                                builder: (context, setState) {
+                                  return ListView(
+                                    children: [
+                                      for (var i = 0;
+                                          i <
+                                              (context
+                                                          .read<
+                                                              AreaSettingCubit>()
+                                                          .state
+                                                          .areaModel
+                                                          ?.data ??
+                                                      [])
+                                                  .length;
+                                          i++) ...{
+                                        GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              selectedDistrict =
+                                                  "${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kecamatan ?? ""}, ${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kelurahan ?? ""}";
+                                            });
+                                          },
+                                          child: Container(
+                                            margin: const EdgeInsets.only(
+                                              bottom: 10,
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 5,
+                                              horizontal: 10,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: selectedDistrict ==
+                                                      "${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kecamatan ?? ""}, ${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kelurahan ?? ""}"
+                                                  ? colorSuccess
+                                                  : greyBase300,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                            ),
+                                            child: Text(
+                                              "${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kecamatan ?? ""}, ${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kelurahan ?? ""}",
+                                              style: TextStyle(
+                                                color: selectedDistrict ==
+                                                        "${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kecamatan ?? ""}, ${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kelurahan ?? ""}"
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      }
+                                    ],
+                                  );
+                                },
+                              ),
+                            ),
+                            title: "Pilih Provinsi, Kota");
+                      });
                     },
-                    child: _EditProfilePageExtension().formItem(
-                      title: "Kecamatan, Kelurahan",
-                      controller: districtSubDistrictController,
-                      focus: districtSubDistrictFocusNode,
-                      placeholder: 'Kecamatan, Kelurahan',
-                      icon: null,
-                      rightIcon: SolarIconsBold.altArrowDown,
-                      enableForm: false,
-                    ),
                   ),
                   const SizedBox(
                     height: 10,
@@ -243,19 +416,57 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ],
               ),
             ),
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              padding: const EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: colorSuccess,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Text(
-                "Simpan",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
+            GestureDetector(
+              onTap: () {
+                context
+                    .read<AuthCubit>()
+                    .updateProfile(
+                      token: context.read<AuthCubit>().state.loginModel.token ??
+                          "",
+                      cabangID:
+                          "${context.read<CabangCubit>().state.selectedCabangData.id}",
+                      username: context
+                              .read<AuthCubit>()
+                              .state
+                              .loginModel
+                              .data
+                              ?.username ??
+                          "",
+                      email: emailController.text,
+                      phoneNumber: phoneNumberController.text == ""
+                          ? ""
+                          : "+62${phoneNumberController.text}",
+                      address: addressController.text,
+                      area:
+                          "${cityProvinceController.text}, ${districtSubDistrictController.text}",
+                      birthDate: tglLahirController.text,
+                      gender: genderController.text,
+                    )
+                    .then((_) {
+                  if (context.read<AuthCubit>().state is AuthSuccess) {
+                    Navigator.pop(context);
+                  } else {
+                    Utils().scaffoldMessenger(
+                      context,
+                      (context.read<AuthCubit>().state as AuthFailure).error,
+                    );
+                  }
+                });
+              },
+              child: Container(
+                width: double.infinity,
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                padding: const EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  color: colorSuccess,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Text(
+                  "Simpan",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),

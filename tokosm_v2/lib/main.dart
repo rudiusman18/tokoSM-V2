@@ -7,6 +7,7 @@ import 'package:tokosm_v2/cubit/category_cubit.dart';
 import 'package:tokosm_v2/cubit/auth_cubit.dart';
 import 'package:tokosm_v2/cubit/page_cubit.dart';
 import 'package:tokosm_v2/cubit/product_cubit.dart';
+import 'package:tokosm_v2/cubit/setting_cubit.dart';
 import 'package:tokosm_v2/cubit/transaction_cubit.dart';
 import 'package:tokosm_v2/cubit/wishlist_cubit.dart';
 import 'package:tokosm_v2/login_page.dart';
@@ -65,6 +66,9 @@ class MainApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => DetailTransactionCubit(),
+        ),
+        BlocProvider(
+          create: (context) => AreaSettingCubit(),
         ),
       ],
       child: MaterialApp(

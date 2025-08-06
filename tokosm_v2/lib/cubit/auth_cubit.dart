@@ -46,18 +46,56 @@ class AuthCubit extends Cubit<AuthState> {
     prefs.remove("user credential");
   }
 
-  void postChangePassword(
-      {required String token,
-      required String oldPassword,
-      required String newPassword}) async {
+  void postChangePassword({
+    required String token,
+    required String oldPassword,
+    required String newPassword,
+  }) async {
     emit(PChangeLoading(state.loginModel));
     try {
       var _ = await AuthService().postChangePassword(
           token: token, oldPassword: oldPassword, newPassword: newPassword);
-
+      final prefs = await SharedPreferences.getInstance();
+      final userCredential = prefs.getString('user credential');
+      await prefs.setString('user credential',
+          "${(userCredential ?? "").split("||").first}||$newPassword");
       emit(PChangeSuccess(state.loginModel));
     } catch (e) {
       emit(PChangeFailure(state.loginModel, e.toString()));
+    }
+  }
+
+  Future<void> updateProfile({
+    required String token,
+    required String cabangID,
+    required String username,
+    required String email,
+    required String phoneNumber,
+    required String address,
+    required String area,
+    required String birthDate,
+    required String gender,
+  }) async {
+    emit(AuthLoading());
+    try {
+      await AuthService().updateProfile(
+          token: token,
+          cabangID: cabangID,
+          username: username,
+          email: email,
+          phoneNumber: phoneNumber,
+          address: address,
+          area: area,
+          birthDate: birthDate,
+          gender: gender);
+      final prefs = await SharedPreferences.getInstance();
+      final userCredential = prefs.getString('user credential');
+      postLogin(
+          email: email, password: (userCredential ?? "").split("||").last);
+
+      emit(AuthSuccess(loginModelData: state.loginModel));
+    } catch (e) {
+      emit(AuthFailure(error: e.toString()));
     }
   }
 }

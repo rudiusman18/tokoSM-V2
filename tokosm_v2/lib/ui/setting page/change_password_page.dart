@@ -104,7 +104,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                       ),
                     ],
                   ),
-                  
                   Expanded(
                     child: ListView(
                       children: [
