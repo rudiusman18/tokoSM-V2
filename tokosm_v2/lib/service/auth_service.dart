@@ -121,10 +121,14 @@ class AuthService {
       "email": email,
       "telp": phoneNumber,
       "alamat": address,
-      "wilayah": area,
+      "provinsi": area.split(", ").first,
+      "kabkota": area.split(", ")[1],
+      "kecamatan": area.split(", ")[2],
+      "kelurahan": area.split(", ").last,
       "tgl_lahir": birthDate,
       "jenis_kelamin": gender,
     };
+
     var body = jsonEncode(data);
     var response = await http.put(
       url,

@@ -37,7 +37,7 @@ class Data {
   String? kabkota;
   String? kecamatan;
   String? kelurahan;
-  String? kodepos;
+  dynamic kodepos;
   String? lat;
   String? lng;
   int? cod;

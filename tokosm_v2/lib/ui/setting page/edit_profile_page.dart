@@ -50,8 +50,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     genderController.text = userData?.jenisKelaminPelanggan ?? "";
     emailController.text = userData?.emailPelanggan ?? "";
     addressController.text = userData?.alamatPelanggan ?? "";
-    cityProvinceController.text = userData?.provinsi ?? "";
-    districtSubDistrictController.text = userData?.kabkota ?? "";
+    cityProvinceController.text =
+        "${userData?.provinsi ?? ""}, ${userData?.kabkota ?? ""}";
+    districtSubDistrictController.text =
+        "${userData?.kecamatan ?? ""}, ${userData?.kelurahan ?? ""}";
     phoneNumberController.text =
         (userData?.telpPelanggan ?? "").replaceAll("+62", "");
 
@@ -418,6 +420,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
             GestureDetector(
               onTap: () {
+                Utils().loadingDialog(context: context);
                 context
                     .read<AuthCubit>()
                     .updateProfile(
@@ -444,6 +447,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     )
                     .then((_) {
                   if (context.read<AuthCubit>().state is AuthSuccess) {
+                    Navigator.pop(context);
                     Navigator.pop(context);
                   } else {
                     Utils().scaffoldMessenger(
