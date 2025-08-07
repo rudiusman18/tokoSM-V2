@@ -1,0 +1,57 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+import 'package:tokosm_v2/shared/utils.dart';
+
+class CartService {
+  Future<Map<String, dynamic>> postCart({
+    required String token,
+    required int cabangId,
+    required int productId,
+    required int? amount,
+    required List<int>? multisatuanJumlah,
+    required List<String>? multisatuanUnit,
+    required List<int>? jumlahmultiSatuan,
+    required bool isMultiCart,
+  }) async {
+    var url = Uri.parse("$baseURL/auth/login");
+    var header = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    Map data = {};
+
+    if (isMultiCart) {
+      // multi satuan
+      data = {
+        "cabang_id": cabangId,
+        "produk_id": productId,
+        "multisatuan_jumlah": multisatuanJumlah,
+        "multisatuan_unit": multisatuanUnit,
+        "jumlah_multisatuan": jumlahmultiSatuan,
+      };
+    } else {
+      // single satuan
+      data = {
+        'cabang_id': cabangId,
+        'produk_id': productId,
+        'jumlah': amount,
+      };
+    }
+
+    var body = jsonEncode(data);
+    var response = await http.post(
+      url,
+      headers: header,
+      body: body,
+    );
+
+    if (response.statusCode >= 200 && response.statusCode <= 299) {
+      var data = jsonDecode(response.body);
+      return data;
+    } else {
+      var data = jsonDecode(response.body);
+      throw ("${data['message']}");
+    }
+  }
+}
