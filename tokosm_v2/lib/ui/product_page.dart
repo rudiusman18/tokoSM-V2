@@ -158,8 +158,13 @@ class _ProductPageState extends State<ProductPage> {
                 const SizedBox(
                   width: 10,
                 ),
-                const Icon(
-                  SolarIconsOutline.cartLarge2,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, "cart");
+                  },
+                  child: const Icon(
+                    SolarIconsOutline.cartLarge2,
+                  ),
                 ),
                 const SizedBox(
                   width: 10,

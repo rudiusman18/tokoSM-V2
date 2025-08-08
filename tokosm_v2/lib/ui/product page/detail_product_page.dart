@@ -4,6 +4,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:tokosm_v2/cubit/cabang_cubit.dart';
 import 'package:tokosm_v2/cubit/auth_cubit.dart';
+import 'package:tokosm_v2/cubit/cart_cubit.dart';
 import 'package:tokosm_v2/cubit/product_cubit.dart';
 import 'package:tokosm_v2/model/product_model.dart';
 import 'package:tokosm_v2/shared/themes.dart';
@@ -103,9 +104,13 @@ class _DetailProductPageState extends State<DetailProductPage> {
                 ),
               ),
             ),
-            const Icon(
-              SolarIconsOutline.cartLarge2,
-              size: 24,
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, "cart");
+              },
+              child: const Icon(
+                SolarIconsOutline.cartLarge2,
+              ),
             ),
           ],
         ),
@@ -474,10 +479,28 @@ class _DetailProductPageState extends State<DetailProductPage> {
                   GestureDetector(
                     onTap: () {
                       if (product.isMultisatuan == 1) {
-                        print("product adalah multi satuan");
                       } else {
-                        print(
-                            "product bukan multi satuan ${product.isMultisatuan}");
+                        context.read<CartCubit>().addCart(
+                              token: context
+                                      .read<AuthCubit>()
+                                      .state
+                                      .loginModel
+                                      .token ??
+                                  "",
+                              cabangId: context
+                                      .read<CabangCubit>()
+                                      .state
+                                      .selectedCabangData
+                                      .id ??
+                                  0,
+                              productId: product.id,
+                              isMultiCart:
+                                  product.isMultisatuan == 1 ? true : false,
+                              amount: 1,
+                              jumlahmultiSatuan: null,
+                              multisatuanJumlah: null,
+                              multisatuanUnit: null,
+                            );
                       }
                     },
                     child: Container(

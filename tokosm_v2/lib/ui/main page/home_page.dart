@@ -150,9 +150,13 @@ class _HomePageState extends State<HomePage> {
                 Row(
                   spacing: 10,
                   children: [
-                    const Icon(
-                      SolarIconsOutline.cartLarge2,
-                      size: 24,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, "cart");
+                      },
+                      child: const Icon(
+                        SolarIconsOutline.cartLarge2,
+                      ),
                     ),
                     GestureDetector(
                       onTap: () {

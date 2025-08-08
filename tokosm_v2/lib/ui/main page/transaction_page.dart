@@ -110,9 +110,13 @@ class _TransactionPageState extends State<TransactionPage> {
                     ),
                   ),
                 ),
-                const Icon(
-                  SolarIconsOutline.cartLarge2,
-                  size: 24,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, "cart");
+                  },
+                  child: const Icon(
+                    SolarIconsOutline.cartLarge2,
+                  ),
                 ),
               ],
             ),

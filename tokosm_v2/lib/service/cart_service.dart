@@ -14,7 +14,7 @@ class CartService {
     required List<int>? jumlahmultiSatuan,
     required bool isMultiCart,
   }) async {
-    var url = Uri.parse("$baseURL/auth/login");
+    var url = Uri.parse("$baseURL/keranjang");
     var header = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
@@ -39,6 +39,8 @@ class CartService {
       };
     }
 
+    print("isi data sebelum dikirim: $data");
+
     var body = jsonEncode(data);
     var response = await http.post(
       url,
@@ -48,9 +50,11 @@ class CartService {
 
     if (response.statusCode >= 200 && response.statusCode <= 299) {
       var data = jsonDecode(response.body);
+      print("berhasil dengan isi $data");
       return data;
     } else {
       var data = jsonDecode(response.body);
+      print("gagal dengan isi $data");
       throw ("${data['message']}");
     }
   }
