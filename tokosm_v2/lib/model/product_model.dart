@@ -43,6 +43,7 @@ class DataProduct {
   dynamic hargaProduk;
   dynamic hargaDiskon;
   dynamic diskon;
+  dynamic jumlah;
   List<String>? gambarProduk;
   String? multisatuanJumlah;
   String? multisatuanUnit;
@@ -73,54 +74,56 @@ class DataProduct {
   dynamic rating;
   String? grosirProduk;
 
-  DataProduct(
-      {this.id,
-      this.cabangId,
-      this.produkKategoriId,
-      this.kodeProduk,
-      this.barcodeProduk,
-      this.namaProduk,
-      this.deskripsiProduk,
-      this.kategoriProduk,
-      this.satuanProduk,
-      this.satuanProdukList,
-      this.golonganProduk,
-      this.merkProduk,
-      this.dimensiProduk,
-      this.beratProduk,
-      this.hargaPokok,
-      this.hargaProduk,
-      this.hargaDiskon,
-      this.diskon,
-      this.gambarProduk,
-      this.multisatuanJumlah,
-      this.multisatuanUnit,
-      this.multisatuanJumlahList,
-      this.multisatuanUnitList,
-      this.namaPromo,
-      this.keteranganPromo,
-      this.flashsale,
-      this.flashsaleKuantitas,
-      this.flashsaleLimit,
-      this.flashsaleTerjual,
-      this.flashsaleNominal,
-      this.flashsaleSatuan,
-      this.flashsaleEnd,
-      this.hargaProdukFlashsale,
-      this.hargaDiskonFlashsale,
-      this.isAktiva,
-      this.isMultisatuan,
-      this.isGrosir,
-      this.isDiskon,
-      this.isPromo,
-      this.isFlashsale,
-      this.view,
-      this.viewMonth,
-      this.terjual,
-      this.persentaseDiskon,
-      this.persentaseFlashsale,
-      this.rating,
-      this.grosirProduk});
+  DataProduct({
+    this.id,
+    this.cabangId,
+    this.produkKategoriId,
+    this.kodeProduk,
+    this.barcodeProduk,
+    this.namaProduk,
+    this.deskripsiProduk,
+    this.kategoriProduk,
+    this.satuanProduk,
+    this.satuanProdukList,
+    this.golonganProduk,
+    this.merkProduk,
+    this.dimensiProduk,
+    this.beratProduk,
+    this.hargaPokok,
+    this.hargaProduk,
+    this.hargaDiskon,
+    this.diskon,
+    this.gambarProduk,
+    this.jumlah,
+    this.multisatuanJumlah,
+    this.multisatuanUnit,
+    this.multisatuanJumlahList,
+    this.multisatuanUnitList,
+    this.namaPromo,
+    this.keteranganPromo,
+    this.flashsale,
+    this.flashsaleKuantitas,
+    this.flashsaleLimit,
+    this.flashsaleTerjual,
+    this.flashsaleNominal,
+    this.flashsaleSatuan,
+    this.flashsaleEnd,
+    this.hargaProdukFlashsale,
+    this.hargaDiskonFlashsale,
+    this.isAktiva,
+    this.isMultisatuan,
+    this.isGrosir,
+    this.isDiskon,
+    this.isPromo,
+    this.isFlashsale,
+    this.view,
+    this.viewMonth,
+    this.terjual,
+    this.persentaseDiskon,
+    this.persentaseFlashsale,
+    this.rating,
+    this.grosirProduk,
+  });
 
   DataProduct.fromJson(Map<String, dynamic> json) {
     id = json['id'] ?? json['produk_id'];
@@ -150,6 +153,7 @@ class DataProduct {
     hargaDiskon = json['harga_diskon'];
     diskon =
         (json['diskon'] is num) ? (json['diskon'] as num).toDouble() : null;
+    jumlah = json['jumlah'];
     gambarProduk =
         (json['gambar_produk'] as List?)?.map((e) => e.toString()).toList();
     multisatuanJumlah = json['multisatuan_jumlah'] is String

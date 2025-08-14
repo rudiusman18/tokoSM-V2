@@ -479,7 +479,105 @@ class _DetailProductPageState extends State<DetailProductPage> {
                   GestureDetector(
                     onTap: () {
                       if (product.isMultisatuan == 1) {
+                        // multisatuan
+                        showModalBottomSheet<void>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return StatefulBuilder(
+                              builder: (context, setState) {
+                                return Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      width: double.infinity,
+                                      margin: const EdgeInsets.all(
+                                        20,
+                                      ),
+                                      decoration: const BoxDecoration(
+                                        borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                      ),
+                                      child: Column(
+                                        spacing: 5,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          for (var i = 0;
+                                              i <
+                                                  (product.multisatuanJumlahList ??
+                                                          [])
+                                                      .length;
+                                              i++) ...{
+                                            // NOTE: content multisatuan
+                                            Row(
+                                              spacing: 5,
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    "${product.multisatuanUnitList?[i]} (${product.multisatuanJumlahList?[i]})",
+                                                  ),
+                                                ),
+                                                // NOTE: kurang
+                                                Container(
+                                                  width: 25,
+                                                  height: 25,
+                                                  alignment: Alignment.center,
+                                                  decoration: BoxDecoration(
+                                                    color: greyBase300,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5),
+                                                  ),
+                                                  child: const Text(
+                                                    "-",
+                                                    style:
+                                                        TextStyle(fontSize: 16),
+                                                  ),
+                                                ),
+                                                Text(
+                                                  "0",
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                                // NOTE: tambah
+                                                Container(
+                                                  width: 25,
+                                                  height: 25,
+                                                  alignment: Alignment.center,
+                                                  decoration: BoxDecoration(
+                                                    color: colorSuccess,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5),
+                                                  ),
+                                                  child: const Text(
+                                                    "+",
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      color: Colors.white,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          },
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                        );
                       } else {
+                        // satuan
                         context.read<CartCubit>().addCart(
                               token: context
                                       .read<AuthCubit>()

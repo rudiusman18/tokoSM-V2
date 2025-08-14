@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tokosm_v2/model/product_model.dart';
 import 'package:tokosm_v2/service/cart_service.dart';
 
 part 'cart_state.dart';
@@ -29,6 +30,25 @@ class CartCubit extends Cubit<CartState> {
           isMultiCart: isMultiCart);
       emit(CartSuccess());
     } catch (e) {
+      emit(CartFailure(error: e.toString()));
+    }
+  }
+
+  void getCart({
+    required String token,
+    required int cabangID,
+  }) async {
+    emit(CartLoading());
+    try {
+      ProductModel productCart =
+          await CartService().getCart(token: token, cabangID: cabangID);
+      emit(
+        CartSuccess(
+          productModelData: productCart,
+        ),
+      );
+    } catch (e) {
+      print("gagal dengan $e");
       emit(CartFailure(error: e.toString()));
     }
   }
