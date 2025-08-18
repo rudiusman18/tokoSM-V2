@@ -266,4 +266,6 @@ class DetailProductCubit extends Cubit<DetailProductState> {
       emit(DetailProductFailure(e.toString()));
     }
   }
+
+  
 }

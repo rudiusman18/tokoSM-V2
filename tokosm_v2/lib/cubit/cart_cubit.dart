@@ -7,7 +7,7 @@ part 'cart_state.dart';
 class CartCubit extends Cubit<CartState> {
   CartCubit() : super(CartInitial());
 
-  void addCart({
+  Future<void> addCart({
     required String token,
     required int cabangId,
     required int productId,
@@ -51,5 +51,16 @@ class CartCubit extends Cubit<CartState> {
       print("gagal dengan $e");
       emit(CartFailure(error: e.toString()));
     }
+  }
+
+// Digunakan untuk menambah data product (state nya akan digunakan di detail product)
+  void setProductAmount({
+    required List<int> productAmount,
+  }) {
+    emit(
+      CartSuccess(
+          productModelData: state.productModel,
+          productAmountData: productAmount),
+    );
   }
 }

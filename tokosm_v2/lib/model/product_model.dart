@@ -44,6 +44,7 @@ class DataProduct {
   dynamic hargaDiskon;
   dynamic diskon;
   dynamic jumlah;
+  List<dynamic>? jumlahList;
   List<String>? gambarProduk;
   String? multisatuanJumlah;
   String? multisatuanUnit;
@@ -97,6 +98,7 @@ class DataProduct {
     this.jumlah,
     this.multisatuanJumlah,
     this.multisatuanUnit,
+    this.jumlahList,
     this.multisatuanJumlahList,
     this.multisatuanUnitList,
     this.namaPromo,
@@ -161,6 +163,9 @@ class DataProduct {
         : null;
     multisatuanUnit =
         json['multisatuan_unit'] is String ? json['multisatuan_unit'] : null;
+    jumlahList = (json['jumlah_multisatuan'] is List)
+        ? List.from(json['jumlah_multisatuan'])
+        : null;
     multisatuanJumlahList = (json['multisatuan_jumlah'] is List)
         ? List.from(json['multisatuan_jumlah'])
         : null;
@@ -222,6 +227,7 @@ class DataProduct {
     data['multisatuan_jumlah'] = multisatuanJumlah;
     data['multisatuan_unit'] = multisatuanUnit;
     data['multisatuan_jumlah_list'] = multisatuanJumlahList;
+    data['jumlah_multisatuan'] = jumlahList;
     data['multisatuan_unit_list'] = multisatuanUnitList;
     data['nama_promo'] = namaPromo;
     data['keterangan_promo'] = keteranganPromo;

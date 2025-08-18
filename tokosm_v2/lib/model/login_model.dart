@@ -25,29 +25,29 @@ class Data {
   int? cabangRegister;
   int? salesId;
   int? kategoriPelangganId;
-  String? username;
-  String? password;
-  String? namaPelanggan;
-  String? tglLahirPelanggan;
-  String? jenisKelaminPelanggan;
-  String? telpPelanggan;
-  String? emailPelanggan;
-  String? alamatPelanggan;
-  String? provinsi;
-  String? kabkota;
-  String? kecamatan;
-  String? kelurahan;
+  dynamic username;
+  dynamic password;
+  dynamic namaPelanggan;
+  dynamic tglLahirPelanggan;
+  dynamic jenisKelaminPelanggan;
+  dynamic telpPelanggan;
+  dynamic emailPelanggan;
+  dynamic alamatPelanggan;
+  dynamic provinsi;
+  dynamic kabkota;
+  dynamic kecamatan;
+  dynamic kelurahan;
   dynamic kodepos;
-  String? lat;
-  String? lng;
+  dynamic lat;
+  dynamic lng;
   int? cod;
   int? kredit;
   int? transfer;
   int? transaksi;
   int? nominal;
-  String? createdBy;
-  String? lasttrxAt;
-  String? namaCabang;
+  dynamic createdBy;
+  dynamic lasttrxAt;
+  dynamic namaCabang;
 
   Data(
       {this.id,

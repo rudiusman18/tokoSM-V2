@@ -30,9 +30,12 @@ class _DetailProductPageState extends State<DetailProductPage> {
   }
 
   void initDetailProduct() {
+    context.read<CartCubit>().setProductAmount(productAmount: []);
+
     var product =
         (context.read<ProductCubit>().state as ProductSuccess).detailProduct ??
             DataProduct();
+
     context.read<DetailProductCubit>().getDetailproduct(
           token: context.read<AuthCubit>().state.loginModel.token ?? "",
           cabangId:
@@ -477,12 +480,41 @@ class _DetailProductPageState extends State<DetailProductPage> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {
+                    onTap: () async {
                       if (product.isMultisatuan == 1) {
                         // multisatuan
                         showModalBottomSheet<void>(
                           context: context,
                           builder: (BuildContext context) {
+                            List<int> productAmount = [];
+
+                            if ((context
+                                        .read<CartCubit>()
+                                        .state
+                                        .productAmount ??
+                                    [])
+                                .isNotEmpty) {
+                              productAmount.addAll(List<int>.from(context
+                                      .read<CartCubit>()
+                                      .state
+                                      .productAmount ??
+                                  []));
+                            } else {
+                              productAmount.addAll(
+                                List.filled(
+                                    (product.multisatuanJumlahList ?? [])
+                                        .length,
+                                    0),
+                              );
+
+                              context.read<CartCubit>().setProductAmount(
+                                    productAmount: List.filled(
+                                        (product.multisatuanJumlahList ?? [])
+                                            .length,
+                                        0),
+                                  ); //Mengisi data kosong
+                            }
+
                             return StatefulBuilder(
                               builder: (context, setState) {
                                 return Column(
@@ -523,50 +555,215 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                                   ),
                                                 ),
                                                 // NOTE: kurang
-                                                Container(
-                                                  width: 25,
-                                                  height: 25,
-                                                  alignment: Alignment.center,
-                                                  decoration: BoxDecoration(
-                                                    color: greyBase300,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5),
-                                                  ),
-                                                  child: const Text(
-                                                    "-",
-                                                    style:
-                                                        TextStyle(fontSize: 16),
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    if (context
+                                                            .read<CartCubit>()
+                                                            .state
+                                                            .productAmount?[i] !=
+                                                        0) {
+                                                      setState(() {
+                                                        productAmount[
+                                                            i] = (context
+                                                                    .read<
+                                                                        CartCubit>()
+                                                                    .state
+                                                                    .productAmount?[i] ??
+                                                                0) -
+                                                            1;
+
+                                                        context
+                                                            .read<CartCubit>()
+                                                            .setProductAmount(
+                                                              productAmount:
+                                                                  productAmount,
+                                                            );
+                                                      });
+                                                    }
+                                                  },
+                                                  child: Container(
+                                                    width: 25,
+                                                    height: 25,
+                                                    alignment: Alignment.center,
+                                                    decoration: BoxDecoration(
+                                                      color: greyBase300,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5),
+                                                    ),
+                                                    child: const Text(
+                                                      "-",
+                                                      style: TextStyle(
+                                                          fontSize: 16),
+                                                    ),
                                                   ),
                                                 ),
                                                 Text(
-                                                  "0",
-                                                  style: TextStyle(
+                                                  "${productAmount[i]}",
+                                                  style: const TextStyle(
                                                     fontSize: 12,
                                                   ),
                                                 ),
                                                 // NOTE: tambah
-                                                Container(
-                                                  width: 25,
-                                                  height: 25,
-                                                  alignment: Alignment.center,
-                                                  decoration: BoxDecoration(
-                                                    color: colorSuccess,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            5),
-                                                  ),
-                                                  child: const Text(
-                                                    "+",
-                                                    style: TextStyle(
-                                                      fontSize: 16,
-                                                      color: Colors.white,
+                                                GestureDetector(
+                                                  onTap: () {
+                                                    setState(() {
+                                                      productAmount[
+                                                          i] = (context
+                                                                  .read<
+                                                                      CartCubit>()
+                                                                  .state
+                                                                  .productAmount?[i] ??
+                                                              0) +
+                                                          1;
+
+                                                      context
+                                                          .read<CartCubit>()
+                                                          .setProductAmount(
+                                                            productAmount:
+                                                                productAmount,
+                                                          );
+                                                    });
+                                                  },
+                                                  child: Container(
+                                                    width: 25,
+                                                    height: 25,
+                                                    alignment: Alignment.center,
+                                                    decoration: BoxDecoration(
+                                                      color: colorSuccess,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5),
+                                                    ),
+                                                    child: const Text(
+                                                      "+",
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.white,
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
                                               ],
                                             ),
+                                         
                                           },
+                                          const SizedBox(
+                                            height: 12,
+                                          ),
+                                          Row(
+                                            spacing: 10,
+                                            children: [
+                                              Expanded(
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Container(
+                                                    width: double.infinity,
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 10,
+                                                      vertical: 10,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          color: colorSuccess),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5),
+                                                    ),
+                                                    child: Text(
+                                                      "Batal",
+                                                      style: TextStyle(
+                                                        color: colorSuccess,
+                                                      ),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: GestureDetector(
+                                                  onTap: () async {
+                                                    Utils().loadingDialog(
+                                                        context: context);
+                                                    await context
+                                                        .read<CartCubit>()
+                                                        .addCart(
+                                                          token: context
+                                                                  .read<
+                                                                      AuthCubit>()
+                                                                  .state
+                                                                  .loginModel
+                                                                  .token ??
+                                                              "",
+                                                          cabangId: context
+                                                                  .read<
+                                                                      CabangCubit>()
+                                                                  .state
+                                                                  .selectedCabangData
+                                                                  .id ??
+                                                              0,
+                                                          productId: product.id,
+                                                          isMultiCart: true,
+                                                          amount: null,
+                                                          jumlahmultiSatuan:
+                                                              context
+                                                                  .read<
+                                                                      CartCubit>()
+                                                                  .state
+                                                                  .productAmount,
+                                                          multisatuanJumlah:
+                                                              (product.multisatuanJumlahList ??
+                                                                      [])
+                                                                  .cast<int>(),
+                                                          multisatuanUnit: product
+                                                              .multisatuanUnitList,
+                                                        );
+
+                                                    Navigator.pop(context);
+                                                    Navigator.pop(context);
+                                                    if (context
+                                                        .read<CartCubit>()
+                                                        .state is CartSuccess) {
+                                                      Navigator.pushNamed(
+                                                          context, 'cart');
+                                                    } else if (context
+                                                        .read<CartCubit>()
+                                                        .state is CartFailure) {
+                                                      Utils().scaffoldMessenger(
+                                                          context,
+                                                          "Gagal menambahkan produk ke keranjang");
+                                                    }
+                                                  },
+                                                  child: Container(
+                                                    width: double.infinity,
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                      horizontal: 10,
+                                                      vertical: 10,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: colorSuccess,
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5),
+                                                    ),
+                                                    child: const Text(
+                                                      "Simpan",
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                      ),
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -578,7 +775,8 @@ class _DetailProductPageState extends State<DetailProductPage> {
                         );
                       } else {
                         // satuan
-                        context.read<CartCubit>().addCart(
+                        Utils().loadingDialog(context: context);
+                        await context.read<CartCubit>().addCart(
                               token: context
                                       .read<AuthCubit>()
                                       .state
@@ -592,13 +790,20 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                       .id ??
                                   0,
                               productId: product.id,
-                              isMultiCart:
-                                  product.isMultisatuan == 1 ? true : false,
+                              isMultiCart: false,
                               amount: 1,
                               jumlahmultiSatuan: null,
                               multisatuanJumlah: null,
                               multisatuanUnit: null,
                             );
+                        Navigator.pop(context);
+                        if (context.read<CartCubit>().state is CartSuccess) {
+                          Navigator.pushNamed(context, 'cart');
+                        } else if (context.read<CartCubit>().state
+                            is CartFailure) {
+                          Utils().scaffoldMessenger(
+                              context, "Gagal menambahkan produk ke keranjang");
+                        }
                       }
                     },
                     child: Container(

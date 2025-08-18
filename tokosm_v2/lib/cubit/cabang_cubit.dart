@@ -10,7 +10,7 @@ part 'cabang_state.dart';
 class CabangCubit extends Cubit<CabangState> {
   CabangCubit() : super(CabangInitial());
 
-  void selectCabang({required DataCabang cabang}) async {
+  Future<void> selectCabang({required DataCabang cabang}) async {
     final prefs = await SharedPreferences.getInstance();
     final dataCabang = cabang.toJson();
     final encodedDataCabang = jsonEncode(dataCabang);
