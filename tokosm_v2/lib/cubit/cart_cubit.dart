@@ -63,4 +63,19 @@ class CartCubit extends Cubit<CartState> {
           productAmountData: productAmount),
     );
   }
+
+  void updateCartProduct({required ProductModel product}) {
+    emit(CartSuccess(
+        productModelData: product, productAmountData: state.productAmount));
+  }
+
+  void cartProducttoTransaction({required ProductModel product}) {
+    emit(
+      CartSuccess(
+        productAmountData: state.productAmount,
+        productModelData: state.productModel,
+        productToTransactionData: product,
+      ),
+    );
+  }
 }
