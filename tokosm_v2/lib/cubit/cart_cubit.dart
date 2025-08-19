@@ -37,14 +37,22 @@ class CartCubit extends Cubit<CartState> {
   void getCart({
     required String token,
     required int cabangID,
+    bool isLoadingNeeded = true,
   }) async {
-    emit(CartLoading());
+    var selectedProductCart = state.productToTransaction;
+    var productCartPrices = state.productPricestoTransaction;
+
+    if (isLoadingNeeded == true) {
+      emit(CartLoading());
+    }
     try {
       ProductModel productCart =
           await CartService().getCart(token: token, cabangID: cabangID);
       emit(
         CartSuccess(
           productModelData: productCart,
+          productPricestoTransactionData: productCartPrices,
+          productToTransactionData: selectedProductCart,
         ),
       );
     } catch (e) {
@@ -64,9 +72,71 @@ class CartCubit extends Cubit<CartState> {
     );
   }
 
-  void updateCartProduct({required ProductModel product}) {
-    emit(CartSuccess(
-        productModelData: product, productAmountData: state.productAmount));
+  void updateCart({
+    required String token,
+    required DataProduct product,
+    required int cabangID,
+  }) async {
+    ProductModel? selectedProductCart = state.productToTransaction;
+    List<int>? selectedProductPrices = state.productPricestoTransaction;
+    ProductModel? productModel = state.productModel;
+
+    try {
+      var _ = await CartService().updateCart(
+        token: token,
+        cartId: product.cartId,
+        amount: product.jumlah,
+        jumlahmultiSatuan: (product.jumlahList ?? [])
+            .map((e) => int.tryParse(e.toString()) ?? 0)
+            .toList(),
+        multisatuanjumlah: (product.multisatuanJumlah?.split("/") ?? [])
+            .map((e) => int.tryParse(e.toString()) ?? 0)
+            .toList(),
+        isMultiCart: product.isMultisatuan == 1 ? true : false,
+      );
+      emit(CartSuccess(
+        productModelData: productModel,
+        productPricestoTransactionData: selectedProductPrices,
+        productToTransactionData: selectedProductCart,
+      ));
+      getCart(
+        token: token,
+        cabangID: cabangID,
+        isLoadingNeeded: false,
+      );
+    } catch (e) {
+      print("update cart error $e");
+      emit(CartFailure(error: e.toString()));
+    }
+  }
+
+  void deleteCart({
+    required String token,
+    required int cabangID,
+    required DataProduct product,
+  }) async {
+    emit(CartLoading());
+    try {
+      ProductModel? selectedProductCart = state.productToTransaction;
+      List<int>? selectedProductPrices = state.productPricestoTransaction;
+      ProductModel? productModel = state.productModel;
+
+      var _ =
+          await CartService().deleteCart(token: token, cartId: product.cartId);
+
+      emit(CartSuccess(
+        productModelData: productModel,
+        productPricestoTransactionData: selectedProductPrices,
+        productToTransactionData: selectedProductCart,
+      ));
+      getCart(
+        token: token,
+        cabangID: cabangID,
+        isLoadingNeeded: false,
+      );
+    } catch (e) {
+      emit(CartFailure(error: e.toString()));
+    }
   }
 
   void cartProducttoTransaction({required ProductModel product}) {

@@ -21,6 +21,8 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   @override
   void initState() {
+    context.read<CartCubit>().cartProducttoTransaction(
+        product: ProductModel(message: "success", data: []));
     initialCartData();
     super.initState();
   }
@@ -228,17 +230,24 @@ class _CartPageState extends State<CartPage> {
                                 }
                               },
                               child: context
-                                          .read<CartCubit>()
-                                          .state
-                                          .productModel
-                                          ?.data
-                                          ?.length ==
-                                      context
-                                          .read<CartCubit>()
-                                          .state
-                                          .productToTransaction
-                                          ?.data
-                                          ?.length
+                                              .read<CartCubit>()
+                                              .state
+                                              .productModel
+                                              ?.data
+                                              ?.length ==
+                                          context
+                                              .read<CartCubit>()
+                                              .state
+                                              .productToTransaction
+                                              ?.data
+                                              ?.length &&
+                                      (context
+                                                  .read<CartCubit>()
+                                                  .state
+                                                  .productModel
+                                                  ?.data ??
+                                              [])
+                                          .isNotEmpty
                                   ? Icon(
                                       SolarIconsBold.checkSquare,
                                       color: colorSuccess,
@@ -307,155 +316,239 @@ class _CartPageExtenion {
     return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
         ProductModel dataProduct = ProductModel(message: "success", data: []);
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 96,
-              child: Center(
-                child: GestureDetector(
-                  onTap: () {
-                    if (product != null) {
-                      dataProduct = context
+
+        return GestureDetector(
+          onTap: () {
+            context
+                .read<ProductCubit>()
+                .selectProduct(product: product ?? DataProduct());
+            Navigator.pushNamed(context, 'product/detail-product');
+          },
+          child: Container(
+            color: Colors.transparent,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  height: 96,
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        if (product != null) {
+                          dataProduct = context
+                                  .read<CartCubit>()
+                                  .state
+                                  .productToTransaction ??
+                              ProductModel(message: "success", data: []);
+
+                          if ((context
+                                      .read<CartCubit>()
+                                      .state
+                                      .productToTransaction
+                                      ?.data ??
+                                  [])
+                              .where((element) => (element.id == product.id))
+                              .toList()
+                              .isNotEmpty) {
+                            dataProduct.data?.remove(product);
+                          } else {
+                            dataProduct.data?.add(product);
+                          }
+
+                          context
                               .read<CartCubit>()
-                              .state
-                              .productToTransaction ??
-                          ProductModel(message: "success", data: []);
-
-                      if ((context
-                                  .read<CartCubit>()
-                                  .state
-                                  .productToTransaction
-                                  ?.data ??
-                              [])
-                          .where((element) => (element.id == product.id))
-                          .toList()
-                          .isNotEmpty) {
-                        dataProduct.data?.remove(product);
-                      } else {
-                        dataProduct.data?.add(product);
-                      }
-
-                      context
-                          .read<CartCubit>()
-                          .cartProducttoTransaction(product: dataProduct);
-                    }
-                  },
-                  child: (context
-                                  .read<CartCubit>()
-                                  .state
-                                  .productToTransaction
-                                  ?.data ??
-                              [])
-                          .where((element) => (element.id == product?.id))
-                          .toList()
-                          .isNotEmpty
-                      ? Icon(
-                          SolarIconsBold.checkSquare,
-                          size: 25,
-                          color: colorSuccess,
-                        )
-                      : Container(
-                          width: 25,
-                          height: 25,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: Colors.grey,
+                              .cartProducttoTransaction(product: dataProduct);
+                        }
+                      },
+                      child: (context
+                                      .read<CartCubit>()
+                                      .state
+                                      .productToTransaction
+                                      ?.data ??
+                                  [])
+                              .where((element) => (element.id == product?.id))
+                              .toList()
+                              .isNotEmpty
+                          ? Icon(
+                              SolarIconsBold.checkSquare,
+                              size: 25,
+                              color: colorSuccess,
+                            )
+                          : Container(
+                              width: 25,
+                              height: 25,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: Colors.grey,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                ),
-              ),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            // Gambar di kiri
-            Container(
-              height: 96,
-              width: 96,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(10),
-                image: DecorationImage(
-                  image: NetworkImage(product?.gambarProduk?.first ?? ""),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            const SizedBox(width: 8), // jarak antara gambar dan teks
-
-            // Semua teks di kanan
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    product?.namaProduk ?? "",
-                    style: const TextStyle(fontSize: 12),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  if (product?.isFlashsale == 1 &&
-                      product?.satuanProduk != product?.flashsaleSatuan)
-                    Text(
-                      "Rp ${product?.hargaProduk}",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: colorSuccess,
-                        fontWeight: bold,
-                      ),
-                      overflow: TextOverflow.ellipsis,
                     ),
-                  Row(
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                // Gambar di kiri
+                Container(
+                  height: 96,
+                  width: 96,
+                  decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(10),
+                    image: DecorationImage(
+                      image: NetworkImage(product?.gambarProduk?.first ?? ""),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8), // jarak antara gambar dan teks
+
+                // Semua teks di kanan
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Flexible(
-                        child: Text(
-                          product?.isFlashsale == 1
-                              ? "Rp ${product?.hargaDiskonFlashsale ?? 0}"
-                              : product?.isDiskon == 1
-                                  ? "Rp ${product?.hargaDiskon}"
-                                  : "Rp ${product?.hargaProduk}",
+                      Text(
+                        product?.namaProduk ?? "",
+                        style: const TextStyle(fontSize: 12),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (product?.isFlashsale == 1 &&
+                          product?.satuanProduk != product?.flashsaleSatuan)
+                        Text(
+                          "Rp ${product?.hargaProduk}",
                           style: TextStyle(
                             fontSize: 12,
-                            color: product?.isFlashsale == 1
-                                ? colorError
-                                : colorSuccess,
+                            color: colorSuccess,
                             fontWeight: bold,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              product?.isFlashsale == 1
+                                  ? "Rp ${product?.hargaDiskonFlashsale ?? 0}"
+                                  : product?.isDiskon == 1
+                                      ? "Rp ${product?.hargaDiskon}"
+                                      : "Rp ${product?.hargaProduk}",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: product?.isFlashsale == 1
+                                    ? colorError
+                                    : colorSuccess,
+                                fontWeight: bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if ((product?.isFlashsale == 1
+                                  ? "${product?.persentaseFlashsale}%"
+                                  : product?.isDiskon == 1
+                                      ? "${product?.persentaseDiskon}%"
+                                      : "") !=
+                              "") ...{
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Container(
+                              padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                color: colorError,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  if (product?.isFlashsale == 1)
+                                    const Icon(
+                                      SolarIconsBold.bolt,
+                                      size: 10,
+                                      color: Colors.white,
+                                    ),
+                                  Text(
+                                    product?.isFlashsale == 1
+                                        ? "${product?.persentaseFlashsale}%"
+                                        : product?.isDiskon == 1
+                                            ? "${product?.persentaseDiskon}%"
+                                            : "",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.white,
+                                      fontWeight: bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          }
+                        ],
                       ),
-                      if ((product?.isFlashsale == 1
-                              ? "${product?.persentaseFlashsale}%"
-                              : product?.isDiskon == 1
-                                  ? "${product?.persentaseDiskon}%"
-                                  : "") !=
-                          "") ...{
-                        const SizedBox(
-                          width: 10,
+                      if ((product?.isFlashsale == 1 ||
+                              product?.isDiskon == 1) &&
+                          product?.hargaProduk != null) ...{
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                product?.isFlashsale == 1
+                                    ? "Rp ${product?.hargaProdukFlashsale}"
+                                    : product?.isDiskon == 1
+                                        ? "Rp ${product?.hargaDiskon}"
+                                        : "",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                  fontWeight: bold,
+                                  decoration: TextDecoration.lineThrough,
+                                  decorationThickness: 3,
+                                ),
+                              ),
+                            ),
+                            if (product?.isFlashsale == 1) ...{
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  color: Colors.black,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Text(
+                                  product?.flashsaleSatuan ?? "",
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            },
+                          ],
                         ),
+                      },
+                      if (product?.isPromo == 1 && product?.namaPromo != null)
                         Container(
                           padding: const EdgeInsets.all(2),
                           decoration: BoxDecoration(
-                            color: colorError,
+                            color: colorWarning,
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: Row(
+                            spacing: 2,
+                            mainAxisSize: MainAxisSize.min,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              if (product?.isFlashsale == 1)
-                                const Icon(
-                                  SolarIconsBold.bolt,
-                                  size: 10,
-                                  color: Colors.white,
-                                ),
+                              const Icon(
+                                SolarIconsBold.tag,
+                                size: 10,
+                                color: Colors.white,
+                              ),
                               Text(
-                                product?.isFlashsale == 1
-                                    ? "${product?.persentaseFlashsale}%"
-                                    : product?.isDiskon == 1
-                                        ? "${product?.persentaseDiskon}%"
-                                        : "",
+                                product?.namaPromo ?? "",
                                 style: TextStyle(
                                   fontSize: 10,
                                   color: Colors.white,
@@ -465,210 +558,234 @@ class _CartPageExtenion {
                             ],
                           ),
                         ),
-                      }
                     ],
                   ),
-                  if ((product?.isFlashsale == 1 || product?.isDiskon == 1) &&
-                      product?.hargaProduk != null) ...{
-                    Row(
+                ),
+
+                //NOTE: tambah dan kurang keranjang
+                if (product?.isMultisatuan == 1) ...{
+                  // multi satuan
+
+                  Container(
+                    constraints: const BoxConstraints(
+                      minHeight: 96,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      spacing: 5,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Flexible(
-                          child: Text(
-                            product?.isFlashsale == 1
-                                ? "Rp ${product?.hargaProdukFlashsale}"
-                                : product?.isDiskon == 1
-                                    ? "Rp ${product?.hargaDiskon}"
-                                    : "",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                              fontWeight: bold,
-                              decoration: TextDecoration.lineThrough,
-                              decorationThickness: 3,
+                        for (var i = 0;
+                            i <
+                                ((product?.multisatuanUnit?.split("/")) ?? [])
+                                    .length;
+                            i++) ...{
+                          Row(
+                            spacing: 5,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                "${product?.multisatuanUnit?.split("/")[i] ?? "-"}(${product?.multisatuanJumlah?.split("/")[i] ?? "-"})",
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                              ),
+                              // NOTE: kurang
+                              GestureDetector(
+                                onTap: () {
+                                  product?.jumlahList?[i] -= 1;
+                                  if (product?.jumlahList?[i] > 0) {
+                                    context.read<CartCubit>().updateCart(
+                                        token: context
+                                                .read<AuthCubit>()
+                                                .state
+                                                .loginModel
+                                                .token ??
+                                            "",
+                                        product: product ?? DataProduct(),
+                                        cabangID: context
+                                                .read<CabangCubit>()
+                                                .state
+                                                .selectedCabangData
+                                                .id ??
+                                            0);
+                                  } else {
+                                    if ((product?.jumlahList ?? [])
+                                        .every((element) => element <= 0)) {
+                                      context.read<CartCubit>().deleteCart(
+                                            token: context
+                                                    .read<AuthCubit>()
+                                                    .state
+                                                    .loginModel
+                                                    .token ??
+                                                "",
+                                            cabangID: context
+                                                    .read<CabangCubit>()
+                                                    .state
+                                                    .selectedCabangData
+                                                    .id ??
+                                                0,
+                                            product: product ?? DataProduct(),
+                                          );
+                                    }
+                                  }
+                                },
+                                child: Container(
+                                  width: 25,
+                                  height: 25,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: greyBase300,
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: const Text(
+                                    "-",
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                ),
+                              ),
+                              Text(
+                                "${(product?.jumlahList ?? [])[i]}",
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                ),
+                              ),
+                              // NOTE: tambah
+                              GestureDetector(
+                                onTap: () {},
+                                child: Container(
+                                  width: 25,
+                                  height: 25,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: colorSuccess,
+                                    borderRadius: BorderRadius.circular(5),
+                                  ),
+                                  child: const Text(
+                                    "+",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
+                        }
+                      ],
+                    ),
+                  ),
+                } else ...{
+                  // satuan
+                  Container(
+                    constraints: const BoxConstraints(
+                      minHeight: 96,
+                    ),
+                    alignment: Alignment.bottomRight,
+                    child: Row(
+                      spacing: 5,
+                      children: [
+                        // NOTE: kurang
+                        GestureDetector(
+                          onTap: () {
+                            product?.jumlah -= 1;
+                            if (product?.jumlah > 0) {
+                              context.read<CartCubit>().updateCart(
+                                  token: context
+                                          .read<AuthCubit>()
+                                          .state
+                                          .loginModel
+                                          .token ??
+                                      "",
+                                  product: product ?? DataProduct(),
+                                  cabangID: context
+                                          .read<CabangCubit>()
+                                          .state
+                                          .selectedCabangData
+                                          .id ??
+                                      0);
+                            } else {
+                              context.read<CartCubit>().deleteCart(
+                                    token: context
+                                            .read<AuthCubit>()
+                                            .state
+                                            .loginModel
+                                            .token ??
+                                        "",
+                                    cabangID: context
+                                            .read<CabangCubit>()
+                                            .state
+                                            .selectedCabangData
+                                            .id ??
+                                        0,
+                                    product: product ?? DataProduct(),
+                                  );
+                            }
+                          },
+                          child: Container(
+                            width: 25,
+                            height: 25,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: greyBase300,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: const Text(
+                              "-",
+                              style: TextStyle(fontSize: 16),
                             ),
                           ),
                         ),
-                        if (product?.isFlashsale == 1) ...{
-                          const SizedBox(
-                            width: 10,
+                        Text(
+                          "${product?.jumlah}",
+                          style: const TextStyle(
+                            fontSize: 12,
                           ),
-                          Container(
-                            padding: const EdgeInsets.all(2),
+                        ),
+                        // NOTE: tambah
+                        GestureDetector(
+                          onTap: () {
+                            product?.jumlah += 1;
+                            context.read<CartCubit>().updateCart(
+                                token: context
+                                        .read<AuthCubit>()
+                                        .state
+                                        .loginModel
+                                        .token ??
+                                    "",
+                                product: product ?? DataProduct(),
+                                cabangID: context
+                                        .read<CabangCubit>()
+                                        .state
+                                        .selectedCabangData
+                                        .id ??
+                                    0);
+                          },
+                          child: Container(
+                            width: 25,
+                            height: 25,
+                            alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              color: Colors.black,
+                              color: colorSuccess,
                               borderRadius: BorderRadius.circular(5),
                             ),
-                            child: Text(
-                              product?.flashsaleSatuan ?? "",
-                              style: const TextStyle(
-                                fontSize: 12,
+                            child: const Text(
+                              "+",
+                              style: TextStyle(
+                                fontSize: 16,
                                 color: Colors.white,
                               ),
                             ),
                           ),
-                        },
+                        ),
                       ],
                     ),
-                  },
-                  if (product?.isPromo == 1 && product?.namaPromo != null)
-                    Container(
-                      padding: const EdgeInsets.all(2),
-                      decoration: BoxDecoration(
-                        color: colorWarning,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Row(
-                        spacing: 2,
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            SolarIconsBold.tag,
-                            size: 10,
-                            color: Colors.white,
-                          ),
-                          Text(
-                            product?.namaPromo ?? "",
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: Colors.white,
-                              fontWeight: bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
+                  )
+                },
+              ],
             ),
-
-            //NOTE: tambah dan kurang keranjang
-            if (product?.isMultisatuan == 1) ...{
-              // multi satuan
-
-              Container(
-                constraints: const BoxConstraints(
-                  minHeight: 96,
-                ),
-                child: Column(
-                  spacing: 5,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    for (var i = 0;
-                        i <
-                            ((product?.multisatuanJumlah?.split("/")) ?? [])
-                                .length;
-                        i++) ...{
-                      Row(
-                        spacing: 5,
-                        children: [
-                          // NOTE: kurang
-                          GestureDetector(
-                            onTap: () {},
-                            child: Container(
-                              width: 25,
-                              height: 25,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: greyBase300,
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: const Text(
-                                "-",
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ),
-                          ),
-                          Text(
-                            "${(product?.jumlahList ?? [])[i]}",
-                            style: const TextStyle(
-                              fontSize: 12,
-                            ),
-                          ),
-                          // NOTE: tambah
-                          GestureDetector(
-                            onTap: () {},
-                            child: Container(
-                              width: 25,
-                              height: 25,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: colorSuccess,
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: const Text(
-                                "+",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    }
-                  ],
-                ),
-              ),
-            } else ...{
-              // satuan
-              Container(
-                constraints: const BoxConstraints(
-                  minHeight: 96,
-                ),
-                alignment: Alignment.bottomRight,
-                child: Row(
-                  spacing: 5,
-                  children: [
-                    // NOTE: kurang
-                    GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        width: 25,
-                        height: 25,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: greyBase300,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: const Text(
-                          "-",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    ),
-                    Text(
-                      "${product?.jumlah}",
-                      style: const TextStyle(
-                        fontSize: 12,
-                      ),
-                    ),
-                    // NOTE: tambah
-                    GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        width: 25,
-                        height: 25,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: colorSuccess,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: const Text(
-                          "+",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            },
-          ],
+          ),
         );
       },
     );

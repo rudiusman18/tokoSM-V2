@@ -60,6 +60,79 @@ class CartService {
     }
   }
 
+  Future<Map<String, dynamic>> updateCart({
+    required String token,
+    required String cartId,
+    required int? amount,
+    required List<int>? jumlahmultiSatuan,
+    required List<int>? multisatuanjumlah,
+    required bool isMultiCart,
+  }) async {
+    var url = Uri.parse("$baseURL/keranjang/$cartId");
+    var header = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    Map data = {};
+
+    if (isMultiCart) {
+      // multi satuan
+      data = {
+        "jumlah_multisatuan": jumlahmultiSatuan,
+        "multisatuan_jumlah": multisatuanjumlah,
+      };
+    } else {
+      // single satuan
+      data = {
+        'jumlah': amount,
+      };
+    }
+
+    print("isi data sebelum dikirim: $data dengan url $url");
+
+    var body = jsonEncode(data);
+    var response = await http.put(
+      url,
+      headers: header,
+      body: body,
+    );
+
+    if (response.statusCode >= 200 && response.statusCode <= 299) {
+      var data = jsonDecode(response.body);
+      print("berhasil dengan isi $data");
+      return data;
+    } else {
+      var data = jsonDecode(response.body);
+      print("gagal dengan isi $data");
+      throw ("${data['message']}");
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteCart({
+    required String token,
+    required String cartId,
+  }) async {
+    var url = Uri.parse("$baseURL/keranjang/$cartId");
+    var header = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+    var response = await http.delete(
+      url,
+      headers: header,
+    );
+
+    if (response.statusCode >= 200 && response.statusCode <= 299) {
+      var data = jsonDecode(response.body);
+      print("berhasil dengan isi $data");
+      return data;
+    } else {
+      var data = jsonDecode(response.body);
+      print("gagal dengan isi $data");
+      throw ("${data['message']}");
+    }
+  }
+
   Future<ProductModel> getCart(
       {required String token, required int cabangID}) async {
     var url = Uri.parse("$baseURL/keranjang?cabang=$cabangID");

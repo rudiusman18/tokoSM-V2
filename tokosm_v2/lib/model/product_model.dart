@@ -25,6 +25,7 @@ class ProductModel {
 }
 
 class DataProduct {
+  dynamic cartId;
   dynamic id;
   dynamic cabangId;
   dynamic produkKategoriId;
@@ -76,6 +77,7 @@ class DataProduct {
   String? grosirProduk;
 
   DataProduct({
+    this.cartId,
     this.id,
     this.cabangId,
     this.produkKategoriId,
@@ -128,6 +130,7 @@ class DataProduct {
   });
 
   DataProduct.fromJson(Map<String, dynamic> json) {
+    cartId = json['_id'];
     id = json['id'] ?? json['produk_id'];
     cabangId = json['cabang_id'];
     produkKategoriId = json['produk_kategori_id'];
@@ -205,6 +208,7 @@ class DataProduct {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {};
+    data['_id'] = cartId;
     data['id'] = id;
     data['cabang_id'] = cabangId;
     data['produk_kategori_id'] = produkKategoriId;
