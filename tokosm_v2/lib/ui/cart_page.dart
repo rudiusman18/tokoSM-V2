@@ -185,6 +185,107 @@ class _CartPageState extends State<CartPage> {
                                   }
                                 ],
                               ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Row(
+                          spacing: 5,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                if (context
+                                        .read<CartCubit>()
+                                        .state
+                                        .productModel
+                                        ?.data
+                                        ?.length ==
+                                    context
+                                        .read<CartCubit>()
+                                        .state
+                                        .productToTransaction
+                                        ?.data
+                                        ?.length) {
+                                  context
+                                      .read<CartCubit>()
+                                      .cartProducttoTransaction(
+                                          product: ProductModel(
+                                        message: "success",
+                                        data: [],
+                                      ));
+                                } else {
+                                  context
+                                      .read<CartCubit>()
+                                      .cartProducttoTransaction(
+                                        product: context
+                                                .read<CartCubit>()
+                                                .state
+                                                .productModel ??
+                                            ProductModel(
+                                              message: "success",
+                                              data: [],
+                                            ),
+                                      );
+                                }
+                              },
+                              child: context
+                                          .read<CartCubit>()
+                                          .state
+                                          .productModel
+                                          ?.data
+                                          ?.length ==
+                                      context
+                                          .read<CartCubit>()
+                                          .state
+                                          .productToTransaction
+                                          ?.data
+                                          ?.length
+                                  ? Icon(
+                                      SolarIconsBold.checkSquare,
+                                      color: colorSuccess,
+                                      size: 25,
+                                    )
+                                  : Container(
+                                      width: 25,
+                                      height: 25,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ),
+                            ),
+                            const Text(
+                              "Semua",
+                            ),
+                            Expanded(
+                              child: Text(
+                                "Rp ${context.read<CartCubit>().state.productPricestoTransaction?.fold(0, (a, b) => a + b) ?? 0}",
+                                style: TextStyle(
+                                  fontWeight: bold,
+                                ),
+                                textAlign: TextAlign.end,
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: colorSuccess,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadiusGeometry.circular(
+                                    10,
+                                  ),
+                                ),
+                              ),
+                              child: const Text(
+                                "Beli",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       )
                     ],
                   ),

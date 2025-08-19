@@ -70,11 +70,29 @@ class CartCubit extends Cubit<CartState> {
   }
 
   void cartProducttoTransaction({required ProductModel product}) {
+    final List<int> productPricestoTransaction = [];
+    for (var index = 0; index < (product.data ?? []).length; index++) {
+      if ((product.data ?? [])[index].isFlashsale == 1 &&
+          (product.data ?? [])[index].satuanProduk !=
+              (product.data ?? [])[index].flashsaleSatuan) {
+        productPricestoTransaction.add((product.data ?? [])[index].hargaProduk);
+      } else if ((product.data ?? [])[index].isFlashsale == 1) {
+        productPricestoTransaction
+            .add((product.data ?? [])[index].hargaDiskonFlashsale);
+      } else if ((product.data ?? [])[index].isDiskon == 1) {
+        productPricestoTransaction.add((product.data ?? [])[index].hargaDiskon);
+      } else {
+        productPricestoTransaction.add((product.data ?? [])[index].hargaProduk);
+      }
+    }
+
+    print("isi datanya adalah $productPricestoTransaction");
     emit(
       CartSuccess(
         productAmountData: state.productAmount,
         productModelData: state.productModel,
         productToTransactionData: product,
+        productPricestoTransactionData: productPricestoTransaction,
       ),
     );
   }
