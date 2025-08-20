@@ -21,13 +21,13 @@ class CartPage extends StatefulWidget {
 class _CartPageState extends State<CartPage> {
   @override
   void initState() {
-    context.read<CartCubit>().cartProducttoTransaction(
-        product: ProductModel(message: "success", data: []));
     initialCartData();
     super.initState();
   }
 
   void initialCartData() {
+    context.read<CartCubit>().cartProducttoTransaction(
+        product: ProductModel(message: "success", data: []));
     context.read<CartCubit>().getCart(
           token: context.read<AuthCubit>().state.loginModel.token ?? "",
           cabangID:
@@ -595,8 +595,29 @@ class _CartPageExtenion {
                               // NOTE: kurang
                               GestureDetector(
                                 onTap: () {
-                                  product?.jumlahList?[i] -= 1;
-                                  if (product?.jumlahList?[i] > 0) {
+                                  product?.jumlahList?[i] =
+                                      product.jumlahList?[i] - 1 < 0
+                                          ? 0
+                                          : product.jumlahList?[i] - 1;
+
+                                  if ((product?.jumlahList ?? [])
+                                      .every((element) => element <= 0)) {
+                                    context.read<CartCubit>().deleteCart(
+                                          token: context
+                                                  .read<AuthCubit>()
+                                                  .state
+                                                  .loginModel
+                                                  .token ??
+                                              "",
+                                          cabangID: context
+                                                  .read<CabangCubit>()
+                                                  .state
+                                                  .selectedCabangData
+                                                  .id ??
+                                              0,
+                                          product: product ?? DataProduct(),
+                                        );
+                                  } else if (product?.jumlahList?[i] >= 0) {
                                     context.read<CartCubit>().updateCart(
                                         token: context
                                                 .read<AuthCubit>()
@@ -611,25 +632,6 @@ class _CartPageExtenion {
                                                 .selectedCabangData
                                                 .id ??
                                             0);
-                                  } else {
-                                    if ((product?.jumlahList ?? [])
-                                        .every((element) => element <= 0)) {
-                                      context.read<CartCubit>().deleteCart(
-                                            token: context
-                                                    .read<AuthCubit>()
-                                                    .state
-                                                    .loginModel
-                                                    .token ??
-                                                "",
-                                            cabangID: context
-                                                    .read<CabangCubit>()
-                                                    .state
-                                                    .selectedCabangData
-                                                    .id ??
-                                                0,
-                                            product: product ?? DataProduct(),
-                                          );
-                                    }
                                   }
                                 },
                                 child: Container(
@@ -654,7 +656,23 @@ class _CartPageExtenion {
                               ),
                               // NOTE: tambah
                               GestureDetector(
-                                onTap: () {},
+                                onTap: () {
+                                  product?.jumlahList?[i] += 1;
+                                  context.read<CartCubit>().updateCart(
+                                      token: context
+                                              .read<AuthCubit>()
+                                              .state
+                                              .loginModel
+                                              .token ??
+                                          "",
+                                      product: product ?? DataProduct(),
+                                      cabangID: context
+                                              .read<CabangCubit>()
+                                              .state
+                                              .selectedCabangData
+                                              .id ??
+                                          0);
+                                },
                                 child: Container(
                                   width: 25,
                                   height: 25,

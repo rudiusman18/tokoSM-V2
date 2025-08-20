@@ -52,8 +52,10 @@ class CartCubit extends Cubit<CartState> {
       for (var index = 0;
           index < (selectedProductCart?.data ?? []).length;
           index++) {
-        selectedProductCart?.data?[index] =
-            productCart.data?[index] ?? DataProduct();
+        selectedProductCart?.data?[index] = (productCart.data ?? [])
+            .where((e) => e.id == selectedProductCart.data?[index].id)
+            .toList()
+            .first;
 
         if ((selectedProductCart?.data ?? [])[index].isFlashsale == 1 &&
             (selectedProductCart?.data ?? [])[index].satuanProduk !=
