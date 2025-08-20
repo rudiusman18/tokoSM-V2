@@ -117,10 +117,10 @@ class CartCubit extends Cubit<CartState> {
         token: token,
         cartId: product.cartId,
         amount: product.jumlah,
-        jumlahmultiSatuan: (product.jumlahList ?? [])
+        jumlahmultiSatuan: (product.jumlahMultisatuan ?? [])
             .map((e) => int.tryParse(e.toString()) ?? 0)
             .toList(),
-        multisatuanjumlah: (product.multisatuanJumlah?.split("/") ?? [])
+        multisatuanjumlah: (product.multisatuanJumlah ?? [])
             .map((e) => int.tryParse(e.toString()) ?? 0)
             .toList(),
         isMultiCart: product.isMultisatuan == 1 ? true : false,

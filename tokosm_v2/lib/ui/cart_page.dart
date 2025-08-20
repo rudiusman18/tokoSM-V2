@@ -578,16 +578,14 @@ class _CartPageExtenion {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         for (var i = 0;
-                            i <
-                                ((product?.multisatuanUnit?.split("/")) ?? [])
-                                    .length;
+                            i < (product?.multisatuanUnit ?? []).length;
                             i++) ...{
                           Row(
                             spacing: 5,
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(
-                                "${product?.multisatuanUnit?.split("/")[i] ?? "-"}(${product?.multisatuanJumlah?.split("/")[i] ?? "-"})",
+                                "${product?.multisatuanUnit?[i] ?? "-"}(${product?.multisatuanJumlah?[i] ?? "-"})",
                                 style: const TextStyle(
                                   fontSize: 12,
                                 ),
@@ -595,12 +593,12 @@ class _CartPageExtenion {
                               // NOTE: kurang
                               GestureDetector(
                                 onTap: () {
-                                  product?.jumlahList?[i] =
-                                      product.jumlahList?[i] - 1 < 0
+                                  product?.jumlahMultisatuan?[i] =
+                                      product.jumlahMultisatuan?[i] - 1 < 0
                                           ? 0
-                                          : product.jumlahList?[i] - 1;
+                                          : product.jumlahMultisatuan?[i] - 1;
 
-                                  if ((product?.jumlahList ?? [])
+                                  if ((product?.jumlahMultisatuan ?? [])
                                       .every((element) => element <= 0)) {
                                     context.read<CartCubit>().deleteCart(
                                           token: context
@@ -617,7 +615,8 @@ class _CartPageExtenion {
                                               0,
                                           product: product ?? DataProduct(),
                                         );
-                                  } else if (product?.jumlahList?[i] >= 0) {
+                                  } else if (product?.jumlahMultisatuan?[i] >=
+                                      0) {
                                     context.read<CartCubit>().updateCart(
                                         token: context
                                                 .read<AuthCubit>()
@@ -649,7 +648,7 @@ class _CartPageExtenion {
                                 ),
                               ),
                               Text(
-                                "${(product?.jumlahList ?? [])[i]}",
+                                "${(product?.jumlahMultisatuan ?? [])[i]}",
                                 style: const TextStyle(
                                   fontSize: 12,
                                 ),
@@ -657,7 +656,7 @@ class _CartPageExtenion {
                               // NOTE: tambah
                               GestureDetector(
                                 onTap: () {
-                                  product?.jumlahList?[i] += 1;
+                                  product?.jumlahMultisatuan?[i] += 1;
                                   context.read<CartCubit>().updateCart(
                                       token: context
                                               .read<AuthCubit>()

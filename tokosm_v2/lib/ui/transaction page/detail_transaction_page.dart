@@ -621,4 +621,5 @@ class _DetailTransactionPageExtension {
       ],
     );
   }
+
 }

@@ -502,14 +502,13 @@ class _DetailProductPageState extends State<DetailProductPage> {
                             } else {
                               productAmount.addAll(
                                 List.filled(
-                                    (product.multisatuanJumlahList ?? [])
-                                        .length,
+                                    (product.multisatuanJumlah ?? []).length,
                                     0),
                               );
 
                               context.read<CartCubit>().setProductAmount(
                                     productAmount: List.filled(
-                                        (product.multisatuanJumlahList ?? [])
+                                        (product.multisatuanJumlah ?? [])
                                             .length,
                                         0),
                                   ); //Mengisi data kosong
@@ -541,7 +540,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                         children: <Widget>[
                                           for (var i = 0;
                                               i <
-                                                  (product.multisatuanJumlahList ??
+                                                  (product.multisatuanJumlah ??
                                                           [])
                                                       .length;
                                               i++) ...{
@@ -551,7 +550,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                               children: [
                                                 Expanded(
                                                   child: Text(
-                                                    "${product.multisatuanUnitList?[i]} (${product.multisatuanJumlahList?[i]})",
+                                                    "${product.multisatuanUnit?[i]} (${product.multisatuanJumlah?[i]})",
                                                   ),
                                                 ),
                                                 // NOTE: kurang
@@ -646,7 +645,6 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                                 ),
                                               ],
                                             ),
-                                         
                                           },
                                           const SizedBox(
                                             height: 12,
@@ -716,11 +714,11 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                                                   .state
                                                                   .productAmount,
                                                           multisatuanJumlah:
-                                                              (product.multisatuanJumlahList ??
+                                                              (product.multisatuanJumlah ??
                                                                       [])
                                                                   .cast<int>(),
                                                           multisatuanUnit: product
-                                                              .multisatuanUnitList,
+                                                              .multisatuanUnit,
                                                         );
 
                                                     Navigator.pop(context);

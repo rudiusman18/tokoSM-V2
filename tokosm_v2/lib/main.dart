@@ -15,6 +15,7 @@ import 'package:tokosm_v2/login_page.dart';
 import 'package:tokosm_v2/register_page.dart';
 import 'package:tokosm_v2/splash_page.dart';
 import 'package:tokosm_v2/ui/cart_page.dart';
+import 'package:tokosm_v2/ui/checkout_page.dart';
 import 'package:tokosm_v2/ui/main_page.dart';
 import 'package:tokosm_v2/ui/product%20page/detail_product_page.dart';
 import 'package:tokosm_v2/ui/product_page.dart';
@@ -148,6 +149,14 @@ class MainApp extends StatelessWidget {
                 type: PageTransitionType.rightToLeft,
                 childCurrent: context.currentRoute,
                 child: const CartPage(),
+                settings: settings,
+              );
+
+            case 'checkout':
+              return PageTransition(
+                type: PageTransitionType.rightToLeft,
+                childCurrent: context.currentRoute,
+                child: const CheckoutPage(),
                 settings: settings,
               );
 

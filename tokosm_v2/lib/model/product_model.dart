@@ -30,29 +30,31 @@ class DataProduct {
   dynamic cabangId;
   dynamic produkKategoriId;
   String? kodeProduk;
-  String? barcodeProduk;
+  List<String>? barcodeProduk;
   String? namaProduk;
   String? deskripsiProduk;
-  String? kategoriProduk;
+  dynamic kategoriProduk;
   String? satuanProduk;
-  List<String>? satuanProdukList;
-  String? golonganProduk;
+  List<String>? golonganProduk;
   String? merkProduk;
-  String? dimensiProduk;
+  List<String>? dimensiProduk;
   dynamic beratProduk;
   dynamic hargaPokok;
   dynamic hargaProduk;
   dynamic hargaDiskon;
+  dynamic hargaGrosir;
+  String? grosirProduk;
   dynamic diskon;
   dynamic jumlah;
-  List<dynamic>? jumlahList;
-  List<String>? gambarProduk;
-  String? multisatuanJumlah;
-  String? multisatuanUnit;
-  List<dynamic>? multisatuanJumlahList;
-  List<String>? multisatuanUnitList;
-  String? namaPromo;
   String? keteranganPromo;
+  List<dynamic>? jumlahMultisatuan;
+  List<String>? gambarProduk;
+  List<String>? multisatuanJumlah;
+  List<String>? multisatuanUnit;
+  String? namaPromo;
+  dynamic nominalDiskon;
+  dynamic diskonMinBeli;
+  dynamic diskonMaxBeli;
   dynamic flashsale;
   dynamic flashsaleKuantitas;
   dynamic flashsaleLimit;
@@ -74,20 +76,19 @@ class DataProduct {
   dynamic persentaseDiskon;
   dynamic persentaseFlashsale;
   dynamic rating;
-  String? grosirProduk;
 
   DataProduct({
     this.cartId,
     this.id,
     this.cabangId,
     this.produkKategoriId,
+    this.keteranganPromo,
     this.kodeProduk,
     this.barcodeProduk,
     this.namaProduk,
     this.deskripsiProduk,
     this.kategoriProduk,
     this.satuanProduk,
-    this.satuanProdukList,
     this.golonganProduk,
     this.merkProduk,
     this.dimensiProduk,
@@ -95,16 +96,17 @@ class DataProduct {
     this.hargaPokok,
     this.hargaProduk,
     this.hargaDiskon,
+    this.hargaGrosir,
     this.diskon,
     this.gambarProduk,
     this.jumlah,
     this.multisatuanJumlah,
     this.multisatuanUnit,
-    this.jumlahList,
-    this.multisatuanJumlahList,
-    this.multisatuanUnitList,
+    this.jumlahMultisatuan,
     this.namaPromo,
-    this.keteranganPromo,
+    this.nominalDiskon,
+    this.diskonMinBeli,
+    this.diskonMaxBeli,
     this.flashsale,
     this.flashsaleKuantitas,
     this.flashsaleLimit,
@@ -121,12 +123,12 @@ class DataProduct {
     this.isPromo,
     this.isFlashsale,
     this.view,
+    this.grosirProduk,
     this.viewMonth,
     this.terjual,
     this.persentaseDiskon,
     this.persentaseFlashsale,
     this.rating,
-    this.grosirProduk,
   });
 
   DataProduct.fromJson(Map<String, dynamic> json) {
@@ -135,48 +137,68 @@ class DataProduct {
     cabangId = json['cabang_id'];
     produkKategoriId = json['produk_kategori_id'];
     kodeProduk = json['kode_produk'];
-    barcodeProduk = json['barcode_produk'];
+    keteranganPromo = json['keterangan_promo'];
+
+    // ✅ barcode_produk bisa List atau String
+    if (json['barcode_produk'] is List) {
+      barcodeProduk =
+          (json['barcode_produk'] as List).map((e) => e.toString()).toList();
+    } else if (json['barcode_produk'] != null &&
+        json['barcode_produk'].toString().isNotEmpty) {
+      barcodeProduk = [json['barcode_produk'].toString()];
+    }
+
     namaProduk = json['nama_produk'];
     deskripsiProduk = json['deskripsi_produk'];
     kategoriProduk = json['kategori_produk'];
-    satuanProduk = json['satuan_produk']?.toString().split(',').first;
-    satuanProdukList = (json['satuan_produk'] is String)
-        ? json['satuan_produk']
-            .toString()
-            .split(',')
-            .map((e) => e.trim())
-            .toList()
-        : (json['multisatuan_unit'] as List?)
-            ?.map((e) => e.toString())
-            .toList();
-    golonganProduk = json['golongan_produk'];
+    satuanProduk = json['satuan_produk'];
+    grosirProduk = json['grosir_produk'];
+
+    // ✅ golongan_produk bisa List atau String
+    if (json['golongan_produk'] is List) {
+      golonganProduk =
+          (json['golongan_produk'] as List).map((e) => e.toString()).toList();
+    } else if (json['golongan_produk'] != null) {
+      golonganProduk = [json['golongan_produk'].toString()];
+    }
+
     merkProduk = json['merk_produk'];
-    dimensiProduk = json['dimensi_produk'];
+
+    // ✅ dimensi_produk bisa List atau String
+    if (json['dimensi_produk'] is List) {
+      dimensiProduk =
+          (json['dimensi_produk'] as List).map((e) => e.toString()).toList();
+    } else if (json['dimensi_produk'] != null) {
+      dimensiProduk = [json['dimensi_produk'].toString()];
+    }
+
     beratProduk = json['berat_produk'];
     hargaPokok = json['harga_pokok'];
     hargaProduk = json['harga_produk'];
     hargaDiskon = json['harga_diskon'];
-    diskon =
-        (json['diskon'] is num) ? (json['diskon'] as num).toDouble() : null;
+    hargaGrosir = json['harga_grosir'];
+    diskon = json['diskon'];
     jumlah = json['jumlah'];
+
+    // ✅ gambar_produk selalu List
     gambarProduk =
         (json['gambar_produk'] as List?)?.map((e) => e.toString()).toList();
-    multisatuanJumlah = json['multisatuan_jumlah'] is String
-        ? json['multisatuan_jumlah']
-        : null;
+
+    // ✅ multisatuan bisa List atau null
+    multisatuanJumlah = (json['multisatuan_jumlah'] as List?)
+        ?.map((e) => e.toString())
+        .toList();
     multisatuanUnit =
-        json['multisatuan_unit'] is String ? json['multisatuan_unit'] : null;
-    jumlahList = (json['jumlah_multisatuan'] is List)
-        ? List.from(json['jumlah_multisatuan'])
+        (json['multisatuan_unit'] as List?)?.map((e) => e.toString()).toList();
+
+    jumlahMultisatuan = (json['jumlah_multisatuan'] is List)
+        ? json['jumlah_multisatuan']
         : null;
-    multisatuanJumlahList = (json['multisatuan_jumlah'] is List)
-        ? List.from(json['multisatuan_jumlah'])
-        : null;
-    multisatuanUnitList = (json['multisatuan_unit'] is List)
-        ? List<String>.from(json['multisatuan_unit'])
-        : null;
+
     namaPromo = json['nama_promo'];
-    keteranganPromo = json['keterangan_promo'];
+    nominalDiskon = json['nominal_diskon'];
+    diskonMinBeli = json['diskon_min_beli'];
+    diskonMaxBeli = json['diskon_max_beli'];
     flashsale = json['flashsale'];
     flashsaleKuantitas = json['flashsale_kuantitas'];
     flashsaleLimit = json['flashsale_limit'];
@@ -203,61 +225,62 @@ class DataProduct {
         : null;
     rating =
         (json['rating'] is num) ? (json['rating'] as num).toDouble() : null;
-    grosirProduk = json['grosir_produk'];
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {};
-    data['_id'] = cartId;
-    data['id'] = id;
-    data['cabang_id'] = cabangId;
-    data['produk_kategori_id'] = produkKategoriId;
-    data['kode_produk'] = kodeProduk;
-    data['barcode_produk'] = barcodeProduk;
-    data['nama_produk'] = namaProduk;
-    data['deskripsi_produk'] = deskripsiProduk;
-    data['kategori_produk'] = kategoriProduk;
-    data['satuan_produk'] = satuanProduk;
-    data['satuan_produk_list'] = satuanProdukList;
-    data['golongan_produk'] = golonganProduk;
-    data['merk_produk'] = merkProduk;
-    data['dimensi_produk'] = dimensiProduk;
-    data['berat_produk'] = beratProduk;
-    data['harga_pokok'] = hargaPokok;
-    data['harga_produk'] = hargaProduk;
-    data['harga_diskon'] = hargaDiskon;
-    data['diskon'] = diskon;
-    data['gambar_produk'] = gambarProduk;
-    data['multisatuan_jumlah'] = multisatuanJumlah;
-    data['multisatuan_unit'] = multisatuanUnit;
-    data['multisatuan_jumlah_list'] = multisatuanJumlahList;
-    data['jumlah_multisatuan'] = jumlahList;
-    data['multisatuan_unit_list'] = multisatuanUnitList;
-    data['nama_promo'] = namaPromo;
-    data['keterangan_promo'] = keteranganPromo;
-    data['flashsale'] = flashsale;
-    data['flashsale_kuantitas'] = flashsaleKuantitas;
-    data['flashsale_limit'] = flashsaleLimit;
-    data['flashsale_terjual'] = flashsaleTerjual;
-    data['flashsale_nominal'] = flashsaleNominal;
-    data['flashsale_satuan'] = flashsaleSatuan;
-    data['flashsale_end'] = flashsaleEnd;
-    data['harga_produk_flashsale'] = hargaProdukFlashsale;
-    data['harga_diskon_flashsale'] = hargaDiskonFlashsale;
-    data['is_aktiva'] = isAktiva;
-    data['is_multisatuan'] = isMultisatuan;
-    data['is_grosir'] = isGrosir;
-    data['is_diskon'] = isDiskon;
-    data['is_promo'] = isPromo;
-    data['is_flashsale'] = isFlashsale;
-    data['view'] = view;
-    data['view_month'] = viewMonth;
-    data['terjual'] = terjual;
-    data['persentase_diskon'] = persentaseDiskon;
-    data['persentase_flashsale'] = persentaseFlashsale;
-    data['rating'] = rating;
-    data['grosir_produk'] = grosirProduk;
-    return data;
+    return {
+      '_id': cartId,
+      'id': id,
+      'cabang_id': cabangId,
+      'produk_kategori_id': produkKategoriId,
+      'keterangan_promo': keteranganPromo,
+      'kode_produk': kodeProduk,
+      'barcode_produk': barcodeProduk,
+      'nama_produk': namaProduk,
+      'deskripsi_produk': deskripsiProduk,
+      'kategori_produk': kategoriProduk,
+      'satuan_produk': satuanProduk,
+      'golongan_produk': golonganProduk,
+      'merk_produk': merkProduk,
+      'dimensi_produk': dimensiProduk,
+      'berat_produk': beratProduk,
+      'harga_pokok': hargaPokok,
+      'harga_produk': hargaProduk,
+      'harga_diskon': hargaDiskon,
+      'harga_grosir': hargaGrosir,
+      'grosir_produk': grosirProduk,
+      'diskon': diskon,
+      'jumlah': jumlah,
+      'gambar_produk': gambarProduk,
+      'multisatuan_jumlah': multisatuanJumlah,
+      'multisatuan_unit': multisatuanUnit,
+      'jumlah_multisatuan': jumlahMultisatuan,
+      'nama_promo': namaPromo,
+      'nominal_diskon': nominalDiskon,
+      'diskon_min_beli': diskonMinBeli,
+      'diskon_max_beli': diskonMaxBeli,
+      'flashsale': flashsale,
+      'flashsale_kuantitas': flashsaleKuantitas,
+      'flashsale_limit': flashsaleLimit,
+      'flashsale_terjual': flashsaleTerjual,
+      'flashsale_nominal': flashsaleNominal,
+      'flashsale_satuan': flashsaleSatuan,
+      'flashsale_end': flashsaleEnd,
+      'harga_produk_flashsale': hargaProdukFlashsale,
+      'harga_diskon_flashsale': hargaDiskonFlashsale,
+      'is_aktiva': isAktiva,
+      'is_multisatuan': isMultisatuan,
+      'is_grosir': isGrosir,
+      'is_diskon': isDiskon,
+      'is_promo': isPromo,
+      'is_flashsale': isFlashsale,
+      'view': view,
+      'view_month': viewMonth,
+      'terjual': terjual,
+      'persentase_diskon': persentaseDiskon,
+      'persentase_flashsale': persentaseFlashsale,
+      'rating': rating,
+    };
   }
 }
 
