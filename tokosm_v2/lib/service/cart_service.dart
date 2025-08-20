@@ -40,8 +40,6 @@ class CartService {
       };
     }
 
-    print("isi data sebelum dikirim: $data");
-
     var body = jsonEncode(data);
     var response = await http.post(
       url,
@@ -87,8 +85,6 @@ class CartService {
         'jumlah': amount,
       };
     }
-
-    print("isi data sebelum dikirim: $data dengan url $url");
 
     var body = jsonEncode(data);
     var response = await http.put(

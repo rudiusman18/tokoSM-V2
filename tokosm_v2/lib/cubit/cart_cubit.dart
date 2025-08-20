@@ -40,7 +40,7 @@ class CartCubit extends Cubit<CartState> {
     bool isLoadingNeeded = true,
   }) async {
     var selectedProductCart = state.productToTransaction;
-    var productCartPrices = state.productPricestoTransaction;
+    List<int>? productCartPrices = [];
 
     if (isLoadingNeeded == true) {
       emit(CartLoading());
@@ -48,6 +48,35 @@ class CartCubit extends Cubit<CartState> {
     try {
       ProductModel productCart =
           await CartService().getCart(token: token, cabangID: cabangID);
+
+      for (var index = 0;
+          index < (selectedProductCart?.data ?? []).length;
+          index++) {
+        selectedProductCart?.data?[index] =
+            productCart.data?[index] ?? DataProduct();
+
+        if ((selectedProductCart?.data ?? [])[index].isFlashsale == 1 &&
+            (selectedProductCart?.data ?? [])[index].satuanProduk !=
+                (selectedProductCart?.data ?? [])[index].flashsaleSatuan) {
+          productCartPrices.add(
+              (selectedProductCart?.data ?? [])[index].hargaProduk *
+                  (selectedProductCart?.data ?? [])[index].jumlah);
+        } else if ((selectedProductCart?.data ?? [])[index].isFlashsale == 1) {
+          productCartPrices.add(
+              (selectedProductCart?.data ?? [])[index].hargaDiskonFlashsale *
+                  (selectedProductCart?.data ?? [])[index].jumlah);
+        } else if ((selectedProductCart?.data ?? [])[index].isDiskon == 1) {
+          productCartPrices.add(
+              (selectedProductCart?.data ?? [])[index].hargaDiskon *
+                  (selectedProductCart?.data ?? [])[index].jumlah);
+        } else {
+          productCartPrices.add(
+            (selectedProductCart?.data ?? [])[index].hargaProduk *
+                (selectedProductCart?.data ?? [])[index].jumlah,
+          );
+        }
+      }
+
       emit(
         CartSuccess(
           productModelData: productCart,
@@ -145,18 +174,23 @@ class CartCubit extends Cubit<CartState> {
       if ((product.data ?? [])[index].isFlashsale == 1 &&
           (product.data ?? [])[index].satuanProduk !=
               (product.data ?? [])[index].flashsaleSatuan) {
-        productPricestoTransaction.add((product.data ?? [])[index].hargaProduk);
+        productPricestoTransaction.add((product.data ?? [])[index].hargaProduk *
+            (product.data ?? [])[index].jumlah);
       } else if ((product.data ?? [])[index].isFlashsale == 1) {
-        productPricestoTransaction
-            .add((product.data ?? [])[index].hargaDiskonFlashsale);
+        productPricestoTransaction.add(
+            (product.data ?? [])[index].hargaDiskonFlashsale *
+                (product.data ?? [])[index].jumlah);
       } else if ((product.data ?? [])[index].isDiskon == 1) {
-        productPricestoTransaction.add((product.data ?? [])[index].hargaDiskon);
+        productPricestoTransaction.add((product.data ?? [])[index].hargaDiskon *
+            (product.data ?? [])[index].jumlah);
       } else {
-        productPricestoTransaction.add((product.data ?? [])[index].hargaProduk);
+        productPricestoTransaction.add(
+          (product.data ?? [])[index].hargaProduk *
+              (product.data ?? [])[index].jumlah,
+        );
       }
     }
 
-    print("isi datanya adalah $productPricestoTransaction");
     emit(
       CartSuccess(
         productAmountData: state.productAmount,
