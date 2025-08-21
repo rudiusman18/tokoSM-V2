@@ -248,7 +248,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                 spacing: 10,
                                 children: [
                                   Text(
-                                    "Rp ${product.isFlashsale == 1 ? product.hargaDiskonFlashsale : product.isDiskon == 1 ? product.hargaDiskon : product.hargaProduk}",
+                                    "Rp ${formatNumber(product.isFlashsale == 1 ? product.hargaDiskonFlashsale : product.isDiskon == 1 ? product.hargaDiskon : product.hargaProduk)}",
                                     style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: bold,
@@ -258,7 +258,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                   if (product.isFlashsale == 1 ||
                                       product.isDiskon == 1) ...{
                                     Text(
-                                      "Rp ${product.hargaProduk}",
+                                      "Rp ${formatNumber(product.hargaProduk)}",
                                       style: const TextStyle(
                                         fontSize: 16,
                                         color: Colors.grey,

@@ -143,7 +143,7 @@ class Utils {
     return DateFormat("d MMMM y HH:mm", "id_ID").format(dateTime);
   }
 
- DateTime? normalizeToDateTime(String dateString) {
+  DateTime? normalizeToDateTime(String dateString) {
     final List<String> knownFormats = [
       "dd/MM/yyyy",
       "MM/dd/yyyy",
@@ -166,4 +166,9 @@ class Utils {
 
     return null; // Tidak ada format cocok
   }
+}
+
+String formatNumber(num number) {
+  final formatter = NumberFormat.decimalPattern('id');
+  return formatter.format(number);
 }

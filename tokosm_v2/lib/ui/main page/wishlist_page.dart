@@ -7,6 +7,7 @@ import 'package:tokosm_v2/cubit/product_cubit.dart';
 import 'package:tokosm_v2/cubit/wishlist_cubit.dart';
 import 'package:tokosm_v2/model/product_model.dart';
 import 'package:tokosm_v2/shared/themes.dart';
+import 'package:tokosm_v2/shared/utils.dart';
 
 class WishlistPage extends StatefulWidget {
   const WishlistPage({super.key});
@@ -347,7 +348,7 @@ class _wishlistPageExtension {
                 if (product?.isFlashsale == 1 &&
                     product?.satuanProduk != product?.flashsaleSatuan) ...{
                   Text(
-                    "Rp ${product?.hargaProduk}",
+                    "Rp ${formatNumber(product?.hargaProduk)}",
                     style: TextStyle(
                       fontSize: 12,
                       color: colorSuccess,
@@ -362,10 +363,10 @@ class _wishlistPageExtension {
                     Flexible(
                       child: Text(
                         product?.isFlashsale == 1
-                            ? "Rp ${product?.hargaDiskonFlashsale ?? 0}"
+                            ? "Rp ${formatNumber(product?.hargaDiskonFlashsale ?? 0)}"
                             : product?.isDiskon == 1
-                                ? "Rp ${product?.hargaDiskon}"
-                                : "Rp ${product?.hargaProduk}",
+                                ? "Rp ${formatNumber(product?.hargaDiskon)}"
+                                : "Rp ${formatNumber(product?.hargaProduk)}",
                         style: TextStyle(
                           fontSize: 12,
                           color: product?.isFlashsale == 1
@@ -377,14 +378,14 @@ class _wishlistPageExtension {
                       ),
                     ),
                     if ((product?.isFlashsale == 1 || product?.isDiskon == 1
-                            ? "Rp ${product?.hargaProduk}"
+                            ? "Rp ${formatNumber(product?.hargaProduk)}"
                             : "") !=
                         "") ...{
                       Text(
                         product?.isFlashsale == 1
-                            ? "Rp ${product?.hargaProdukFlashsale ?? 0}"
+                            ? "Rp ${formatNumber(product?.hargaProdukFlashsale ?? 0)}"
                             : product?.isDiskon == 1
-                                ? "Rp ${product?.hargaDiskon ?? 0}"
+                                ? "Rp ${formatNumber(product?.hargaDiskon ?? 0)}"
                                 : "",
                         style: TextStyle(
                           fontSize: 12,

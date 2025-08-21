@@ -465,7 +465,7 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                                           children: [
                                             Expanded(
                                               child: Text(
-                                                "Rp ${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.produk?[index].hargaProduk ?? ""}",
+                                                "Rp ${formatNumber(context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.produk?[index].hargaProduk ?? 0)}",
                                                 style: const TextStyle(
                                                     fontSize: 12),
                                               ),
@@ -516,15 +516,15 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                             _DetailTransactionPageExtension().itemView(
                                 title: "Total harga",
                                 value:
-                                    "Rp ${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.subtotal ?? 0}"),
+                                    "Rp ${formatNumber(context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.subtotal ?? 0)}"),
                             _DetailTransactionPageExtension().itemView(
                                 title: "Total Ongkos Kirim",
                                 value:
-                                    "Rp ${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.totalOngkosKirim ?? 0}"),
+                                    "Rp ${formatNumber(context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.totalOngkosKirim ?? 0)}"),
                             _DetailTransactionPageExtension().itemView(
                                 title: "Total Diskon",
                                 value:
-                                    "Rp ${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.totalDiskon ?? 0}"),
+                                    "Rp ${formatNumber(context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.totalDiskon ?? 0)}"),
                             Row(
                               children: [
                                 Expanded(
@@ -536,7 +536,7 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                                   ),
                                 ),
                                 Text(
-                                  "Rp ${(context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.total ?? 0)}",
+                                  "Rp ${formatNumber((context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.total ?? 0))}",
                                   style: TextStyle(
                                     fontWeight: bold,
                                   ),
@@ -598,9 +598,10 @@ class _DetailTransactionPageExtension {
                 children: [
                   TextSpan(
                     text: "${transaction.pengiriman?.namaPenerima}",
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.black,
                       fontSize: 12,
+                      fontWeight: bold,
                     ),
                   ),
                   TextSpan(
@@ -621,5 +622,4 @@ class _DetailTransactionPageExtension {
       ],
     );
   }
-
 }

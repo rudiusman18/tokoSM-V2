@@ -392,7 +392,7 @@ class _TransactionPageExtension {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "Rp ${transactionModel.produk?.first.hargaProduk ?? ""}",
+                                "Rp ${formatNumber(transactionModel.produk?.first.hargaProduk ?? 0)}",
                                 style: const TextStyle(fontSize: 12),
                               ),
                               Text(
@@ -427,7 +427,8 @@ class _TransactionPageExtension {
                               text:
                                   'Total (${transactionModel.jumlahProduk} Produk): '),
                           TextSpan(
-                            text: 'Rp ${transactionModel.total}',
+                            text:
+                                'Rp ${formatNumber(transactionModel.total ?? 0)}',
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                             ),

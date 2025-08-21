@@ -10,6 +10,7 @@ import 'package:tokosm_v2/cubit/page_cubit.dart';
 import 'package:tokosm_v2/cubit/product_cubit.dart';
 import 'package:tokosm_v2/model/product_model.dart';
 import 'package:tokosm_v2/shared/themes.dart';
+import 'package:tokosm_v2/shared/utils.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -269,7 +270,7 @@ class _CartPageState extends State<CartPage> {
                             ),
                             Expanded(
                               child: Text(
-                                "Rp ${context.read<CartCubit>().state.productPricestoTransaction?.fold(0, (a, b) => a + b) ?? 0}",
+                                "Rp ${formatNumber(context.read<CartCubit>().state.productPricestoTransaction?.fold(0, (a, b) => (a ?? 0) + b) ?? 0)}",
                                 style: TextStyle(
                                   fontWeight: bold,
                                 ),
@@ -277,7 +278,20 @@ class _CartPageState extends State<CartPage> {
                               ),
                             ),
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                if ((context
+                                            .read<CartCubit>()
+                                            .state
+                                            .productPricestoTransaction
+                                            ?.fold(0, (a, b) => a + b) ??
+                                        0) !=
+                                    0) {
+                                  Navigator.pushNamed(context, "checkout");
+                                } else {
+                                  Utils().scaffoldMessenger(context,
+                                      "Silahkan pilih produk terlebih dahulu");
+                                }
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: colorSuccess,
                                 shape: RoundedRectangleBorder(
@@ -420,7 +434,7 @@ class _CartPageExtenion {
                       if (product?.isFlashsale == 1 &&
                           product?.satuanProduk != product?.flashsaleSatuan)
                         Text(
-                          "Rp ${product?.hargaProduk}",
+                          "Rp ${formatNumber(product?.hargaProduk)}",
                           style: TextStyle(
                             fontSize: 12,
                             color: colorSuccess,
@@ -433,10 +447,10 @@ class _CartPageExtenion {
                           Flexible(
                             child: Text(
                               product?.isFlashsale == 1
-                                  ? "Rp ${product?.hargaDiskonFlashsale ?? 0}"
+                                  ? "Rp ${formatNumber(product?.hargaDiskonFlashsale ?? 0)}"
                                   : product?.isDiskon == 1
-                                      ? "Rp ${product?.hargaDiskon}"
-                                      : "Rp ${product?.hargaProduk}",
+                                      ? "Rp ${formatNumber(product?.hargaDiskon)}"
+                                      : "Rp ${formatNumber(product?.hargaProduk)}",
                               style: TextStyle(
                                 fontSize: 12,
                                 color: product?.isFlashsale == 1
@@ -497,9 +511,9 @@ class _CartPageExtenion {
                             Flexible(
                               child: Text(
                                 product?.isFlashsale == 1
-                                    ? "Rp ${product?.hargaProdukFlashsale}"
+                                    ? "Rp ${formatNumber(product?.hargaProdukFlashsale)}"
                                     : product?.isDiskon == 1
-                                        ? "Rp ${product?.hargaDiskon}"
+                                        ? "Rp ${formatNumber(product?.hargaDiskon)}"
                                         : "",
                                 style: TextStyle(
                                   fontSize: 12,
