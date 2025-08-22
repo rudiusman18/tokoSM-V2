@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:tokosm_v2/cubit/address_cubit.dart';
 import 'package:tokosm_v2/cubit/cabang_cubit.dart';
 import 'package:tokosm_v2/cubit/cart_cubit.dart';
 import 'package:tokosm_v2/cubit/category_cubit.dart';
@@ -14,6 +15,7 @@ import 'package:tokosm_v2/cubit/wishlist_cubit.dart';
 import 'package:tokosm_v2/login_page.dart';
 import 'package:tokosm_v2/register_page.dart';
 import 'package:tokosm_v2/splash_page.dart';
+import 'package:tokosm_v2/ui/address_page.dart';
 import 'package:tokosm_v2/ui/cart_page.dart';
 import 'package:tokosm_v2/ui/checkout_page.dart';
 import 'package:tokosm_v2/ui/main_page.dart';
@@ -75,6 +77,9 @@ class MainApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => CartCubit(),
+        ),
+        BlocProvider(
+          create: (context) => AddressCubit(),
         ),
       ],
       child: MaterialApp(
@@ -157,6 +162,14 @@ class MainApp extends StatelessWidget {
                 type: PageTransitionType.rightToLeft,
                 childCurrent: context.currentRoute,
                 child: const CheckoutPage(),
+                settings: settings,
+              );
+
+            case 'address':
+              return PageTransition(
+                type: PageTransitionType.rightToLeft,
+                childCurrent: context.currentRoute,
+                child: const AddressPage(),
                 settings: settings,
               );
 

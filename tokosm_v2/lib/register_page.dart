@@ -316,4 +316,5 @@ class _RegisterPageExtension {
       },
     );
   }
+
 }
