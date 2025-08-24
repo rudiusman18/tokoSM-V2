@@ -291,6 +291,8 @@ class AddressFormPageState extends State<AddressFormPage> {
       TextEditingController(text: "");
   TextEditingController districtSubDistrictController =
       TextEditingController(text: "");
+  TextEditingController postCodeTextController =
+      TextEditingController(text: "");
   TextEditingController noteTextController = TextEditingController(text: "");
   TextEditingController pinpointTextController =
       TextEditingController(text: "");
@@ -551,6 +553,16 @@ class AddressFormPageState extends State<AddressFormPage> {
                                                   setState(() {
                                                     selectedDistrict =
                                                         "${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kecamatan ?? ""}, ${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kelurahan ?? ""}";
+
+                                                    postCodeTextController
+                                                        .text = context
+                                                            .read<
+                                                                AreaSettingCubit>()
+                                                            .state
+                                                            .areaModel
+                                                            ?.data?[i]
+                                                            .kodepos ??
+                                                        "";
                                                   });
                                                 },
                                                 child: Container(
@@ -669,60 +681,76 @@ class AddressFormPageState extends State<AddressFormPage> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () async {
-                          if (widget.addressData == null) {
-                            Utils().loadingDialog(context: context);
-                            await context.read<AddressCubit>().postAddress(
-                                  token: context
-                                          .read<AuthCubit>()
-                                          .state
-                                          .loginModel
-                                          .token ??
-                                      "",
-                                  addressName: addressNameTextController.text,
-                                  receiverName: receiverNameTextController.text,
-                                  phoneNumber: phoneNumberTextController.text ==
-                                          ""
-                                      ? ""
-                                      : "+62${phoneNumberTextController.text}",
-                                  address: addressTextController.text,
-                                  province: cityProvinceController.text
-                                      .split(", ")
-                                      .first,
-                                  city: cityProvinceController.text
-                                      .split(", ")
-                                      .last,
-                                  district: districtSubDistrictController.text
-                                      .split(", ")
-                                      .first,
-                                  subdistrict: districtSubDistrictController
-                                      .text
-                                      .split(", ")
-                                      .last,
-                                  postCode: "0000",
-                                  note: noteTextController.text,
-                                  lat: "0",
-                                  lng: "0",
-                                  // lat: pinpointTextController.text
-                                  //     .split(", ")
-                                  //     .first,
-                                  // lng: pinpointTextController.text
-                                  //     .split(", ")
-                                  //     .last,
-                                );
-                            if (context.read<AddressCubit>().state
-                                is AddressSuccess) {
-                              Navigator.pop(context);
-                              Navigator.pop(context);
-                            } else if (context.read<AddressCubit>().state
-                                is AddressFailure) {
-                              Navigator.pop(context);
-                              Utils().scaffoldMessenger(
-                                  context,
-                                  (context.read<AddressCubit>().state
-                                              as AddressFailure)
-                                          .error ??
-                                      "");
+                          if (addressNameTextController.text != "" &&
+                              receiverNameTextController.text != "" &&
+                              phoneNumberTextController.text != "" &&
+                              addressNameTextController.text != "" &&
+                              cityProvinceController.text != "" &&
+                              districtSubDistrictController.text != "" &&
+                              postCodeTextController.text != "") {
+                            if (widget.addressData == null) {
+                              // tambah data
+                              Utils().loadingDialog(context: context);
+                              await context.read<AddressCubit>().postAddress(
+                                    token: context
+                                            .read<AuthCubit>()
+                                            .state
+                                            .loginModel
+                                            .token ??
+                                        "",
+                                    addressName: addressNameTextController.text,
+                                    receiverName:
+                                        receiverNameTextController.text,
+                                    phoneNumber: phoneNumberTextController
+                                                .text ==
+                                            ""
+                                        ? ""
+                                        : "+62${phoneNumberTextController.text}",
+                                    address: addressTextController.text,
+                                    province: cityProvinceController.text
+                                        .split(", ")
+                                        .first,
+                                    city: cityProvinceController.text
+                                        .split(", ")
+                                        .last,
+                                    district: districtSubDistrictController.text
+                                        .split(", ")
+                                        .first,
+                                    subdistrict: districtSubDistrictController
+                                        .text
+                                        .split(", ")
+                                        .last,
+                                    postCode: postCodeTextController.text,
+                                    note: noteTextController.text,
+                                    lat: "0",
+                                    lng: "0",
+                                    // lat: pinpointTextController.text
+                                    //     .split(", ")
+                                    //     .first,
+                                    // lng: pinpointTextController.text
+                                    //     .split(", ")
+                                    //     .last,
+                                  );
+                              if (context.read<AddressCubit>().state
+                                  is AddressSuccess) {
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                              } else if (context.read<AddressCubit>().state
+                                  is AddressFailure) {
+                                Navigator.pop(context);
+                                Utils().scaffoldMessenger(
+                                    context,
+                                    (context.read<AddressCubit>().state
+                                                as AddressFailure)
+                                            .error ??
+                                        "");
+                              }
+                            } else {
+                              // edit data
                             }
+                          } else {
+                            Utils().scaffoldMessenger(context,
+                                "Silahkan lengkapi formulir terlebih dahulu");
                           }
                         },
                         style: ElevatedButton.styleFrom(
