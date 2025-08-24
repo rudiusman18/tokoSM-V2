@@ -38,8 +38,8 @@ class AddressData {
   String? kelurahan;
   String? kodepos;
   String? catatan;
-  double? lat;
-  double? lng;
+  dynamic lat;
+  dynamic lng;
   int? isUtama;
   dynamic updatedAt;
 

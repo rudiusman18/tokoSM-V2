@@ -63,7 +63,29 @@ class _AddressPageState extends State<AddressPage> {
                               childCurrent: context.currentRoute,
                               child: AddressFormPage(),
                             ),
-                          );
+                          ).then((_) async {
+                            Utils().loadingDialog(context: context);
+                            await context.read<AddressCubit>().getAddress(
+                                token: context
+                                        .read<AuthCubit>()
+                                        .state
+                                        .loginModel
+                                        .token ??
+                                    "");
+                            if (context.read<AddressCubit>().state
+                                is AddressSuccess) {
+                              Navigator.pop(context);
+                            } else if (context.read<AddressCubit>().state
+                                is AddressFailure) {
+                              Navigator.pop(context);
+                              Utils().scaffoldMessenger(
+                                  context,
+                                  (context.read<AddressCubit>().state
+                                              as AddressFailure)
+                                          .error ??
+                                      "");
+                            }
+                          });
                         },
                         child: const Icon(
                           SolarIconsOutline.addSquare,
@@ -90,13 +112,25 @@ class _AddressPageState extends State<AddressPage> {
                                         [])
                                     .length;
                             index++) ...{
-                          _AddressPageExtension().addressItemView(
-                            context,
-                            context
-                                .read<AddressCubit>()
-                                .state
-                                .addressModel
-                                ?.data?[index],
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              context.read<AddressCubit>().selectAddress(
+                                  addressData: (context
+                                          .read<AddressCubit>()
+                                          .state
+                                          .addressModel
+                                          ?.data ??
+                                      [])[index]);
+                            },
+                            child: _AddressPageExtension().addressItemView(
+                              context,
+                              context
+                                  .read<AddressCubit>()
+                                  .state
+                                  .addressModel
+                                  ?.data?[index],
+                            ),
                           ),
                           const SizedBox(
                             height: 20,
@@ -205,7 +239,24 @@ class _AddressPageExtension {
                       child: AddressFormPage(
                         addressData: addressData,
                       ),
-                    ));
+                    )).then((_) async {
+                  Utils().loadingDialog(context: context);
+                  await context.read<AddressCubit>().getAddress(
+                      token: context.read<AuthCubit>().state.loginModel.token ??
+                          "");
+                  if (context.read<AddressCubit>().state is AddressSuccess) {
+                    Navigator.pop(context);
+                  } else if (context.read<AddressCubit>().state
+                      is AddressFailure) {
+                    Navigator.pop(context);
+                    Utils().scaffoldMessenger(
+                        context,
+                        (context.read<AddressCubit>().state as AddressFailure)
+                                .error ??
+                            "");
+                  }
+                });
+                ;
               },
               child: const Icon(
                 SolarIconsOutline.pen2,
@@ -256,8 +307,11 @@ class AddressFormPageState extends State<AddressFormPage> {
     phoneNumberTextController.text = (widget.addressData?.telpPenerima ?? "")
         .replaceFirst(RegExp(r'^0'), '');
     cityProvinceController.text = widget.addressData?.kabkota ?? "";
-    districtSubDistrictController.text =
-        "${widget.addressData?.kecamatan ?? ""}, ${widget.addressData?.kelurahan ?? ""}";
+    districtSubDistrictController
+        .text = (widget.addressData?.kecamatan ?? "") == "" &&
+            (widget.addressData?.kelurahan ?? "") == ""
+        ? ""
+        : "${widget.addressData?.kecamatan ?? ""}, ${widget.addressData?.kelurahan ?? ""}";
     noteTextController.text = widget.addressData?.catatan ?? "";
     pinpointTextController.text =
         "${widget.addressData?.lat ?? ""}, ${widget.addressData?.lng ?? ""}";
@@ -534,7 +588,7 @@ class AddressFormPageState extends State<AddressFormPage> {
                                       },
                                     ),
                                   ),
-                                  title: "Pilih Provinsi, Kota");
+                                  title: "Pilih Kecamatan, Kelurahan");
                             });
                           },
                         ),
@@ -543,7 +597,7 @@ class AddressFormPageState extends State<AddressFormPage> {
                         ),
                         _AddressFormPageExtension().formItem(
                           title: "Catatan",
-                          controller: addressNameTextController,
+                          controller: noteTextController,
                           focus: FocusNode(),
                           placeholder: "Catatan",
                           icon: null,
@@ -614,7 +668,63 @@ class AddressFormPageState extends State<AddressFormPage> {
                     ),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          if (widget.addressData == null) {
+                            Utils().loadingDialog(context: context);
+                            await context.read<AddressCubit>().postAddress(
+                                  token: context
+                                          .read<AuthCubit>()
+                                          .state
+                                          .loginModel
+                                          .token ??
+                                      "",
+                                  addressName: addressNameTextController.text,
+                                  receiverName: receiverNameTextController.text,
+                                  phoneNumber: phoneNumberTextController.text ==
+                                          ""
+                                      ? ""
+                                      : "+62${phoneNumberTextController.text}",
+                                  address: addressTextController.text,
+                                  province: cityProvinceController.text
+                                      .split(", ")
+                                      .first,
+                                  city: cityProvinceController.text
+                                      .split(", ")
+                                      .last,
+                                  district: districtSubDistrictController.text
+                                      .split(", ")
+                                      .first,
+                                  subdistrict: districtSubDistrictController
+                                      .text
+                                      .split(", ")
+                                      .last,
+                                  postCode: "0000",
+                                  note: noteTextController.text,
+                                  lat: "0",
+                                  lng: "0",
+                                  // lat: pinpointTextController.text
+                                  //     .split(", ")
+                                  //     .first,
+                                  // lng: pinpointTextController.text
+                                  //     .split(", ")
+                                  //     .last,
+                                );
+                            if (context.read<AddressCubit>().state
+                                is AddressSuccess) {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            } else if (context.read<AddressCubit>().state
+                                is AddressFailure) {
+                              Navigator.pop(context);
+                              Utils().scaffoldMessenger(
+                                  context,
+                                  (context.read<AddressCubit>().state
+                                              as AddressFailure)
+                                          .error ??
+                                      "");
+                            }
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colorSuccess,
                           shape: RoundedRectangleBorder(
