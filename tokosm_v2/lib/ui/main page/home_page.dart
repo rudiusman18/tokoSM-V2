@@ -418,6 +418,7 @@ class _HomePageState extends State<HomePage> {
     Widget promoSection() {
       var product = context.read<ProductCubit>().state.promoProduct.data;
       return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 10,
         children: [
           Container(
