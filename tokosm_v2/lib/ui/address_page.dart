@@ -276,91 +276,150 @@ class AddressFormPageState extends State<AddressFormPage> {
                 height: 20,
               ),
               Expanded(
-                  child: SingleChildScrollView(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                  ),
-                  child: Column(
-                    spacing: 10,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _AddressFormPageExtension().formItem(
-                        title: "Nama Alamat",
-                        controller: addressNameTextController,
-                        focus: FocusNode(),
-                        placeholder: "Nama Alamat",
-                        icon: null,
-                      ),
-                      _AddressFormPageExtension().formItem(
-                        title: "Nama Penerima",
-                        controller: addressNameTextController,
-                        focus: FocusNode(),
-                        placeholder: "Nama Penerima",
-                        icon: null,
-                      ),
-                      _AddressFormPageExtension().formItem(
-                        title: "Nomor Hp",
-                        controller: addressNameTextController,
-                        focus: FocusNode(),
-                        placeholder: "Nomor Hp",
-                        icon: null,
-                        textIcon: "+62",
-                      ),
-                      _AddressFormPageExtension().formItem(
-                        title: "Alamat Lengkap",
-                        controller: addressNameTextController,
-                        focus: FocusNode(),
-                        placeholder: "Alamat Lengkap",
-                        icon: null,
-                        descriptionForm: true,
-                      ),
-                      _AddressFormPageExtension().formItem(
-                        title: "Provinsi, Kota",
-                        controller: addressNameTextController,
-                        focus: FocusNode(),
-                        placeholder: "Provinsi, Kota",
-                        rightIcon: SolarIconsBold.altArrowDown,
-                        icon: null,
-                      ),
-                      _AddressFormPageExtension().formItem(
-                        title: "Kecamatan, Kelurahan",
-                        controller: addressNameTextController,
-                        focus: FocusNode(),
-                        placeholder: "Kecamatan, Kelurahan",
-                        rightIcon: SolarIconsBold.altArrowDown,
-                        icon: null,
-                      ),
-                      _AddressFormPageExtension().formItem(
-                        title: "Catatan",
-                        controller: addressNameTextController,
-                        focus: FocusNode(),
-                        placeholder: "Catatan",
-                        icon: null,
-                      ),
-                      // NOTE: Lokasi
-                      Text(
-                        "Lokasi",
-                        style: TextStyle(
-                          fontWeight: bold,
+                child: SingleChildScrollView(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                    ),
+                    child: Column(
+                      spacing: 10,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _AddressFormPageExtension().formItem(
+                          title: "Nama Alamat",
+                          controller: addressNameTextController,
+                          focus: FocusNode(),
+                          placeholder: "Nama Alamat",
+                          icon: null,
                         ),
-                      ),
-                      ElevatedButton(
+                        _AddressFormPageExtension().formItem(
+                          title: "Nama Penerima",
+                          controller: addressNameTextController,
+                          focus: FocusNode(),
+                          placeholder: "Nama Penerima",
+                          icon: null,
+                        ),
+                        _AddressFormPageExtension().formItem(
+                          title: "Nomor Hp",
+                          controller: addressNameTextController,
+                          focus: FocusNode(),
+                          placeholder: "Nomor Hp",
+                          icon: null,
+                          textIcon: "+62",
+                        ),
+                        _AddressFormPageExtension().formItem(
+                          title: "Alamat Lengkap",
+                          controller: addressNameTextController,
+                          focus: FocusNode(),
+                          placeholder: "Alamat Lengkap",
+                          icon: null,
+                          descriptionForm: true,
+                        ),
+                        _AddressFormPageExtension().formItem(
+                          title: "Provinsi, Kota",
+                          controller: addressNameTextController,
+                          focus: FocusNode(),
+                          placeholder: "Provinsi, Kota",
+                          rightIcon: SolarIconsBold.altArrowDown,
+                          icon: null,
+                        ),
+                        _AddressFormPageExtension().formItem(
+                          title: "Kecamatan, Kelurahan",
+                          controller: addressNameTextController,
+                          focus: FocusNode(),
+                          placeholder: "Kecamatan, Kelurahan",
+                          rightIcon: SolarIconsBold.altArrowDown,
+                          icon: null,
+                        ),
+                        _AddressFormPageExtension().formItem(
+                          title: "Catatan",
+                          controller: addressNameTextController,
+                          focus: FocusNode(),
+                          placeholder: "Catatan",
+                          icon: null,
+                        ),
+                        // NOTE: Lokasi
+                        Text(
+                          "Lokasi",
+                          style: TextStyle(
+                            fontWeight: bold,
+                          ),
+                        ),
+                        Container(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.black,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadiusGeometry.circular(10))),
+                            child: const Text(
+                              "Pinpoint",
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 20,
+                ),
+                child: Row(
+                  spacing: 10,
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
                         onPressed: () {},
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.black,
+                          backgroundColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadiusGeometry.circular(
+                              10,
+                            ),
+                            side: BorderSide(
+                              color: colorError,
+                            ),
+                          ),
                         ),
                         child: Text(
-                          "Pinpoint",
+                          "Hapus",
+                          style: TextStyle(
+                            color: colorError,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {},
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: colorSuccess,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadiusGeometry.circular(
+                              10,
+                            ),
+                          ),
+                        ),
+                        child: const Text(
+                          "Simpan",
                           style: TextStyle(
                             color: Colors.white,
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              )),
+              )
             ],
           ),
         ),
