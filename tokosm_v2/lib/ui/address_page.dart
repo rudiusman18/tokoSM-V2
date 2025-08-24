@@ -4,8 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:tokosm_v2/cubit/address_cubit.dart';
+import 'package:tokosm_v2/cubit/auth_cubit.dart';
+import 'package:tokosm_v2/cubit/setting_cubit.dart';
 import 'package:tokosm_v2/model/address_model.dart';
 import 'package:tokosm_v2/shared/themes.dart';
+import 'package:tokosm_v2/shared/utils.dart';
 
 class AddressPage extends StatefulWidget {
   const AddressPage({super.key});
@@ -232,6 +235,10 @@ class AddressFormPageState extends State<AddressFormPage> {
       TextEditingController(text: "");
   TextEditingController phoneNumberTextController =
       TextEditingController(text: "");
+  TextEditingController districtSubDistrictController =
+      TextEditingController(text: "");
+  TextEditingController cityProvinceController =
+      TextEditingController(text: "");
 
   @override
   Widget build(BuildContext context) {
@@ -317,19 +324,199 @@ class AddressFormPageState extends State<AddressFormPage> {
                         ),
                         _AddressFormPageExtension().formItem(
                           title: "Provinsi, Kota",
-                          controller: addressNameTextController,
+                          controller: cityProvinceController,
                           focus: FocusNode(),
-                          placeholder: "Provinsi, Kota",
-                          rightIcon: SolarIconsBold.altArrowDown,
+                          placeholder: 'Provinsi, Kota',
                           icon: null,
+                          rightIcon: SolarIconsBold.altArrowDown,
+                          enableForm: false,
+                          onItemTapped: () {
+                            String selectedCity = cityProvinceController.text;
+                            Utils().loadingDialog(context: context);
+                            context
+                                .read<AreaSettingCubit>()
+                                .getAreaData(
+                                    token: context
+                                            .read<AuthCubit>()
+                                            .state
+                                            .loginModel
+                                            .token ??
+                                        "")
+                                .then((_) {
+                              Navigator.pop(context);
+                              Utils().customAlertDialog(
+                                  context: context,
+                                  confirmationFunction: () {
+                                    Navigator.pop(context);
+                                    districtSubDistrictController.text = "";
+                                    cityProvinceController.text = selectedCity;
+                                  },
+                                  content: SizedBox(
+                                    height: 300,
+                                    width:
+                                        MediaQuery.sizeOf(context).width * 0.8,
+                                    child: StatefulBuilder(
+                                      builder: (context, setState) {
+                                        return ListView(
+                                          children: [
+                                            for (var i = 0;
+                                                i <
+                                                    (context
+                                                                .read<
+                                                                    AreaSettingCubit>()
+                                                                .state
+                                                                .areaModel
+                                                                ?.data ??
+                                                            [])
+                                                        .length;
+                                                i++) ...{
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    selectedCity =
+                                                        "${context.read<AreaSettingCubit>().state.areaModel?.data?[i].provinsi ?? ""}, ${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kota ?? ""}";
+                                                  });
+                                                },
+                                                child: Container(
+                                                  margin: const EdgeInsets.only(
+                                                    bottom: 10,
+                                                  ),
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    vertical: 5,
+                                                    horizontal: 10,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: selectedCity ==
+                                                            "${context.read<AreaSettingCubit>().state.areaModel?.data?[i].provinsi ?? ""}, ${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kota ?? ""}"
+                                                        ? colorSuccess
+                                                        : greyBase300,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                  child: Text(
+                                                    "${context.read<AreaSettingCubit>().state.areaModel?.data?[i].provinsi ?? ""}, ${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kota ?? ""}",
+                                                    style: TextStyle(
+                                                      color: selectedCity ==
+                                                              "${context.read<AreaSettingCubit>().state.areaModel?.data?[i].provinsi ?? ""}, ${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kota ?? ""}"
+                                                          ? Colors.white
+                                                          : Colors.black,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            }
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  title: "Pilih Provinsi, Kota");
+                            });
+                          },
                         ),
                         _AddressFormPageExtension().formItem(
                           title: "Kecamatan, Kelurahan",
-                          controller: addressNameTextController,
+                          controller: districtSubDistrictController,
                           focus: FocusNode(),
-                          placeholder: "Kecamatan, Kelurahan",
-                          rightIcon: SolarIconsBold.altArrowDown,
+                          placeholder: 'Kecamatan, Kelurahan',
                           icon: null,
+                          rightIcon: SolarIconsBold.altArrowDown,
+                          enableForm: false,
+                          onItemTapped: () {
+                            String selectedDistrict =
+                                districtSubDistrictController.text;
+                            Utils().loadingDialog(context: context);
+                            context
+                                .read<AreaSettingCubit>()
+                                .getAreaData(
+                                  token: context
+                                          .read<AuthCubit>()
+                                          .state
+                                          .loginModel
+                                          .token ??
+                                      "",
+                                  kabKota: cityProvinceController.text
+                                      .split(", ")
+                                      .last,
+                                )
+                                .then((_) {
+                              Navigator.pop(context);
+                              Utils().customAlertDialog(
+                                  context: context,
+                                  confirmationFunction: () {
+                                    Navigator.pop(context);
+                                    districtSubDistrictController.text =
+                                        selectedDistrict;
+                                  },
+                                  content: SizedBox(
+                                    height: 300,
+                                    width:
+                                        MediaQuery.sizeOf(context).width * 0.8,
+                                    child: StatefulBuilder(
+                                      builder: (context, setState) {
+                                        return ListView(
+                                          children: [
+                                            for (var i = 0;
+                                                i <
+                                                    (context
+                                                                .read<
+                                                                    AreaSettingCubit>()
+                                                                .state
+                                                                .areaModel
+                                                                ?.data ??
+                                                            [])
+                                                        .length;
+                                                i++) ...{
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    selectedDistrict =
+                                                        "${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kecamatan ?? ""}, ${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kelurahan ?? ""}";
+                                                  });
+                                                },
+                                                child: Container(
+                                                  margin: const EdgeInsets.only(
+                                                    bottom: 10,
+                                                  ),
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    vertical: 5,
+                                                    horizontal: 10,
+                                                  ),
+                                                  decoration: BoxDecoration(
+                                                    color: selectedDistrict ==
+                                                            "${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kecamatan ?? ""}, ${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kelurahan ?? ""}"
+                                                        ? colorSuccess
+                                                        : greyBase300,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                  ),
+                                                  child: Text(
+                                                    "${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kecamatan ?? ""}, ${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kelurahan ?? ""}",
+                                                    style: TextStyle(
+                                                      color: selectedDistrict ==
+                                                              "${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kecamatan ?? ""}, ${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kelurahan ?? ""}"
+                                                          ? Colors.white
+                                                          : Colors.black,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            }
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                  title: "Pilih Provinsi, Kota");
+                            });
+                          },
+                        ),
+                        const SizedBox(
+                          height: 10,
                         ),
                         _AddressFormPageExtension().formItem(
                           title: "Catatan",
