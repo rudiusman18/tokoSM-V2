@@ -235,10 +235,33 @@ class AddressFormPageState extends State<AddressFormPage> {
       TextEditingController(text: "");
   TextEditingController phoneNumberTextController =
       TextEditingController(text: "");
-  TextEditingController districtSubDistrictController =
-      TextEditingController(text: "");
+  TextEditingController addressTextController = TextEditingController(text: "");
   TextEditingController cityProvinceController =
       TextEditingController(text: "");
+  TextEditingController districtSubDistrictController =
+      TextEditingController(text: "");
+  TextEditingController noteTextController = TextEditingController(text: "");
+  TextEditingController pinpointTextController =
+      TextEditingController(text: "");
+
+  @override
+  void initState() {
+    initAddressData();
+    super.initState();
+  }
+
+  initAddressData() {
+    addressNameTextController.text = widget.addressData?.namaAlamat ?? "";
+    receiverNameTextController.text = widget.addressData?.namaPenerima ?? "";
+    phoneNumberTextController.text = (widget.addressData?.telpPenerima ?? "")
+        .replaceFirst(RegExp(r'^0'), '');
+    cityProvinceController.text = widget.addressData?.kabkota ?? "";
+    districtSubDistrictController.text =
+        "${widget.addressData?.kecamatan ?? ""}, ${widget.addressData?.kelurahan ?? ""}";
+    noteTextController.text = widget.addressData?.catatan ?? "";
+    pinpointTextController.text =
+        "${widget.addressData?.lat ?? ""}, ${widget.addressData?.lng ?? ""}";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -301,14 +324,14 @@ class AddressFormPageState extends State<AddressFormPage> {
                         ),
                         _AddressFormPageExtension().formItem(
                           title: "Nama Penerima",
-                          controller: addressNameTextController,
+                          controller: receiverNameTextController,
                           focus: FocusNode(),
                           placeholder: "Nama Penerima",
                           icon: null,
                         ),
                         _AddressFormPageExtension().formItem(
                           title: "Nomor Hp",
-                          controller: addressNameTextController,
+                          controller: phoneNumberTextController,
                           focus: FocusNode(),
                           placeholder: "Nomor Hp",
                           icon: null,
@@ -316,7 +339,7 @@ class AddressFormPageState extends State<AddressFormPage> {
                         ),
                         _AddressFormPageExtension().formItem(
                           title: "Alamat Lengkap",
-                          controller: addressNameTextController,
+                          controller: addressTextController,
                           focus: FocusNode(),
                           placeholder: "Alamat Lengkap",
                           icon: null,
@@ -573,14 +596,18 @@ class AddressFormPageState extends State<AddressFormPage> {
                               10,
                             ),
                             side: BorderSide(
-                              color: colorError,
+                              color: widget.addressData == null
+                                  ? colorSuccess
+                                  : colorError,
                             ),
                           ),
                         ),
                         child: Text(
-                          "Hapus",
+                          widget.addressData == null ? "Batal" : "Hapus",
                           style: TextStyle(
-                            color: colorError,
+                            color: widget.addressData == null
+                                ? colorSuccess
+                                : colorError,
                           ),
                         ),
                       ),
