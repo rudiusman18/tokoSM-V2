@@ -109,6 +109,7 @@ class AuthService {
     required String area,
     required String birthDate,
     required String gender,
+    required String postCode,
   }) async {
     var url = Uri.parse("$baseURL/akun/profil");
     var header = {
@@ -127,6 +128,7 @@ class AuthService {
       "kelurahan": area.split(", ").last,
       "tgl_lahir": birthDate,
       "jenis_kelamin": gender,
+      "kodepos": int.tryParse(postCode),
     };
 
     var body = jsonEncode(data);

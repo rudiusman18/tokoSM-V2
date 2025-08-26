@@ -58,6 +58,8 @@ class DataProduct {
   dynamic flashsale;
   dynamic flashsaleKuantitas;
   dynamic flashsaleLimit;
+  String? kategori;
+  String? kategoriSlug;
   dynamic flashsaleTerjual;
   dynamic flashsaleNominal;
   String? flashsaleSatuan;
@@ -123,6 +125,8 @@ class DataProduct {
     this.isPromo,
     this.isFlashsale,
     this.view,
+    this.kategori,
+    this.kategoriSlug,
     this.grosirProduk,
     this.viewMonth,
     this.terjual,
@@ -138,6 +142,8 @@ class DataProduct {
     produkKategoriId = json['produk_kategori_id'];
     kodeProduk = json['kode_produk'];
     keteranganPromo = json['keterangan_promo'];
+    kategori = json['kategori'];
+    kategoriSlug = json['kategori_slug'];
 
     // ✅ barcode_produk bisa List atau String
     if (json['barcode_produk'] is List) {
@@ -260,6 +266,8 @@ class DataProduct {
       'diskon_min_beli': diskonMinBeli,
       'diskon_max_beli': diskonMaxBeli,
       'flashsale': flashsale,
+      'kategori': kategori,
+      'kategori_slug': kategoriSlug,
       'flashsale_kuantitas': flashsaleKuantitas,
       'flashsale_limit': flashsaleLimit,
       'flashsale_terjual': flashsaleTerjual,

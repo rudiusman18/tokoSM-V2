@@ -21,6 +21,7 @@ dependencies:
   smooth_page_indicator: ^1.2.1
   solar_icons: ^0.0.5
   syncfusion_flutter_datepicker: ^30.1.42
+  webview_flutter: ^4.13.0
 
 dev_dependencies:
   flutter_test:

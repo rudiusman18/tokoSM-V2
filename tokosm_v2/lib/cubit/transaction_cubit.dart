@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:tokosm_v2/model/product_model.dart';
 import 'package:tokosm_v2/model/transaction_model.dart';
 import 'package:tokosm_v2/service/transaction_service.dart';
 
@@ -49,6 +50,45 @@ class TransactionCubit extends Cubit<TransactionState> {
       transactionModelData: state.transactionModel,
       selectedTransactionData: transaction,
     ));
+  }
+
+  Future<void> postTransaction({
+    required String token,
+    required String cabangId,
+    required String userId,
+    required String username,
+    required String total,
+    required String paymentMethod,
+    required String addressID,
+    required List<DataProduct> products,
+  }) async {
+    TransactionData? selectedTransaction = state.selectedTransaction;
+    TransactionModel? transactionModel = state.transactionModel;
+    emit(TransactionLoading(state.transactionTabIndex));
+    try {
+      await TransactionService().postTransaction(
+        token: token,
+        cabangId: cabangId,
+        userId: userId,
+        username: username,
+        total: total,
+        paymentMethod: paymentMethod,
+        addressID: addressID,
+        products: products,
+      );
+      emit(TransactionSuccess(
+        tabIndex: state.transactionTabIndex,
+        selectedTransactionData: selectedTransaction,
+        transactionModelData: transactionModel,
+      ));
+    } catch (e) {
+      emit(
+        TransactionFailure(
+          state.transactionTabIndex,
+          e.toString(),
+        ),
+      );
+    }
   }
 }
 

@@ -7,8 +7,10 @@ import 'package:tokosm_v2/cubit/cabang_cubit.dart';
 import 'package:tokosm_v2/cubit/cart_cubit.dart';
 import 'package:tokosm_v2/cubit/category_cubit.dart';
 import 'package:tokosm_v2/cubit/auth_cubit.dart';
+import 'package:tokosm_v2/cubit/checkout_cubit.dart';
 import 'package:tokosm_v2/cubit/page_cubit.dart';
 import 'package:tokosm_v2/cubit/product_cubit.dart';
+import 'package:tokosm_v2/cubit/review_cubit.dart';
 import 'package:tokosm_v2/cubit/setting_cubit.dart';
 import 'package:tokosm_v2/cubit/transaction_cubit.dart';
 import 'package:tokosm_v2/cubit/wishlist_cubit.dart';
@@ -21,6 +23,7 @@ import 'package:tokosm_v2/ui/checkout_page.dart';
 import 'package:tokosm_v2/ui/main_page.dart';
 import 'package:tokosm_v2/ui/product%20page/detail_product_page.dart';
 import 'package:tokosm_v2/ui/product_page.dart';
+import 'package:tokosm_v2/ui/review%20page/all_product_review_page.dart';
 import 'package:tokosm_v2/ui/setting%20page/change_password_page.dart';
 import 'package:tokosm_v2/ui/setting%20page/edit_profile_page.dart';
 import 'package:tokosm_v2/ui/setting_page.dart';
@@ -80,6 +83,12 @@ class MainApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => AddressCubit(),
+        ),
+        BlocProvider(
+          create: (context) => CheckoutCubit(),
+        ),
+        BlocProvider(
+          create: (context) => ReviewCubit(),
         ),
       ],
       child: MaterialApp(
@@ -170,6 +179,14 @@ class MainApp extends StatelessWidget {
                 type: PageTransitionType.rightToLeft,
                 childCurrent: context.currentRoute,
                 child: const AddressPage(),
+                settings: settings,
+              );
+
+            case 'product/all-review':
+              return PageTransition(
+                type: PageTransitionType.rightToLeft,
+                childCurrent: context.currentRoute,
+                child: const AllProductReviewPage(),
                 settings: settings,
               );
 

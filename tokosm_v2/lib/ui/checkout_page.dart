@@ -6,6 +6,9 @@ import 'package:tokosm_v2/cubit/address_cubit.dart';
 import 'package:tokosm_v2/cubit/auth_cubit.dart';
 import 'package:tokosm_v2/cubit/cabang_cubit.dart';
 import 'package:tokosm_v2/cubit/cart_cubit.dart';
+import 'package:tokosm_v2/cubit/checkout_cubit.dart';
+import 'package:tokosm_v2/cubit/page_cubit.dart';
+import 'package:tokosm_v2/cubit/transaction_cubit.dart';
 import 'package:tokosm_v2/model/product_model.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 import 'package:tokosm_v2/shared/utils.dart';
@@ -27,6 +30,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   void initCheckout() async {
+    context.read<CheckoutCubit>().setPaymentMethod(paymentMethod: "");
+
     Utils().loadingDialog(context: context);
     await context.read<AddressCubit>().getAddress(
         token: context.read<AuthCubit>().state.loginModel.token ?? "");
@@ -71,42 +76,56 @@ class _CheckoutPageState extends State<CheckoutPage> {
     required String imageURL,
     required String name,
   }) {
-    return Column(
-      spacing: 10,
-      children: [
-        Row(
-          spacing: 5,
-          children: [
-            Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(
-                    imageURL,
+    return GestureDetector(
+      onTap: () {
+        context
+            .read<CheckoutCubit>()
+            .setPaymentMethod(paymentMethod: name.toLowerCase());
+      },
+      child: Column(
+        spacing: 10,
+        children: [
+          Row(
+            spacing: 5,
+            children: [
+              Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      imageURL,
+                    ),
                   ),
                 ),
               ),
-            ),
-            Expanded(
-              child: Text(
-                name,
-                style: const TextStyle(
-                  fontSize: 12,
+              Expanded(
+                child: Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 12,
+                  ),
                 ),
               ),
-            ),
-            Icon(
-              Icons.radio_button_off, //radio_button_checked
-              color: colorSuccess,
-              size: 24,
-            ),
-          ],
-        ),
-        const Divider(
-          height: 1,
-        ),
-      ],
+              Icon(
+                context
+                            .read<CheckoutCubit>()
+                            .state
+                            .paymentMethod
+                            ?.toLowerCase() !=
+                        name.toLowerCase()
+                    ? Icons.radio_button_off
+                    : Icons.radio_button_checked, //radio_button_checked
+                color: colorSuccess,
+                size: 24,
+              ),
+            ],
+          ),
+          const Divider(
+            height: 1,
+          ),
+        ],
+      ),
     );
   }
 
@@ -135,419 +154,483 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AddressCubit, AddressState>(
+    return BlocBuilder<CheckoutCubit, CheckoutState>(
       builder: (context, state) {
-        return Scaffold(
-          body: SafeArea(
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                vertical: 10,
-              ),
-              child: Column(
-                spacing: 10,
-                children: [
-                  Container(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                    ),
-                    child: Row(
-                      spacing: 10,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Icon(
-                            SolarIconsOutline.arrowLeft,
-                          ),
+        return BlocBuilder<AddressCubit, AddressState>(
+          builder: (context, state) {
+            return Scaffold(
+              body: SafeArea(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                  ),
+                  child: Column(
+                    spacing: 10,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 16,
                         ),
-                        Expanded(
-                          child: Text(
-                            'Keranjang',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: bold,
+                        child: Row(
+                          spacing: 10,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Icon(
+                                SolarIconsOutline.arrowLeft,
+                              ),
                             ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    height: 3,
-                    color: Colors.grey.withAlpha(90),
-                  ),
-                  Expanded(
-                    child: ListView(
-                      children: [
-                        // NOTE: ALAMAT
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    Navigator.pushNamed(context, "address");
-                                  },
-                                  child: _CheckoutPageExtension()
-                                      .addressItemView(context),
-                                ),
-                              ),
-                              const Icon(
-                                Icons.chevron_right,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          height: 10,
-                          color: Colors.grey.withAlpha(90),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(
-                            top: 10,
-                            left: 16,
-                            right: 16,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            spacing: 5,
-                            children: [
-                              const Icon(
-                                SolarIconsOutline.shopMinimalistic,
-                                size: 18,
-                              ),
-                              Text(
-                                "Cabang ${context.read<CabangCubit>().state.selectedCabangData.namaCabang?.replaceAll("Cab ", "")}",
+                            Expanded(
+                              child: Text(
+                                'Keranjang',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: bold,
                                 ),
                               ),
-                            ],
-                          ),
-                        ),
-                        productListView(),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          height: 2,
-                          color: Colors.grey.withAlpha(90),
-                        ),
-
-                        //NOTE: catatan toko
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                          ),
-                          child: Row(
-                            spacing: 5,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  "Catatan Toko",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: bold,
-                                  ),
-                                ),
-                              ),
-                              Text(
-                                "...",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: bold,
-                                ),
-                              ),
-                              const Icon(
-                                Icons.chevron_right,
-                                size: 18,
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        // NOTE: Pengiriman
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                          ),
-                          child: Row(
-                            spacing: 5,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  "Pengiriman",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: bold,
-                                  ),
-                                ),
-                              ),
-                              const Text(
-                                "Lihat Semua",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const Icon(
-                                Icons.chevron_right,
-                                size: 18,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Container(
-                          padding: const EdgeInsets.all(
-                            10,
-                          ),
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colorSuccess.withAlpha(50),
-                            border: Border.all(
-                              color: Colors.grey,
                             ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
+                          ],
+                        ),
+                      ),
+                      Container(
+                        height: 3,
+                        color: Colors.grey.withAlpha(90),
+                      ),
+                      Expanded(
+                        child: ListView(
+                          children: [
+                            // NOTE: ALAMAT
+                            Container(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.pushNamed(context, "address");
+                                      },
+                                      child: _CheckoutPageExtension()
+                                          .addressItemView(context),
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.chevron_right,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              height: 10,
+                              color: Colors.grey.withAlpha(90),
+                            ),
+                            Container(
+                              margin: const EdgeInsets.only(
+                                top: 10,
+                                left: 16,
+                                right: 16,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                spacing: 5,
+                                children: [
+                                  const Icon(
+                                    SolarIconsOutline.shopMinimalistic,
+                                    size: 18,
+                                  ),
+                                  Text(
+                                    "Cabang ${context.read<CabangCubit>().state.selectedCabangData.namaCabang?.replaceAll("Cab ", "")}",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            productListView(),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              height: 2,
+                              color: Colors.grey.withAlpha(90),
+                            ),
+
+                            //NOTE: catatan toko
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              child: Row(
+                                spacing: 5,
                                 children: [
                                   Expanded(
                                     child: Text(
-                                      "Kurir Toko",
+                                      "Catatan Toko",
                                       style: TextStyle(
-                                        fontWeight: bold,
                                         fontSize: 12,
+                                        fontWeight: bold,
                                       ),
                                     ),
                                   ),
                                   Text(
-                                    "Rp 8,000",
+                                    "...",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: bold,
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.chevron_right,
+                                    size: 18,
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            // NOTE: Pengiriman
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Container(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              child: Row(
+                                spacing: 5,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      "Pengiriman",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: bold,
+                                      ),
+                                    ),
+                                  ),
+                                  const Text(
+                                    "Lihat Semua",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const Icon(
+                                    Icons.chevron_right,
+                                    size: 18,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Container(
+                              padding: const EdgeInsets.all(
+                                10,
+                              ),
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colorSuccess.withAlpha(50),
+                                border: Border.all(
+                                  color: Colors.grey,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          "Kurir Toko",
+                                          style: TextStyle(
+                                            fontWeight: bold,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        "Rp 8,000",
+                                        style: TextStyle(
+                                          fontWeight: bold,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(
+                                    height: 10,
+                                  ),
+                                  const Text(
+                                    "Standar",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const Text(
+                                    "Estimasi tiba 3-4 Maret",
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              height: 10,
+                              color: Colors.grey.withAlpha(90),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+
+                            // NOTE: Metode Pembayaran
+                            Container(
+                              margin:
+                                  const EdgeInsets.symmetric(horizontal: 16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                spacing: 10,
+                                children: [
+                                  Text(
+                                    "Metode Pembayaran",
+                                    style: TextStyle(
+                                      fontWeight: bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Tunai",
                                     style: TextStyle(
                                       fontWeight: bold,
                                       fontSize: 12,
                                     ),
                                   ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              const Text(
-                                "Standar",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                ),
-                              ),
-                              const Text(
-                                "Estimasi tiba 3-4 Maret",
-                                style: TextStyle(
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          height: 10,
-                          color: Colors.grey.withAlpha(90),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-
-                        // NOTE: Metode Pembayaran
-                        Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            spacing: 10,
-                            children: [
-                              Text(
-                                "Metode Pembayaran",
-                                style: TextStyle(
-                                  fontWeight: bold,
-                                ),
-                              ),
-                              Text(
-                                "Tunai",
-                                style: TextStyle(
-                                  fontWeight: bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                              paymentMethodItemView(
-                                imageURL:
-                                    "https://images.tokopedia.net/img/payment/icons/cod.png",
-                                name: "COD",
-                              ),
-                              Text(
-                                "Bank Transfer",
-                                style: TextStyle(
-                                  fontWeight: bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                              paymentMethodItemView(
-                                imageURL:
-                                    "https://images.tokopedia.net/img/payment/icons/bca.png",
-                                name: "Bank BCA",
-                              ),
-                              paymentMethodItemView(
-                                imageURL:
-                                    "https://images.tokopedia.net/img/payment/icons/bri.png",
-                                name: "Bank BRI",
-                              ),
-                              paymentMethodItemView(
-                                imageURL:
-                                    "https://images.tokopedia.net/img/payment/icons/mandiri.png",
-                                name: "Bank Mandiri",
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          height: 10,
-                          color: Colors.grey.withAlpha(90),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-
-                        //NOTE: Rincian Pembayaran
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                          ),
-                          child: Column(
-                            spacing: 10,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Rincian Pembayaran",
-                                style: TextStyle(
-                                  fontWeight: bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                              paymentDetailView(
-                                name: "Total Harga",
-                                value: "Rp 88,000",
-                              ),
-                              paymentDetailView(
-                                name: "Total Ongkos Kirim",
-                                value: "Rp 88,000",
-                              ),
-                              paymentDetailView(
-                                name: "Total Diskon",
-                                value: "- Rp 88,000",
-                              ),
-                              const Divider(),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      "Total Pembayaran",
-                                      style: TextStyle(
-                                        fontWeight: bold,
-                                        fontSize: 14,
-                                      ),
-                                    ),
+                                  paymentMethodItemView(
+                                    imageURL:
+                                        "https://images.tokopedia.net/img/payment/icons/cod.png",
+                                    name: "COD",
                                   ),
                                   Text(
-                                    "Rp ${formatNumber(context.read<CartCubit>().state.productPricestoTransaction?.fold(0, (a, b) => (a ?? 0) + b) ?? 0)}",
+                                    "Bank Transfer",
+                                    style: TextStyle(
+                                      fontWeight: bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  paymentMethodItemView(
+                                    imageURL:
+                                        "https://images.tokopedia.net/img/payment/icons/bca.png",
+                                    name: "Bank BCA",
+                                  ),
+                                  paymentMethodItemView(
+                                    imageURL:
+                                        "https://images.tokopedia.net/img/payment/icons/bri.png",
+                                    name: "Bank BRI",
+                                  ),
+                                  paymentMethodItemView(
+                                    imageURL:
+                                        "https://images.tokopedia.net/img/payment/icons/mandiri.png",
+                                    name: "Bank Mandiri",
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              height: 10,
+                              color: Colors.grey.withAlpha(90),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+
+                            //NOTE: Rincian Pembayaran
+                            Container(
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              child: Column(
+                                spacing: 10,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Rincian Pembayaran",
                                     style: TextStyle(
                                       fontWeight: bold,
                                       fontSize: 14,
                                     ),
                                   ),
+                                  paymentDetailView(
+                                    name: "Total Harga",
+                                    value: "Rp 88,000",
+                                  ),
+                                  paymentDetailView(
+                                    name: "Total Ongkos Kirim",
+                                    value: "Rp 88,000",
+                                  ),
+                                  paymentDetailView(
+                                    name: "Total Diskon",
+                                    value: "- Rp 88,000",
+                                  ),
+                                  const Divider(),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          "Total Pembayaran",
+                                          style: TextStyle(
+                                            fontWeight: bold,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        "Rp ${formatNumber(context.read<CartCubit>().state.productPricestoTransaction?.fold(0, (a, b) => (a ?? 0) + b) ?? 0)}",
+                                        style: TextStyle(
+                                          fontWeight: bold,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ],
                               ),
-                            ],
-                          ),
+                            ),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                          ],
                         ),
-                        const SizedBox(
-                          height: 30,
+                      ),
+                      Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 16,
                         ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      spacing: 10,
-                      children: [
-                        RichText(
-                          text: TextSpan(
-                              text: "Total ",
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text:
-                                      "Rp ${formatNumber(context.read<CartCubit>().state.productPricestoTransaction?.fold(0, (a, b) => (a ?? 0) + b) ?? 0)}",
-                                  style: TextStyle(
-                                    color: colorSuccess,
-                                    fontWeight: bold,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          spacing: 10,
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                  text: "Total ",
+                                  style: const TextStyle(
+                                    color: Colors.black,
                                     fontSize: 16,
                                   ),
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                          "Rp ${formatNumber(context.read<CartCubit>().state.productPricestoTransaction?.fold(0, (a, b) => (a ?? 0) + b) ?? 0)}",
+                                      style: TextStyle(
+                                        color: colorSuccess,
+                                        fontWeight: bold,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ]),
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                if ((context
+                                            .read<CheckoutCubit>()
+                                            .state
+                                            .paymentMethod ??
+                                        "") !=
+                                    "") {
+                                  Utils().loadingDialog(context: context);
+                                  await context
+                                      .read<TransactionCubit>()
+                                      .postTransaction(
+                                        token: context
+                                                .read<AuthCubit>()
+                                                .state
+                                                .loginModel
+                                                .token ??
+                                            "",
+                                        cabangId:
+                                            "${context.read<CabangCubit>().state.selectedCabangData.id}",
+                                        userId:
+                                            "${context.read<AuthCubit>().state.loginModel.data?.id}",
+                                        username:
+                                            "${context.read<AuthCubit>().state.loginModel.data?.namaPelanggan}",
+                                        total:
+                                            "${(context.read<CartCubit>().state.productPricestoTransaction?.fold(0, (a, b) => (a) + b) ?? 0)}",
+                                        paymentMethod: context
+                                                .read<CheckoutCubit>()
+                                                .state
+                                                .paymentMethod ??
+                                            "",
+                                        addressID:
+                                            "${context.read<AddressCubit>().state.selectedAddressModel?.id}",
+                                        products: context
+                                                .read<CartCubit>()
+                                                .state
+                                                .productToTransaction
+                                                ?.data ??
+                                            [],
+                                      );
+
+                                  Navigator.pop(context);
+                                  if (context.read<TransactionCubit>().state
+                                      is TransactionFailure) {
+                                    Utils().scaffoldMessenger(
+                                        context,
+                                        (context.read<TransactionCubit>().state
+                                                as TransactionFailure)
+                                            .error);
+                                  } else if (context
+                                      .read<TransactionCubit>()
+                                      .state is TransactionSuccess) {
+                                    context.read<PageCubit>().setPage(3);
+                                    Navigator.popUntil(context,
+                                        ModalRoute.withName('main-page'));
+                                  }
+                                } else {
+                                  Utils().scaffoldMessenger(context,
+                                      "Silahkan pilih metode pembayaran terlebih dahulu");
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: colorSuccess,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadiusGeometry.circular(
+                                    10,
+                                  ),
                                 ),
-                              ]),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: colorSuccess,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadiusGeometry.circular(
-                                10,
+                              ),
+                              child: const Text(
+                                "Buat Pesanan",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
-                          ),
-                          child: const Text(
-                            "Buat Pesanan",
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ),
+            );
+          },
         );
       },
     );

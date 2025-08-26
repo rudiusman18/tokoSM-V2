@@ -43,6 +43,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
       TextEditingController(text: "");
   FocusNode districtSubDistrictFocusNode = FocusNode();
 
+  TextEditingController postCodeTextController =
+      TextEditingController(text: "");
+
   @override
   Widget build(BuildContext context) {
     var userData = context.read<AuthCubit>().state.loginModel.data;
@@ -373,6 +376,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                             setState(() {
                                               selectedDistrict =
                                                   "${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kecamatan ?? ""}, ${context.read<AreaSettingCubit>().state.areaModel?.data?[i].kelurahan ?? ""}";
+
+                                              postCodeTextController
+                                                  .text = context
+                                                      .read<AreaSettingCubit>()
+                                                      .state
+                                                      .areaModel
+                                                      ?.data?[i]
+                                                      .kodepos ??
+                                                  "";
                                             });
                                           },
                                           child: Container(
@@ -444,6 +456,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           "${cityProvinceController.text}, ${districtSubDistrictController.text}",
                       birthDate: tglLahirController.text,
                       gender: genderController.text,
+                      postCode: postCodeTextController.text,
                     )
                     .then((_) {
                   if (context.read<AuthCubit>().state is AuthSuccess) {

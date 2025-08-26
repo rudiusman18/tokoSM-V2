@@ -146,4 +146,28 @@ class ProductService {
       throw ("${data['message']}");
     }
   }
+
+  Future<Map<String, dynamic>> getProductReview({
+    required String token,
+    required String productID,
+  }) async {
+    var url = Uri.parse("$baseURL/ulasan/$productID");
+    var header = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    var response = await http.get(
+      url,
+      headers: header,
+    );
+
+    if (response.statusCode >= 200 && response.statusCode <= 299) {
+      var data = jsonDecode(response.body);
+      return data;
+    } else {
+      var data = jsonDecode(response.body);
+      throw ("${data['message']}");
+    }
+  }
 }

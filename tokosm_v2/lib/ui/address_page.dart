@@ -171,23 +171,25 @@ class _AddressPageExtension {
                 Row(
                   spacing: 5,
                   children: [
-                    RichText(
-                      text: TextSpan(
-                        children: [
-                          TextSpan(
-                            text: "${addressData?.namaAlamat}",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 12,
-                              fontWeight: bold,
+                    Expanded(
+                      child: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: "${addressData?.namaAlamat}",
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontSize: 12,
+                                fontWeight: bold,
+                              ),
                             ),
-                          ),
-                          TextSpan(
-                            text: " | ${addressData?.telpPenerima}",
-                            style: const TextStyle(
-                                color: Colors.grey, fontSize: 12),
-                          ),
-                        ],
+                            TextSpan(
+                              text: " | ${addressData?.telpPenerima}",
+                              style: const TextStyle(
+                                  color: Colors.grey, fontSize: 12),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     if (addressData?.isUtama == 1)
@@ -297,6 +299,8 @@ class AddressFormPageState extends State<AddressFormPage> {
   TextEditingController pinpointTextController =
       TextEditingController(text: "");
 
+  bool isUtama = false;
+
   @override
   void initState() {
     initAddressData();
@@ -307,7 +311,9 @@ class AddressFormPageState extends State<AddressFormPage> {
     addressNameTextController.text = widget.addressData?.namaAlamat ?? "";
     receiverNameTextController.text = widget.addressData?.namaPenerima ?? "";
     phoneNumberTextController.text = (widget.addressData?.telpPenerima ?? "")
-        .replaceFirst(RegExp(r'^0'), '');
+        .replaceFirst(RegExp(r'^0'), '')
+        .replaceAll("+62", "");
+    addressTextController.text = widget.addressData?.alamatLengkap ?? "";
     cityProvinceController.text = widget.addressData?.kabkota ?? "";
     districtSubDistrictController
         .text = (widget.addressData?.kecamatan ?? "") == "" &&
@@ -317,6 +323,9 @@ class AddressFormPageState extends State<AddressFormPage> {
     noteTextController.text = widget.addressData?.catatan ?? "";
     pinpointTextController.text =
         "${widget.addressData?.lat ?? ""}, ${widget.addressData?.lng ?? ""}";
+    postCodeTextController.text = widget.addressData?.kodepos ?? "";
+
+    isUtama = widget.addressData?.isUtama == 1 ? true : false;
   }
 
   @override
@@ -621,10 +630,18 @@ class AddressFormPageState extends State<AddressFormPage> {
                             fontWeight: bold,
                           ),
                         ),
-                        Container(
+                        SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              // Navigator.push(
+                              //   context,
+                              //   PageTransition(
+                              //     type: PageTransitionType.bottomToTop,
+                              //     child: const MapWebView(),
+                              //   ),
+                              // );
+                            },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.black,
                                 shape: RoundedRectangleBorder(
@@ -637,6 +654,26 @@ class AddressFormPageState extends State<AddressFormPage> {
                               ),
                             ),
                           ),
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                "Jadikan alamat utama",
+                                style: TextStyle(
+                                  fontWeight: bold,
+                                ),
+                              ),
+                            ),
+                            Switch(
+                                activeColor: colorSuccess,
+                                value: isUtama,
+                                onChanged: (_) {
+                                  setState(() {
+                                    isUtama = !isUtama;
+                                  });
+                                })
+                          ],
                         ),
                       ],
                     ),
@@ -653,7 +690,36 @@ class AddressFormPageState extends State<AddressFormPage> {
                   children: [
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () async {
+                          if (widget.addressData == null) {
+                            Navigator.pop(context);
+                          } else {
+                            Utils().loadingDialog(context: context);
+                            await context.read<AddressCubit>().deleteAddress(
+                                  addressID: "${widget.addressData?.id}",
+                                  token: context
+                                          .read<AuthCubit>()
+                                          .state
+                                          .loginModel
+                                          .token ??
+                                      "",
+                                );
+                            if (context.read<AddressCubit>().state
+                                is AddressSuccess) {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            } else if (context.read<AddressCubit>().state
+                                is AddressFailure) {
+                              Navigator.pop(context);
+                              Utils().scaffoldMessenger(
+                                  context,
+                                  (context.read<AddressCubit>().state
+                                              as AddressFailure)
+                                          .error ??
+                                      "");
+                            }
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.transparent,
                           shadowColor: Colors.transparent,
@@ -722,6 +788,7 @@ class AddressFormPageState extends State<AddressFormPage> {
                                         .last,
                                     postCode: postCodeTextController.text,
                                     note: noteTextController.text,
+                                    isUtama: isUtama,
                                     lat: "0",
                                     lng: "0",
                                     // lat: pinpointTextController.text
@@ -747,6 +814,63 @@ class AddressFormPageState extends State<AddressFormPage> {
                               }
                             } else {
                               // edit data
+                              Utils().loadingDialog(context: context);
+                              await context.read<AddressCubit>().updateAddress(
+                                    addressID: "${widget.addressData?.id}",
+                                    token: context
+                                            .read<AuthCubit>()
+                                            .state
+                                            .loginModel
+                                            .token ??
+                                        "",
+                                    addressName: addressNameTextController.text,
+                                    receiverName:
+                                        receiverNameTextController.text,
+                                    phoneNumber: phoneNumberTextController
+                                                .text ==
+                                            ""
+                                        ? ""
+                                        : "+62${phoneNumberTextController.text}",
+                                    address: addressTextController.text,
+                                    province: cityProvinceController.text
+                                        .split(", ")
+                                        .first,
+                                    city: cityProvinceController.text
+                                        .split(", ")
+                                        .last,
+                                    district: districtSubDistrictController.text
+                                        .split(", ")
+                                        .first,
+                                    subdistrict: districtSubDistrictController
+                                        .text
+                                        .split(", ")
+                                        .last,
+                                    postCode: postCodeTextController.text,
+                                    note: noteTextController.text,
+                                    isUtama: isUtama,
+                                    lat: "0",
+                                    lng: "0",
+                                    // lat: pinpointTextController.text
+                                    //     .split(", ")
+                                    //     .first,
+                                    // lng: pinpointTextController.text
+                                    //     .split(", ")
+                                    //     .last,
+                                  );
+                              if (context.read<AddressCubit>().state
+                                  is AddressSuccess) {
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                              } else if (context.read<AddressCubit>().state
+                                  is AddressFailure) {
+                                Navigator.pop(context);
+                                Utils().scaffoldMessenger(
+                                    context,
+                                    (context.read<AddressCubit>().state
+                                                as AddressFailure)
+                                            .error ??
+                                        "");
+                              }
                             }
                           } else {
                             Utils().scaffoldMessenger(context,
@@ -894,5 +1018,19 @@ class _AddressFormPageExtension {
         );
       },
     );
+  }
+}
+
+class MapWebView extends StatefulWidget {
+  const MapWebView({super.key});
+
+  @override
+  State<MapWebView> createState() => _MapWebViewState();
+}
+
+class _MapWebViewState extends State<MapWebView> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }

@@ -75,19 +75,22 @@ class AuthCubit extends Cubit<AuthState> {
     required String area,
     required String birthDate,
     required String gender,
+    required String postCode,
   }) async {
     emit(AuthLoading());
     try {
       await AuthService().updateProfile(
-          token: token,
-          cabangID: cabangID,
-          username: username,
-          email: email,
-          phoneNumber: phoneNumber,
-          address: address,
-          area: area,
-          birthDate: birthDate,
-          gender: gender);
+        token: token,
+        cabangID: cabangID,
+        username: username,
+        email: email,
+        phoneNumber: phoneNumber,
+        address: address,
+        area: area,
+        birthDate: birthDate,
+        gender: gender,
+        postCode: postCode,
+      );
       final prefs = await SharedPreferences.getInstance();
       final userCredential = prefs.getString('user credential');
       postLogin(
