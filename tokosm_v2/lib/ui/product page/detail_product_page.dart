@@ -746,59 +746,73 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                                   Expanded(
                                                     child: GestureDetector(
                                                       onTap: () async {
-                                                        Utils().loadingDialog(
-                                                            context: context);
-                                                        await context
-                                                            .read<CartCubit>()
-                                                            .addCart(
-                                                              token: context
-                                                                      .read<
-                                                                          AuthCubit>()
-                                                                      .state
-                                                                      .loginModel
-                                                                      .token ??
-                                                                  "",
-                                                              cabangId: context
-                                                                      .read<
-                                                                          CabangCubit>()
-                                                                      .state
-                                                                      .selectedCabangData
-                                                                      .id ??
-                                                                  0,
-                                                              productId:
-                                                                  product.id,
-                                                              isMultiCart: true,
-                                                              amount: null,
-                                                              jumlahmultiSatuan: context
-                                                                  .read<
-                                                                      CartCubit>()
-                                                                  .state
-                                                                  .productAmount,
-                                                              multisatuanJumlah:
-                                                                  (product.multisatuanJumlah ??
-                                                                          [])
-                                                                      .cast<
-                                                                          int>(),
-                                                              multisatuanUnit:
-                                                                  product
-                                                                      .multisatuanUnit,
-                                                            );
+                                                        if ((product?.jumlahMultisatuan ??
+                                                                [])
+                                                            .every((element) =>
+                                                                element <= 0)) {
 
-                                                        Navigator.pop(context);
-                                                        Navigator.pop(context);
-                                                        if (context
-                                                                .read<CartCubit>()
-                                                                .state
-                                                            is CartSuccess) {
-                                                          Navigator.pushNamed(
-                                                              context, 'cart');
-                                                        } else if (context
-                                                                .read<CartCubit>()
-                                                                .state
-                                                            is CartFailure) {
-                                                          Utils().scaffoldMessenger(
-                                                              context,
-                                                              "Gagal menambahkan produk ke keranjang");
+                                                                  Utils().scaffoldMessenger(context, "Silahkan");
+                                                        } else {
+                                                          Utils().loadingDialog(
+                                                              context: context);
+                                                          await context
+                                                              .read<CartCubit>()
+                                                              .addCart(
+                                                                token: context
+                                                                        .read<
+                                                                            AuthCubit>()
+                                                                        .state
+                                                                        .loginModel
+                                                                        .token ??
+                                                                    "",
+                                                                cabangId: context
+                                                                        .read<
+                                                                            CabangCubit>()
+                                                                        .state
+                                                                        .selectedCabangData
+                                                                        .id ??
+                                                                    0,
+                                                                productId:
+                                                                    product.id,
+                                                                isMultiCart:
+                                                                    true,
+                                                                amount: null,
+                                                                jumlahmultiSatuan: context
+                                                                    .read<
+                                                                        CartCubit>()
+                                                                    .state
+                                                                    .productAmount,
+                                                                multisatuanJumlah: ((product
+                                                                            .multisatuanJumlah ??
+                                                                        [])
+                                                                    .map((e) =>
+                                                                        int.tryParse(
+                                                                            e) ??
+                                                                        0)).toList(),
+                                                                multisatuanUnit:
+                                                                    product
+                                                                        .multisatuanUnit,
+                                                              );
+
+                                                          Navigator.pop(
+                                                              context);
+                                                          Navigator.pop(
+                                                              context);
+                                                          if (context
+                                                                  .read<CartCubit>()
+                                                                  .state
+                                                              is CartSuccess) {
+                                                            Navigator.pushNamed(
+                                                                context,
+                                                                'cart');
+                                                          } else if (context
+                                                                  .read<CartCubit>()
+                                                                  .state
+                                                              is CartFailure) {
+                                                            Utils().scaffoldMessenger(
+                                                                context,
+                                                                "Gagal menambahkan produk ke keranjang");
+                                                          }
                                                         }
                                                       },
                                                       child: Container(
@@ -1015,5 +1029,4 @@ class _DetailProductExtension {
       ],
     );
   }
-
 }

@@ -20,16 +20,19 @@ class CartCubit extends Cubit<CartState> {
     emit(CartLoading());
     try {
       var _ = await CartService().postCart(
-          token: token,
-          cabangId: cabangId,
-          productId: productId,
-          amount: amount,
-          multisatuanJumlah: multisatuanJumlah,
-          multisatuanUnit: multisatuanUnit,
-          jumlahmultiSatuan: jumlahmultiSatuan,
-          isMultiCart: isMultiCart);
+        token: token,
+        cabangId: cabangId,
+        productId: productId,
+        amount: amount,
+        multisatuanJumlah: multisatuanJumlah,
+        multisatuanUnit: multisatuanUnit,
+        jumlahmultiSatuan: jumlahmultiSatuan,
+        isMultiCart: isMultiCart,
+      );
+
       emit(CartSuccess());
     } catch (e) {
+      print(e.toString());
       emit(CartFailure(error: e.toString()));
     }
   }
