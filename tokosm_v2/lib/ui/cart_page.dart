@@ -364,7 +364,6 @@ class _CartPageExtenion {
                               .where((element) => (element.id == product.id))
                               .toList()
                               .isNotEmpty) {
-                            print("seharusnya dihapus");
                             dataProduct.data?.removeWhere(
                                 (element) => element.id == product.id);
                           } else {

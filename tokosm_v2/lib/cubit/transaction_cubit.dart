@@ -60,6 +60,8 @@ class TransactionCubit extends Cubit<TransactionState> {
     required String total,
     required String paymentMethod,
     required String addressID,
+    required String courier,
+    required String courierService,
     required List<DataProduct> products,
   }) async {
     TransactionData? selectedTransaction = state.selectedTransaction;
@@ -75,6 +77,8 @@ class TransactionCubit extends Cubit<TransactionState> {
         paymentMethod: paymentMethod,
         addressID: addressID,
         products: products,
+        courier: courier,
+        courierService: courierService,
       );
       emit(TransactionSuccess(
         tabIndex: state.transactionTabIndex,

@@ -141,6 +141,22 @@ class Utils {
     );
   }
 
+  void customBottomSheet(
+    BuildContext context,
+    Widget content,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // allows full height if needed
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return content;
+      },
+    );
+  }
+
   String formatTanggal(String input) {
     DateTime dateTime = DateTime.parse(input);
     // Format: 18 April 2025 23:00

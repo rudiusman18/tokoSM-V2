@@ -35,10 +35,21 @@ class _CheckoutPageState extends State<CheckoutPage> {
     Utils().loadingDialog(context: context);
     await context.read<AddressCubit>().getAddress(
         token: context.read<AuthCubit>().state.loginModel.token ?? "");
+
+    await context.read<CheckoutCubit>().getCourier(
+        token: context.read<AuthCubit>().state.loginModel.token ?? "",
+        cabangID: context.read<CabangCubit>().state.selectedCabangData.id ?? 0);
+
     Navigator.pop(context);
+
     if (context.read<AddressCubit>().state is AddressFailure) {
       Utils().scaffoldMessenger(context,
           (context.read<AddressCubit>().state as AddressFailure).error ?? "");
+    }
+
+    if (context.read<CheckoutCubit>().state is CheckoutFailure) {
+      Utils().scaffoldMessenger(context,
+          (context.read<CheckoutCubit>().state as CheckoutFailure).error ?? "");
     }
   }
 
@@ -318,10 +329,18 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                       ),
                                     ),
                                   ),
-                                  const Text(
-                                    "Lihat Semua",
-                                    style: TextStyle(
-                                      fontSize: 12,
+                                  GestureDetector(
+                                    onTap: () {
+                                      Utils().customBottomSheet(
+                                          context,
+                                          _CheckoutPageExtension()
+                                              .courierView());
+                                    },
+                                    child: const Text(
+                                      "Lihat Semua",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                      ),
                                     ),
                                   ),
                                   const Icon(
@@ -332,59 +351,65 @@ class _CheckoutPageState extends State<CheckoutPage> {
                               ),
                             ),
                             const SizedBox(height: 10),
-                            Container(
-                              padding: const EdgeInsets.all(
-                                10,
-                              ),
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              decoration: BoxDecoration(
-                                color: colorSuccess.withAlpha(50),
-                                border: Border.all(
-                                  color: Colors.grey,
+                            GestureDetector(
+                              onTap: () {
+                                Utils().customBottomSheet(context,
+                                    _CheckoutPageExtension().courierView());
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(
+                                  10,
                                 ),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          "Kurir Toko",
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: colorSuccess.withAlpha(50),
+                                  border: Border.all(
+                                    color: Colors.grey,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Text(
+                                            "${context.read<CheckoutCubit>().state.selectedCourier?["data"].first["nama"]}",
+                                            style: TextStyle(
+                                              fontWeight: bold,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ),
+                                        Text(
+                                          "Rp ${formatNumber(context.read<CheckoutCubit>().state.selectedCourier?["data"].first["layanan"].first["biaya"] ?? 0)}",
                                           style: TextStyle(
                                             fontWeight: bold,
                                             fontSize: 12,
                                           ),
                                         ),
-                                      ),
-                                      Text(
-                                        "Rp 8,000",
-                                        style: TextStyle(
-                                          fontWeight: bold,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  const Text(
-                                    "Standar",
-                                    style: TextStyle(
-                                      fontSize: 12,
+                                      ],
                                     ),
-                                  ),
-                                  const Text(
-                                    "Estimasi tiba 3-4 Maret",
-                                    style: TextStyle(
-                                      fontSize: 10,
+                                    const SizedBox(
+                                      height: 10,
                                     ),
-                                  ),
-                                ],
+                                    Text(
+                                      "${context.read<CheckoutCubit>().state.selectedCourier?["data"].first["layanan"].first["nama"]}",
+                                      style: const TextStyle(
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                    Text(
+                                      "Estimasi tiba ${context.read<CheckoutCubit>().state.selectedCourier?["data"].first["layanan"].first["durasi"]}",
+                                      style: const TextStyle(
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
 
@@ -585,6 +610,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                                 .productToTransaction
                                                 ?.data ??
                                             [],
+                                        courier:
+                                            "${context.read<CheckoutCubit>().state.selectedCourier?["data"].first["id"]}",
+                                        courierService:
+                                            "${context.read<CheckoutCubit>().state.selectedCourier?["data"].first["layanan"].first["nama"]}",
                                       );
 
                                   Navigator.pop(context);
@@ -638,6 +667,146 @@ class _CheckoutPageState extends State<CheckoutPage> {
 }
 
 class _CheckoutPageExtension {
+  Widget courierView() {
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return IntrinsicHeight(
+          child: Container(
+            padding: const EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 10,
+            ),
+            width: double.infinity,
+            child: Column(
+              spacing: 10,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "Opsi Pengiriman",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: bold,
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Icon(
+                        Icons.close,
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (var data in (context
+                                .read<CheckoutCubit>()
+                                .state
+                                .courierModel?["data"] ??
+                            [])) ...[
+                          // NOTE: Nama Kurir
+                          Text(
+                            "${data["nama"]}",
+                            style: TextStyle(
+                              fontWeight: bold,
+                            ),
+                          ),
+                          for (var service in (data?["layanan"] ?? [])) ...{
+                            // NOTE: layanan kurir
+                            GestureDetector(
+                              onTap: () {
+                                setState(
+                                  () {
+                                    var selectedCourier = <String, dynamic>{
+                                      ...context
+                                              .read<CheckoutCubit>()
+                                              .state
+                                              .courierModel ??
+                                          {}
+                                    };
+
+                                    selectedCourier["data"] = [
+                                      <String, dynamic>{...data}
+                                    ];
+                                    selectedCourier["data"].first["layanan"] = [
+                                      service
+                                    ];
+
+                                    context.read<CheckoutCubit>().selectCourier(
+                                        selectedCourier: selectedCourier);
+
+                                    Navigator.pop(context);
+                                  },
+                                );
+                              },
+                              child: Container(
+                                color: Colors.transparent,
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "${service["nama"]} (Rp ${formatNumber(service["biaya"] ?? 0)})",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: bold,
+                                            ),
+                                          ),
+                                          Text(
+                                            "Estimasi tiba ${service["durasi"]}",
+                                            style: const TextStyle(
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Icon(
+                                      "${data["nama"]}${service["nama"]}" ==
+                                              "${context.read<CheckoutCubit>().state.selectedCourier?["data"].first["nama"]}${context.read<CheckoutCubit>().state.selectedCourier?["data"].first["layanan"].first["nama"]}"
+                                          ? Icons.radio_button_checked
+                                          : Icons.radio_button_off,
+                                      color: colorSuccess,
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                          },
+                          const SizedBox(
+                            height: 10,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget addressItemView(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,

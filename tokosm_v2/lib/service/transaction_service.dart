@@ -78,6 +78,8 @@ class TransactionService {
     required String total,
     required String paymentMethod,
     required String addressID,
+    required String courier,
+    required String courierService,
     required List<DataProduct> products,
   }) async {
     var url = Uri.parse("$baseURL/transaksi");
@@ -111,11 +113,11 @@ class TransactionService {
       "bank_transfer_nama": paymentMethod.toLowerCase() != "cod"
           ? paymentMethod.replaceAll("bank ", "")
           : null,
-      "kurir": "toko", // toko, jne, j&t
-      "layanan_kurir": "standart",
+      "kurir": courier, // toko, jne, j&t
+      "layanan_kurir": courierService.toLowerCase(),
       "pengiriman_id": int.tryParse(addressID),
       "produk": products.map((e) => e.toJson()).toList(),
-      "bonus": [],
+      "bonus": null,
     };
 
     print("data yang dikirim adalah: $data");
@@ -131,11 +133,13 @@ class TransactionService {
     if (response.statusCode >= 200 && response.statusCode <= 299) {
       var data = jsonDecode(response.body);
 
-      // print("isi data adalah $data");
+      print("isi data adalah $data");
 
       return data;
     } else {
       var data = jsonDecode(response.body);
+
+      print("isi data adalah $data");
 
       throw ("${data['message']}");
     }
