@@ -814,8 +814,8 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                                                 "Gagal menambahkan produk ke keranjang");
                                                           }
                                                         }
-                                                      },
-                                                      child: Container(
+                                                      }, 
+                                                       child: Container(
                                                         width: double.infinity,
                                                         padding:
                                                             const EdgeInsets
