@@ -326,8 +326,12 @@ class AddressFormPageState extends State<AddressFormPage> {
         ? ""
         : "${widget.addressData?.kecamatan ?? ""}, ${widget.addressData?.kelurahan ?? ""}";
     noteTextController.text = widget.addressData?.catatan ?? "";
-    pinpointTextController.text =
-        "${widget.addressData?.lat ?? ""}, ${widget.addressData?.lng ?? ""}";
+
+    pinpointTextController.text = (widget.addressData?.lat ?? 0) == 0 &&
+            (widget.addressData?.lng ?? 0) == 0
+        ? ""
+        : "${widget.addressData?.lat ?? ""}, ${widget.addressData?.lng ?? ""}";
+
     postCodeTextController.text = widget.addressData?.kodepos ?? "";
 
     isUtama = widget.addressData?.isUtama == 1 ? true : false;
@@ -1127,6 +1131,27 @@ class _MapWebViewState extends State<MapWebView> {
           children: [
             WebViewWidget(
               controller: controller,
+            ),
+            Container(
+              margin: const EdgeInsets.symmetric(
+                vertical: 10,
+                horizontal: 16,
+              ),
+              child: ElevatedButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadiusGeometry.circular(10))),
+                child: const Text(
+                  "Kembali",
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             ),
             Positioned(
               // top: 0,
