@@ -19,6 +19,7 @@ class CartService {
     var header = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
+      "skip_zrok_interstitial": "true",
     };
     Map data = {};
 
@@ -70,6 +71,7 @@ class CartService {
     var header = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
+      "skip_zrok_interstitial": "true",
     };
     Map data = {};
 
@@ -112,6 +114,7 @@ class CartService {
     var header = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
+      "skip_zrok_interstitial": "true",
     };
     var response = await http.delete(
       url,
@@ -135,6 +138,7 @@ class CartService {
     var header = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
+      "skip_zrok_interstitial": "true",
     };
 
     var response = await http.get(

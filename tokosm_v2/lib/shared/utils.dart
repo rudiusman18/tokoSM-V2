@@ -24,6 +24,7 @@ class Utils {
   void alertDialog(
       {required BuildContext context,
       required Function function,
+      Function? cancelFunction,
       required String title,
       required String message,
       String cancelTitle = "Cancel",
@@ -48,7 +49,11 @@ class Utils {
               ),
               child: Text(cancelTitle),
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                if (cancelFunction == null) {
+                  Navigator.of(context).pop(); // Close the dialog
+                } else {
+                  cancelFunction();
+                }
               },
             ),
             TextButton(

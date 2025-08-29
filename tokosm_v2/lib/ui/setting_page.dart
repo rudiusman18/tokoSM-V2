@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_icons/solar_icons.dart';
+import 'package:tokosm_v2/cubit/address_cubit.dart';
 import 'package:tokosm_v2/cubit/auth_cubit.dart';
 import 'package:tokosm_v2/cubit/page_cubit.dart';
 import 'package:tokosm_v2/shared/themes.dart';
@@ -203,9 +204,23 @@ class _SettingPageState extends State<SettingPage> {
                               title: "Ubah Kata Sandi",
                             ),
                           ),
-                          _SettingPageExtension().settingItem(
-                            icon: SolarIconsOutline.delivery,
-                            title: "Daftar Alamat",
+                          GestureDetector(
+                            onTap: () async {
+                              Utils().loadingDialog(context: context);
+                              await context.read<AddressCubit>().getAddress(
+                                  token: context
+                                          .read<AuthCubit>()
+                                          .state
+                                          .loginModel
+                                          .token ??
+                                      "");
+                              Navigator.pop(context);
+                              Navigator.pushNamed(context, 'address');
+                            },
+                            child: _SettingPageExtension().settingItem(
+                              icon: SolarIconsOutline.delivery,
+                              title: "Daftar Alamat",
+                            ),
                           ),
                           GestureDetector(
                             onTap: () {

@@ -12,6 +12,7 @@ class AddressService {
     var header = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
+      "skip_zrok_interstitial": "true",
     };
 
     var response = await http.get(
@@ -48,6 +49,7 @@ class AddressService {
     var header = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
+      "skip_zrok_interstitial": "true",
     };
 
     Map data = {
@@ -104,6 +106,7 @@ class AddressService {
     var header = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
+      "skip_zrok_interstitial": "true",
     };
 
     Map data = {
@@ -121,8 +124,6 @@ class AddressService {
       "lng": double.tryParse(lng),
       "is_utama": isUtama == true ? 1 : 0,
     };
-
-    print("isi url nya adlaah $url");
 
     var body = jsonEncode(data);
 
@@ -152,6 +153,28 @@ class AddressService {
     };
 
     var response = await http.delete(
+      url,
+      headers: header,
+    );
+
+    if (response.statusCode >= 200 && response.statusCode <= 299) {
+      var data = jsonDecode(response.body);
+      return data;
+    } else {
+      var data = jsonDecode(response.body);
+      throw ("${data['message']}");
+    }
+  }
+
+  Future<Map<String, dynamic>> getMapLocation({required String userID}) async {
+    var url =
+        Uri.parse("http://10.10.10.98:3000/apipos/v1/map/customer/$userID");
+    var header = {
+      'Content-Type': 'application/json',
+      "skip_zrok_interstitial": "true",
+    };
+
+    var response = await http.get(
       url,
       headers: header,
     );

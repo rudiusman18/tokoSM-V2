@@ -12,6 +12,7 @@ class CabangService {
     var header = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
+      "skip_zrok_interstitial": "true",
     };
 
     var response = await http.get(

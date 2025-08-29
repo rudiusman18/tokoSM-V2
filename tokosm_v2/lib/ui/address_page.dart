@@ -1,14 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:tokosm_v2/cubit/address_cubit.dart';
 import 'package:tokosm_v2/cubit/auth_cubit.dart';
 import 'package:tokosm_v2/cubit/setting_cubit.dart';
 import 'package:tokosm_v2/model/address_model.dart';
+import 'package:tokosm_v2/service/address_service.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 import 'package:tokosm_v2/shared/utils.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class AddressPage extends StatefulWidget {
   const AddressPage({super.key});
@@ -122,6 +125,8 @@ class _AddressPageState extends State<AddressPage> {
                                           .addressModel
                                           ?.data ??
                                       [])[index]);
+                              Utils().scaffoldMessenger(context,
+                                  "${(context.read<AddressCubit>().state.addressModel?.data ?? [])[index].namaAlamat ?? ""} menjadi alamat terpilih");
                             },
                             child: _AddressPageExtension().addressItemView(
                               context,
@@ -634,22 +639,34 @@ class AddressFormPageState extends State<AddressFormPage> {
                           width: double.infinity,
                           child: ElevatedButton(
                             onPressed: () {
-                              // Navigator.push(
-                              //   context,
-                              //   PageTransition(
-                              //     type: PageTransitionType.bottomToTop,
-                              //     child: const MapWebView(),
-                              //   ),
-                              // );
+                              Navigator.push(
+                                context,
+                                PageTransition(
+                                  type: PageTransitionType.bottomToTop,
+                                  child: const MapWebView(),
+                                ),
+                              ).then((position) {
+                                setState(() {
+                                  if (position.toString().split(", ").first !=
+                                          "null" &&
+                                      position.toString().split(", ").last !=
+                                          "null") {
+                                    pinpointTextController.text =
+                                        "${position.toString().split(", ").first}, ${position.toString().split(", ").last}";
+                                  }
+                                });
+                              });
                             },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.black,
                                 shape: RoundedRectangleBorder(
                                     borderRadius:
                                         BorderRadiusGeometry.circular(10))),
-                            child: const Text(
-                              "Pinpoint",
-                              style: TextStyle(
+                            child: Text(
+                              pinpointTextController.text == ""
+                                  ? "Pinpoint"
+                                  : pinpointTextController.text,
+                              style: const TextStyle(
                                 color: Colors.white,
                               ),
                             ),
@@ -747,6 +764,7 @@ class AddressFormPageState extends State<AddressFormPage> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () async {
+                          print("");
                           if (addressNameTextController.text != "" &&
                               receiverNameTextController.text != "" &&
                               phoneNumberTextController.text != "" &&
@@ -789,14 +807,12 @@ class AddressFormPageState extends State<AddressFormPage> {
                                     postCode: postCodeTextController.text,
                                     note: noteTextController.text,
                                     isUtama: isUtama,
-                                    lat: "0",
-                                    lng: "0",
-                                    // lat: pinpointTextController.text
-                                    //     .split(", ")
-                                    //     .first,
-                                    // lng: pinpointTextController.text
-                                    //     .split(", ")
-                                    //     .last,
+                                    lat: pinpointTextController.text
+                                        .split(", ")
+                                        .first,
+                                    lng: pinpointTextController.text
+                                        .split(", ")
+                                        .last,
                                   );
                               if (context.read<AddressCubit>().state
                                   is AddressSuccess) {
@@ -848,14 +864,12 @@ class AddressFormPageState extends State<AddressFormPage> {
                                     postCode: postCodeTextController.text,
                                     note: noteTextController.text,
                                     isUtama: isUtama,
-                                    lat: "0",
-                                    lng: "0",
-                                    // lat: pinpointTextController.text
-                                    //     .split(", ")
-                                    //     .first,
-                                    // lng: pinpointTextController.text
-                                    //     .split(", ")
-                                    //     .last,
+                                    lat: pinpointTextController.text
+                                        .split(", ")
+                                        .first,
+                                    lng: pinpointTextController.text
+                                        .split(", ")
+                                        .last,
                                   );
                               if (context.read<AddressCubit>().state
                                   is AddressSuccess) {
@@ -1029,8 +1043,120 @@ class MapWebView extends StatefulWidget {
 }
 
 class _MapWebViewState extends State<MapWebView> {
+  var controller = WebViewController()
+    ..setJavaScriptMode(JavaScriptMode.unrestricted)
+    ..setNavigationDelegate(
+      NavigationDelegate(
+        onProgress: (int progress) {
+          // Update loading bar.
+        },
+        onPageStarted: (String url) {},
+        onPageFinished: (String url) {},
+        onHttpError: (HttpResponseError error) {},
+        onWebResourceError: (WebResourceError error) {},
+        // onNavigationRequest: (NavigationRequest request) {
+        //   if (request.url.startsWith('https://www.youtube.com/')) {
+        //     return NavigationDecision.prevent;
+        //   }
+        //   return NavigationDecision.navigate;
+        // },
+      ),
+    );
+
+  Position? position;
+
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // cek apakah service lokasi aktif
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // buka setting GPS
+      await Geolocator.openLocationSettings();
+      return;
+    }
+
+    // cek permission
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      Utils().alertDialog(
+        context: context,
+        function: () async {
+          Navigator.pop(context);
+          // arahkan ke pengaturan aplikasi
+          await Geolocator.openAppSettings();
+        },
+        cancelFunction: () {
+          Navigator.pop(context);
+          Navigator.pop(context);
+        },
+        title: "Perhatian",
+        message: "Silahkan berikan izin untuk lokasi untuk melanjutkan",
+      );
+      return;
+    }
+
+    Utils().loadingDialog(context: context);
+    // ambil lokasi sekarang
+    position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+    Navigator.pop(context);
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    _getCurrentLocation();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    controller.loadRequest(Uri.parse(
+        'http://10.10.10.98:3000/apipos/v1/map?kategori=customer&id=${context.read<AuthCubit>().state.loginModel.data?.id}&lat=${position?.latitude ?? 0}&lng=${position?.longitude ?? 0}'));
+
+    return Scaffold(
+      body: SafeArea(
+        child: Stack(
+          children: [
+            WebViewWidget(
+              controller: controller,
+            ),
+            Positioned(
+              // top: 0,
+              left: 16,
+              right: 16,
+              bottom: 16,
+              child: ElevatedButton(
+                onPressed: () async {
+                  Utils().loadingDialog(context: context);
+                  var data = await AddressService().getMapLocation(
+                      userID:
+                          "${context.read<AuthCubit>().state.loginModel.data?.id ?? 0}");
+                  Navigator.pop(context);
+                  Navigator.pop(context, "${data['lat']}, ${data['lng']}");
+                },
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: colorSuccess,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadiusGeometry.circular(10))),
+                child: const Text(
+                  "Pilih Lokasi",
+                  style: TextStyle(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

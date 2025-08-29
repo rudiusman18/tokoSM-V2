@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Izinkan HTTP untuk IP address tertentu -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.10.10.98</domain>
+    </domain-config>
+
+    <!-- Izinkan HTTP untuk localhost juga (kalau dibutuhkan) -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">localhost</domain>
+    </domain-config>
+</network-security-config>

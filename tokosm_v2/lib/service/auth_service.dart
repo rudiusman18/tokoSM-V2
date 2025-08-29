@@ -10,6 +10,7 @@ class AuthService {
     var url = Uri.parse("$baseURL/auth/login");
     var header = {
       'Content-Type': 'application/json',
+      "skip_zrok_interstitial": "true",
     };
     Map data = {
       "email": email,
@@ -44,6 +45,7 @@ class AuthService {
     var header = {
       'Content-Type': 'application/json',
       'Authorization': "Bearer $token",
+      "skip_zrok_interstitial": "true",
     };
     Map data = {
       "oldpassword": oldPassword,
@@ -75,6 +77,7 @@ class AuthService {
     var url = Uri.parse("$baseURL/auth/register");
     var header = {
       'Content-Type': 'application/json',
+      "skip_zrok_interstitial": "true",
     };
     Map data = {
       "nama_lengkap": fullName,
@@ -115,6 +118,7 @@ class AuthService {
     var header = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
+      "skip_zrok_interstitial": "true",
     };
     Map data = {
       "cabang_id": cabangID,
