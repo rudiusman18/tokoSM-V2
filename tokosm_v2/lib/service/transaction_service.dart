@@ -1,6 +1,7 @@
 // import 'package:tokosm_v2/shared/utils.dart';
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:tokosm_v2/model/product_model.dart';
@@ -145,6 +146,50 @@ class TransactionService {
       print("isi data adalah $data");
 
       throw ("${data['message']}");
+    }
+  }
+
+  Future postPaymentConfirmation({
+    required String token,
+    required String noInvoice,
+    required String noRekening,
+    required String nama,
+    required File bukti,
+  }) async {
+    var url = Uri.parse("$baseURL/transaksi");
+    var header = {};
+
+    var request = http.MultipartRequest('POST', url);
+
+    // 🔹 Tambahkan field JSON sebagai form-data
+    request.fields['no_invoice'] = noInvoice;
+    request.fields['norekening_pengirim'] = noRekening;
+    request.fields['nama_pengirim'] = nama;
+
+    // 🔹 Tambahkan file
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'file', // 🔑 key sesuai backend (misalnya 'bukti_transfer' atau 'upload')
+        bukti.path,
+      ),
+    );
+
+    // (opsional) kalau perlu auth token
+    request.headers['Authorization'] = 'Bearer $token';
+    request.headers['Content-Type'] = 'application/json';
+    request.headers['skip_zrok_interstitial'] = 'true';
+
+    try {
+      var response = await request.send();
+
+      if (response.statusCode >= 200 && response.statusCode <= 299) {
+        var respStr = await response.stream.bytesToString();
+        print("✅ Upload berhasil: $respStr");
+      } else {
+        print("❌ Upload gagal: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("⚠️ Error: $e");
     }
   }
 }

@@ -12,7 +12,7 @@ warning => #fbc700
 error => #f82834
 
 [FONT SIZE]
-text-xxs => font-size: 10px
+text-xxs => font-size: 10px 
 text-xs => font-size: 12px
 text-sm => font-size: 14px
 text-base => font-size: 16px

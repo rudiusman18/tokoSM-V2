@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:tokosm_v2/model/product_model.dart';
 import 'package:tokosm_v2/model/transaction_model.dart';
@@ -111,6 +113,31 @@ class DetailTransactionCubit extends Cubit<DetailTransactionState> {
           detailTransaction,
         ),
       );
+    } catch (e) {
+      print("gagal mendapatkan detail dengan peasn ${e}");
+      emit(DetailTransactionFailure(e.toString()));
+    }
+  }
+
+  Future<void> postPaymentConfirmation({
+    required String token,
+    required String noInvoice,
+    required String noRekening,
+    required String nama,
+    required File bukti,
+  }) async {
+    final TransactionModel? transactionModel = state.detailTransactionModel;
+
+    emit(DetailTransactionLoading());
+    try {
+      var _ = await TransactionService().postPaymentConfirmation(
+        token: token,
+        noInvoice: noInvoice,
+        noRekening: noRekening,
+        nama: nama,
+        bukti: bukti,
+      );
+      emit(DetailTransactionSuccess(transactionModel));
     } catch (e) {
       emit(DetailTransactionFailure(e.toString()));
     }

@@ -300,61 +300,54 @@ class _TransactionPageExtension {
                         fontSize: 14,
                       ),
                     ),
-                    Text(
-                      (transactionModel.createdAt ?? "") != ""
-                          ? Utils()
-                              .formatTanggal(transactionModel.createdAt ?? "")
-                          : "",
-                      style: const TextStyle(
-                        fontSize: 10,
+                    Expanded(
+                      child: Text(
+                        (transactionModel.createdAt ?? "") != ""
+                            ? Utils()
+                                .formatTanggal(transactionModel.createdAt ?? "")
+                            : "",
+                        style: const TextStyle(
+                          fontSize: 10,
+                        ),
                       ),
                     ),
-                    const Spacer(),
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 5,
                       ),
                       decoration: BoxDecoration(
-                        color:
-                            transactionModel.keteranganStatus?.toLowerCase() ==
-                                    'belum dibayar'
-                                ? colorError.withAlpha(50)
-                                : transactionModel.keteranganStatus
-                                            ?.toLowerCase() ==
-                                        'diproses'
-                                    ? colorWarning.withAlpha(50)
-                                    : transactionModel.keteranganStatus
-                                                ?.toLowerCase() ==
-                                            'dikirim'
-                                        ? colorInfo.withAlpha(50)
-                                        : transactionModel.keteranganStatus
-                                                    ?.toLowerCase() ==
-                                                'selesai'
+                        color: transactionModel.status == 0
+                            ? colorWarning.withAlpha(50)
+                            : transactionModel.status == 1
+                                ? colorWarning.withAlpha(50)
+                                : transactionModel.status == 2
+                                    ? colorInfo.withAlpha(50)
+                                    : transactionModel.status == 3
+                                        ? colorSuccess.withAlpha(50)
+                                        : transactionModel.status == 4
                                             ? colorSuccess.withAlpha(50)
-                                            : colorError.withAlpha(50),
+                                            : transactionModel.status == 5
+                                                ? colorError.withAlpha(50)
+                                                : Colors.grey.withAlpha(50),
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: Text(
                         transactionModel.keteranganStatus ??
                             "Status tidak ditemukan",
                         style: TextStyle(
-                          color: transactionModel.keteranganStatus
-                                      ?.toLowerCase() ==
-                                  'belum dibayar'
-                              ? colorError
-                              : transactionModel.keteranganStatus
-                                          ?.toLowerCase() ==
-                                      'diproses'
+                          color: transactionModel.status == 0
+                              ? Colors.orange
+                              : transactionModel.status == 1
                                   ? Colors.orange
-                                  : transactionModel.keteranganStatus
-                                              ?.toLowerCase() ==
-                                          'dikirim'
+                                  : transactionModel.status == 2
                                       ? colorInfo
-                                      : transactionModel.keteranganStatus
-                                                  ?.toLowerCase() ==
-                                              'selesai'
+                                      : transactionModel.status == 3
                                           ? colorSuccess
-                                          : colorError,
+                                          : transactionModel.status == 4
+                                              ? colorSuccess
+                                              : transactionModel.status == 5
+                                                  ? colorError
+                                                  : Colors.grey,
                           fontSize: 12,
                         ),
                       ),

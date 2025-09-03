@@ -6,29 +6,33 @@ class TransactionModel {
 
   TransactionModel.fromJson(Map<String, dynamic> json) {
     message = json['message'];
-
-    if (json['data'] is List) {
-      data = (json['data'] as List)
-          .map((e) => TransactionData.fromJson(e))
-          .toList();
-    } else if (json['data'] is Map<String, dynamic>) {
-      data = [TransactionData.fromJson(json['data'])];
+    if (json['data'] != null) {
+      if (json['data'] is List) {
+        data = <TransactionData>[];
+        json['data'].forEach((v) {
+          data!.add(TransactionData.fromJson(v));
+        });
+      } else {
+        data = <TransactionData>[TransactionData.fromJson(json['data'])];
+      }
     }
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'message': message,
-      'data': data?.map((e) => e.toJson()).toList(),
-    };
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['message'] = message;
+    if (this.data != null) {
+      data['data'] = this.data!.map((v) => v.toJson()).toList();
+    }
+    return data;
   }
 }
 
 class TransactionData {
-  String? id;
+  String? sId;
   String? noInvoice;
   int? cabangId;
-  int? gudangId;
+  dynamic gudangId;
   int? pegawaiId;
   String? namaPegawai;
   int? pelangganId;
@@ -41,50 +45,51 @@ class TransactionData {
   int? total;
   int? laba;
   String? metodePembayaran;
+  DetailPembayaran? detailPembayaran;
   int? sisaBayar;
-  String? tglJatuhTempo;
-  String? keterangan;
+  dynamic tglJatuhtempo;
+  dynamic keterangan;
   int? status;
   String? keteranganStatus;
+  Pengiriman? pengiriman;
   bool? online;
   String? createdAt;
-  String? namaCabang;
   List<Produk>? produk;
-  Pengiriman? pengiriman;
+  String? namaCabang;
   List<Bonus>? bonus;
 
-  TransactionData({
-    this.id,
-    this.noInvoice,
-    this.cabangId,
-    this.gudangId,
-    this.pegawaiId,
-    this.namaPegawai,
-    this.pelangganId,
-    this.namaPelanggan,
-    this.namaProduk,
-    this.jumlahProduk,
-    this.subtotal,
-    this.totalDiskon,
-    this.totalOngkosKirim,
-    this.total,
-    this.laba,
-    this.metodePembayaran,
-    this.sisaBayar,
-    this.tglJatuhTempo,
-    this.keterangan,
-    this.status,
-    this.keteranganStatus,
-    this.online,
-    this.createdAt,
-    this.namaCabang,
-    this.produk,
-    this.pengiriman,
-    this.bonus,
-  });
+  TransactionData(
+      {this.sId,
+      this.noInvoice,
+      this.cabangId,
+      this.gudangId,
+      this.pegawaiId,
+      this.namaPegawai,
+      this.pelangganId,
+      this.namaPelanggan,
+      this.namaProduk,
+      this.jumlahProduk,
+      this.subtotal,
+      this.totalDiskon,
+      this.totalOngkosKirim,
+      this.total,
+      this.laba,
+      this.metodePembayaran,
+      this.detailPembayaran,
+      this.sisaBayar,
+      this.tglJatuhtempo,
+      this.keterangan,
+      this.status,
+      this.keteranganStatus,
+      this.pengiriman,
+      this.online,
+      this.createdAt,
+      this.produk,
+      this.namaCabang,
+      this.bonus});
 
   TransactionData.fromJson(Map<String, dynamic> json) {
-    id = json['_id'];
+    sId = json['_id'];
     noInvoice = json['no_invoice'];
     cabangId = json['cabang_id'];
     gudangId = json['gudang_id'];
@@ -92,7 +97,7 @@ class TransactionData {
     namaPegawai = json['nama_pegawai'];
     pelangganId = json['pelanggan_id'];
     namaPelanggan = json['nama_pelanggan'];
-    namaProduk = (json['nama_produk'] as List?)?.cast<String>();
+    namaProduk = json['nama_produk'].cast<String>();
     jumlahProduk = json['jumlah_produk'];
     subtotal = json['subtotal'];
     totalDiskon = json['total_diskon'];
@@ -100,219 +105,192 @@ class TransactionData {
     total = json['total'];
     laba = json['laba'];
     metodePembayaran = json['metode_pembayaran'];
+    detailPembayaran = json['detail_pembayaran'] != null
+        ? DetailPembayaran.fromJson(json['detail_pembayaran'])
+        : null;
     sisaBayar = json['sisa_bayar'];
-    tglJatuhTempo = json['tgl_jatuhtempo'];
+    tglJatuhtempo = json['tgl_jatuhtempo'];
     keterangan = json['keterangan'];
     status = json['status'];
     keteranganStatus = json['keterangan_status'];
+    pengiriman = json['pengiriman'] != null
+        ? Pengiriman.fromJson(json['pengiriman'])
+        : null;
     online = json['online'];
     createdAt = json['created_at'];
+    if (json['produk'] != null) {
+      produk = <Produk>[];
+      json['produk'].forEach((v) {
+        produk!.add(Produk.fromJson(v));
+      });
+    }
     namaCabang = json['nama_cabang'];
-
-    if (json['produk'] != null && json['produk'] is List) {
-      produk = (json['produk'] as List).map((e) => Produk.fromJson(e)).toList();
-    }
-
-    if (json['pengiriman'] != null &&
-        json['pengiriman'] is Map<String, dynamic>) {
-      pengiriman = Pengiriman.fromJson(json['pengiriman']);
-    }
-
-    if (json['bonus'] != null && json['bonus'] is List) {
-      bonus = (json['bonus'] as List).map((e) => Bonus.fromJson(e)).toList();
+    if (json['bonus'] != null) {
+      bonus = <Bonus>[];
+      json['bonus'].forEach((v) {
+        bonus!.add(Bonus.fromJson(v));
+      });
     }
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'no_invoice': noInvoice,
-      'cabang_id': cabangId,
-      'gudang_id': gudangId,
-      'pegawai_id': pegawaiId,
-      'nama_pegawai': namaPegawai,
-      'pelanggan_id': pelangganId,
-      'nama_pelanggan': namaPelanggan,
-      'nama_produk': namaProduk,
-      'jumlah_produk': jumlahProduk,
-      'subtotal': subtotal,
-      'total_diskon': totalDiskon,
-      'total_ongkos_kirim': totalOngkosKirim,
-      'total': total,
-      'laba': laba,
-      'metode_pembayaran': metodePembayaran,
-      'sisa_bayar': sisaBayar,
-      'tgl_jatuhtempo': tglJatuhTempo,
-      'keterangan': keterangan,
-      'status': status,
-      'keterangan_status': keteranganStatus,
-      'online': online,
-      'created_at': createdAt,
-      'nama_cabang': namaCabang,
-      'produk': produk?.map((e) => e.toJson()).toList(),
-      'pengiriman': pengiriman?.toJson(),
-      'bonus': bonus?.map((e) => e.toJson()).toList(),
-    };
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['no_invoice'] = noInvoice;
+    data['cabang_id'] = cabangId;
+    data['gudang_id'] = gudangId;
+    data['pegawai_id'] = pegawaiId;
+    data['nama_pegawai'] = namaPegawai;
+    data['pelanggan_id'] = pelangganId;
+    data['nama_pelanggan'] = namaPelanggan;
+    data['nama_produk'] = namaProduk;
+    data['jumlah_produk'] = jumlahProduk;
+    data['subtotal'] = subtotal;
+    data['total_diskon'] = totalDiskon;
+    data['total_ongkos_kirim'] = totalOngkosKirim;
+    data['total'] = total;
+    data['laba'] = laba;
+    data['metode_pembayaran'] = metodePembayaran;
+    if (detailPembayaran != null) {
+      data['detail_pembayaran'] = detailPembayaran!.toJson();
+    }
+    data['sisa_bayar'] = sisaBayar;
+    data['tgl_jatuhtempo'] = tglJatuhtempo;
+    data['keterangan'] = keterangan;
+    data['status'] = status;
+    data['keterangan_status'] = keteranganStatus;
+    if (pengiriman != null) {
+      data['pengiriman'] = pengiriman!.toJson();
+    }
+    data['online'] = online;
+    data['created_at'] = createdAt;
+    if (produk != null) {
+      data['produk'] = produk!.map((v) => v.toJson()).toList();
+    }
+    data['nama_cabang'] = namaCabang;
+    if (bonus != null) {
+      data['bonus'] = bonus!.map((v) => v.toJson()).toList();
+    }
+    return data;
   }
 }
 
-class Produk {
-  String? id;
-  String? noInvoice;
-  int? cabangId;
-  int? gudangId;
-  int? produkId;
-  String? namaProduk;
-  String? gambarProduk;
-  String? satuanProduk;
-  String? golonganProduk;
-  String? rakProduk;
-  int? rakBintang;
-  String? kategori;
-  String? kategoriSlug;
-  int? hargaPokok;
-  int? hargaProduk;
-  List<HargaGrosir>? hargaGrosir;
-  int? hargaDiskon;
-  int? diskonProduk;
-  int? diskonMaxBeli;
-  int? jumlah;
-  List<dynamic>? jumlahMultisatuan;
-  int? jumlahDiskon;
-  int? isMultisatuan;
-  int? isGrosir;
-  bool? grosir;
-  int? subtotal;
-  int? totalDiskon;
-  int? totalHarga;
-  int? totalLaba;
-  String? createdAt;
+class DetailPembayaran {
+  dynamic bankId;
+  String? namaBank;
+  dynamic bankPengirim;
+  dynamic norekeningPengirim;
+  dynamic namaPengirim;
+  dynamic buktiTransfer;
 
-  Produk.fromJson(Map<String, dynamic> json) {
-    id = json['_id'];
-    noInvoice = json['no_invoice'];
-    cabangId = json['cabang_id'];
-    gudangId = json['gudang_id'];
-    produkId = json['produk_id'];
-    namaProduk = json['nama_produk'];
-    gambarProduk = json['gambar_produk'];
-    satuanProduk = json['satuan_produk'];
-    golonganProduk = json['golongan_produk'];
-    rakProduk = json['rak_produk'];
-    rakBintang = json['rak_bintang'];
-    kategori = json['kategori'];
-    kategoriSlug = json['kategori_slug'];
-    hargaPokok = json['harga_pokok'];
-    hargaProduk = json['harga_produk'];
-    hargaDiskon = json['harga_diskon'];
-    diskonProduk = json['diskon_produk'];
-    diskonMaxBeli = json['diskon_max_beli'];
-    jumlah = json['jumlah'];
-    jumlahMultisatuan = json['jumlah_multisatuan'];
-    jumlahDiskon = json['jumlah_diskon'];
-    isMultisatuan = json['is_multisatuan'];
-    isGrosir = json['is_grosir'];
-    grosir = json['grosir'];
-    subtotal = json['subtotal'];
-    totalDiskon = json['total_diskon'];
-    totalHarga = json['total_harga'];
-    totalLaba = json['total_laba'];
-    createdAt = json['created_at'];
+  DetailPembayaran(
+      {this.bankId,
+      this.namaBank,
+      this.bankPengirim,
+      this.norekeningPengirim,
+      this.namaPengirim,
+      this.buktiTransfer});
 
-    if (json['harga_grosir'] != null) {
-      hargaGrosir = (json['harga_grosir'] as List)
-          .map((e) => HargaGrosir.fromJson(e))
-          .toList();
-    }
+  DetailPembayaran.fromJson(Map<String, dynamic> json) {
+    bankId = json['bank_id'];
+    namaBank = json['nama_bank'];
+    bankPengirim = json['bank_pengirim'];
+    norekeningPengirim = json['norekening_pengirim'];
+    namaPengirim = json['nama_pengirim'];
+    buktiTransfer = json['bukti_transfer'];
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'no_invoice': noInvoice,
-      'cabang_id': cabangId,
-      'gudang_id': gudangId,
-      'produk_id': produkId,
-      'nama_produk': namaProduk,
-      'gambar_produk': gambarProduk,
-      'satuan_produk': satuanProduk,
-      'golongan_produk': golonganProduk,
-      'rak_produk': rakProduk,
-      'rak_bintang': rakBintang,
-      'kategori': kategori,
-      'kategori_slug': kategoriSlug,
-      'harga_pokok': hargaPokok,
-      'harga_produk': hargaProduk,
-      'harga_grosir': hargaGrosir?.map((e) => e.toJson()).toList(),
-      'harga_diskon': hargaDiskon,
-      'diskon_produk': diskonProduk,
-      'diskon_max_beli': diskonMaxBeli,
-      'jumlah': jumlah,
-      'jumlah_multisatuan': jumlahMultisatuan,
-      'jumlah_diskon': jumlahDiskon,
-      'is_multisatuan': isMultisatuan,
-      'is_grosir': isGrosir,
-      'grosir': grosir,
-      'subtotal': subtotal,
-      'total_diskon': totalDiskon,
-      'total_harga': totalHarga,
-      'total_laba': totalLaba,
-      'created_at': createdAt,
-    };
-  }
-}
-
-class HargaGrosir {
-  int? min;
-  int? harga;
-
-  HargaGrosir({this.min, this.harga});
-
-  HargaGrosir.fromJson(Map<String, dynamic> json) {
-    min = json['min'];
-    harga = json['harga'];
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'min': min,
-      'harga': harga,
-    };
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['bank_id'] = bankId;
+    data['nama_bank'] = namaBank;
+    data['bank_pengirim'] = bankPengirim;
+    data['norekening_pengirim'] = norekeningPengirim;
+    data['nama_pengirim'] = namaPengirim;
+    data['bukti_transfer'] = buktiTransfer;
+    return data;
   }
 }
 
 class Pengiriman {
+  dynamic noResi;
+  String? kurir;
+  String? namaLayanan;
   String? namaPenerima;
   String? telpPenerima;
   String? alamatLengkap;
   String? catatan;
-  String? kurir;
-  String? noresi;
-  double? lat;
-  double? lng;
+  dynamic lat;
+  dynamic lng;
+
+  Pengiriman(
+      {this.noResi,
+      this.kurir,
+      this.namaLayanan,
+      this.namaPenerima,
+      this.telpPenerima,
+      this.alamatLengkap,
+      this.catatan,
+      this.lat,
+      this.lng});
 
   Pengiriman.fromJson(Map<String, dynamic> json) {
+    noResi = json['no_resi'];
+    kurir = json['kurir'];
+    namaLayanan = json['nama_layanan'];
     namaPenerima = json['nama_penerima'];
     telpPenerima = json['telp_penerima'];
     alamatLengkap = json['alamat_lengkap'];
     catatan = json['catatan'];
-    kurir = json['kurir'];
-    noresi = json['no_resi'];
-    lat = (json['lat'] is int) ? (json['lat'] as int).toDouble() : json['lat'];
-    lng = (json['lng'] is int) ? (json['lng'] as int).toDouble() : json['lng'];
+    lat = json['lat'];
+    lng = json['lng'];
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'nama_penerima': namaPenerima,
-      'telp_penerima': telpPenerima,
-      'alamat_lengkap': alamatLengkap,
-      'catatan': catatan,
-      'lat': lat,
-      'lng': lng,
-      'kurir': kurir,
-      'no_resi': noresi,
-    };
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['no_resi'] = noResi;
+    data['kurir'] = kurir;
+    data['nama_layanan'] = namaLayanan;
+    data['nama_penerima'] = namaPenerima;
+    data['telp_penerima'] = telpPenerima;
+    data['alamat_lengkap'] = alamatLengkap;
+    data['catatan'] = catatan;
+    data['lat'] = lat;
+    data['lng'] = lng;
+    return data;
+  }
+}
+
+class Produk {
+  String? sId;
+  String? namaProduk;
+  String? gambarProduk;
+  int? hargaProduk;
+  int? jumlah;
+
+  Produk(
+      {this.sId,
+      this.namaProduk,
+      this.gambarProduk,
+      this.hargaProduk,
+      this.jumlah});
+
+  Produk.fromJson(Map<String, dynamic> json) {
+    sId = json['_id'];
+    namaProduk = json['nama_produk'];
+    gambarProduk = json['gambar_produk'];
+    hargaProduk = json['harga_produk'];
+    jumlah = json['jumlah'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['_id'] = sId;
+    data['nama_produk'] = namaProduk;
+    data['gambar_produk'] = gambarProduk;
+    data['harga_produk'] = hargaProduk;
+    data['jumlah'] = jumlah;
+    return data;
   }
 }
 
@@ -324,6 +302,14 @@ class Bonus {
   String? namaBonus;
   int? jumlahBonus;
 
+  Bonus(
+      {this.promoId,
+      this.bonusId,
+      this.tipeBonus,
+      this.namaPromo,
+      this.namaBonus,
+      this.jumlahBonus});
+
   Bonus.fromJson(Map<String, dynamic> json) {
     promoId = json['promo_id'];
     bonusId = json['bonus_id'];
@@ -334,13 +320,13 @@ class Bonus {
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'promo_id': promoId,
-      'bonus_id': bonusId,
-      'tipe_bonus': tipeBonus,
-      'nama_promo': namaPromo,
-      'nama_bonus': namaBonus,
-      'jumlah_bonus': jumlahBonus,
-    };
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['promo_id'] = promoId;
+    data['bonus_id'] = bonusId;
+    data['tipe_bonus'] = tipeBonus;
+    data['nama_promo'] = namaPromo;
+    data['nama_bonus'] = namaBonus;
+    data['jumlah_bonus'] = jumlahBonus;
+    return data;
   }
 }

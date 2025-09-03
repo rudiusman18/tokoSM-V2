@@ -157,7 +157,11 @@ class Utils {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return content;
+        return Padding(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: content,
+        );
       },
     );
   }
