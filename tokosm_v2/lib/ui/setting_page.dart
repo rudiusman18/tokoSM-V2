@@ -232,9 +232,15 @@ class _SettingPageState extends State<SettingPage> {
                               title: "Daftar Transaksi",
                             ),
                           ),
-                          _SettingPageExtension().settingItem(
-                            icon: Icons.star_border,
-                            title: "Ulasan",
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, "product/all-review-user");
+                            },
+                            child: _SettingPageExtension().settingItem(
+                              icon: Icons.star_border,
+                              title: "Ulasan",
+                            ),
                           ),
                           GestureDetector(
                             onTap: () {

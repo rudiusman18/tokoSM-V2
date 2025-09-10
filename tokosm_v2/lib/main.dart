@@ -24,6 +24,7 @@ import 'package:tokosm_v2/ui/main_page.dart';
 import 'package:tokosm_v2/ui/product%20page/detail_product_page.dart';
 import 'package:tokosm_v2/ui/product_page.dart';
 import 'package:tokosm_v2/ui/review%20page/all_product_review_page.dart';
+import 'package:tokosm_v2/ui/review%20page/all_user_review_page.dart';
 import 'package:tokosm_v2/ui/setting%20page/change_password_page.dart';
 import 'package:tokosm_v2/ui/setting%20page/edit_profile_page.dart';
 import 'package:tokosm_v2/ui/setting_page.dart';
@@ -187,6 +188,14 @@ class MainApp extends StatelessWidget {
                 type: PageTransitionType.rightToLeft,
                 childCurrent: context.currentRoute,
                 child: const AllProductReviewPage(),
+                settings: settings,
+              );
+
+            case 'product/all-review-user':
+              return PageTransition(
+                type: PageTransitionType.rightToLeft,
+                childCurrent: context.currentRoute,
+                child: const AllUserReviewPage(),
                 settings: settings,
               );
 

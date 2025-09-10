@@ -14,7 +14,33 @@ class ReviewCubit extends Cubit<ReviewState> {
           .getProductReview(token: token, productID: productID);
       emit(ReviewSuccess(reviewModelData: data));
     } catch (e) {
-      emit(ReviewFailure());
+      emit(
+        ReviewFailure(
+          error: e.toString(),
+        ),
+      );
+    }
+  }
+
+  void getUserReviewProduct({
+    required String token,
+    String? searchKeyword,
+    int limit = 999999999,
+    int page = 1,
+  }) async {
+    emit(ReviewLoading());
+    try {
+      var data = await ProductService().getUserProductReview(
+        token: token,
+        searchKeyword: searchKeyword ?? "",
+        limit: limit,
+        page: page,
+      );
+      emit(ReviewSuccess(reviewModelData: data));
+    } catch (e) {
+      emit(ReviewFailure(
+        error: e.toString(),
+      ));
     }
   }
 }

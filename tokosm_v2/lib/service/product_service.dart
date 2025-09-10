@@ -176,4 +176,32 @@ class ProductService {
       throw ("${data['message']}");
     }
   }
+
+  Future<Map<String, dynamic>> getUserProductReview({
+    required String token,
+    required String searchKeyword,
+    required int limit,
+    required int page,
+  }) async {
+    var url =
+        Uri.parse("$baseURL/ulasan?q=$searchKeyword&limit=$limit&page=$page");
+    var header = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+      "skip_zrok_interstitial": "true",
+    };
+
+    var response = await http.get(
+      url,
+      headers: header,
+    );
+
+    if (response.statusCode >= 200 && response.statusCode <= 299) {
+      var data = jsonDecode(response.body);
+      return data;
+    } else {
+      var data = jsonDecode(response.body);
+      throw ("${data['message']}");
+    }
+  }
 }
