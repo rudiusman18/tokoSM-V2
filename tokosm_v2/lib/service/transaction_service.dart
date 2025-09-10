@@ -157,7 +157,6 @@ class TransactionService {
     required File bukti,
   }) async {
     var url = Uri.parse("$baseURL/transaksi");
-    var header = {};
 
     var request = http.MultipartRequest('POST', url);
 
@@ -190,6 +189,7 @@ class TransactionService {
       }
     } catch (e) {
       print("⚠️ Error: $e");
+      
     }
   }
 }

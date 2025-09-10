@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:solar_icons/solar_icons.dart';
 import 'package:tokosm_v2/cubit/auth_cubit.dart';
 import 'package:tokosm_v2/shared/themes.dart';
@@ -45,6 +46,8 @@ class _RegisterPageState extends State<RegisterPage> {
     passwordFocusNode.addListener(() {
       setState(() {});
     });
+
+    _getCurrentLocation();
   }
 
   @override
@@ -61,6 +64,53 @@ class _RegisterPageState extends State<RegisterPage> {
     passwordController.dispose();
     passwordFocusNode.dispose();
     super.dispose();
+  }
+
+  Position? position;
+
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // cek apakah service lokasi aktif
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // buka setting GPS
+      await Geolocator.openLocationSettings();
+      return;
+    }
+
+    // cek permission
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      Utils().alertDialog(
+        context: context,
+        function: () async {
+          Navigator.pop(context);
+          // arahkan ke pengaturan aplikasi
+          await Geolocator.openAppSettings();
+        },
+        cancelFunction: () {
+          Navigator.pop(context);
+          Navigator.pushReplacementNamed(context, 'login');
+        },
+        title: "Perhatian",
+        message: "Silahkan berikan izin untuk lokasi untuk melanjutkan",
+      );
+      return;
+    } else {
+      Utils().loadingDialog(context: context);
+      // ambil lokasi sekarang
+      position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      Navigator.pop(context);
+      setState(() {});
+    }
   }
 
   @override
@@ -160,6 +210,8 @@ class _RegisterPageState extends State<RegisterPage> {
                             phoneNumber: "+62${phoneNumberController.text}",
                             email: emailController.text,
                             password: passwordController.text,
+                            lat: position?.latitude,
+                            lng: position?.longitude,
                           );
                     }
                   },
@@ -316,5 +368,4 @@ class _RegisterPageExtension {
       },
     );
   }
-
 }

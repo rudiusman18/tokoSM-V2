@@ -750,8 +750,9 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                                                 [])
                                                             .every((element) =>
                                                                 element <= 0)) {
-
-                                                                  Utils().scaffoldMessenger(context, "Silahkan");
+                                                          Utils().scaffoldMessenger(
+                                                              context,
+                                                              "Silahkan Masukkan Produk kedalam Keranjang");
                                                         } else {
                                                           Utils().loadingDialog(
                                                               context: context);
@@ -814,8 +815,8 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                                                 "Gagal menambahkan produk ke keranjang");
                                                           }
                                                         }
-                                                      }, 
-                                                       child: Container(
+                                                      },
+                                                      child: Container(
                                                         width: double.infinity,
                                                         padding:
                                                             const EdgeInsets

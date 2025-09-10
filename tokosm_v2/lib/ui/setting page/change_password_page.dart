@@ -177,6 +177,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                                     oldPassword: oldPasswordController.text,
                                     newPassword: newPasswordController.text,
                                   );
+                            } else {
+                              Utils().scaffoldMessenger(context,
+                                  "Ubah Password Gagal. Silahkan Coba Kembali");
                             }
                           },
                           child: Container(

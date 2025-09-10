@@ -1123,7 +1123,7 @@ class _MapWebViewState extends State<MapWebView> {
   @override
   Widget build(BuildContext context) {
     controller.loadRequest(Uri.parse(
-        'http://10.10.10.98:3000/apipos/v1/map?kategori=customer&id=${context.read<AuthCubit>().state.loginModel.data?.id}&lat=${position?.latitude ?? 0}&lng=${position?.longitude ?? 0}'));
+        '${mapBaseURL}/map?kategori=customer&id=${context.read<AuthCubit>().state.loginModel.data?.id}&lat=${position?.latitude ?? 0}&lng=${position?.longitude ?? 0}'));
 
     return Scaffold(
       body: SafeArea(

@@ -73,6 +73,8 @@ class AuthService {
     required String email,
     required String userName,
     required String password,
+    required double? lat,
+    required double? lng,
   }) async {
     var url = Uri.parse("$baseURL/auth/register");
     var header = {
@@ -85,6 +87,8 @@ class AuthService {
       "email": email,
       "username": fullName,
       "password": password,
+      "lat": lat,
+      "lng": lng,
     };
     var body = jsonEncode(data);
     var response = await http.post(

@@ -195,7 +195,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             ),
                             Expanded(
                               child: Text(
-                                'Keranjang',
+                                'Checkout',
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: bold,

@@ -23,6 +23,7 @@ class ProductCubit extends Cubit<ProductState> {
             (state as ProductSuccess).selectedCategoryFilter,
         selectedPromoFilter: (state as ProductSuccess).selectedPromoFilter,
         selectedRatingFilter: (state as ProductSuccess).selectedRatingFilter,
+        productBannerData: state.productBanner,
       ),
     );
   }
@@ -81,6 +82,8 @@ class ProductCubit extends Cubit<ProductState> {
         ? (state as ProductSuccess).selectedRatingFilter
         : "";
 
+    Map<String, dynamic>? productBannerData = state.productBanner;
+
     emit(ProductLoading(indexTab));
     try {
       ProductModel productModel = await ProductService().getProduct(
@@ -111,6 +114,7 @@ class ProductCubit extends Cubit<ProductState> {
           popularProductData: popular ?? state.popularProduct,
           wildProductData: productModel,
           productTabIndexData: indexTab,
+          productBannerData: productBannerData,
         ),
       );
     } catch (e) {
@@ -126,6 +130,8 @@ class ProductCubit extends Cubit<ProductState> {
     int page = 1,
     int limit = 10,
   }) async {
+    Map<String, dynamic>? productBanner = state.productBanner;
+
     emit(ProductLoading(0));
     try {
       ProductModel productModel = await ProductService().getProduct(
@@ -159,6 +165,7 @@ class ProductCubit extends Cubit<ProductState> {
               type == "populer" ? productModel : state.popularProduct,
           wildProductData: state.wildProduct,
           productTabIndexData: state.productTabIndex,
+          productBannerData: productBanner,
         ),
       );
     } catch (e) {
@@ -193,6 +200,7 @@ class ProductCubit extends Cubit<ProductState> {
         selectedRatingFilter: state is ProductSuccess
             ? (state as ProductSuccess).selectedRatingFilter
             : "",
+        productBannerData: state.productBanner,
       ),
     );
   }
@@ -219,6 +227,7 @@ class ProductCubit extends Cubit<ProductState> {
         popularProductData: state.popularProduct,
         wildProductData: state.wildProduct,
         productTabIndexData: state.productTabIndex,
+        productBannerData: state.productBanner,
       ),
     );
   }
@@ -241,8 +250,81 @@ class ProductCubit extends Cubit<ProductState> {
         selectedPromoFilter: (state as ProductSuccess).selectedPromoFilter,
         selectedRatingFilter: (state as ProductSuccess).selectedRatingFilter,
         detailProduct: product,
+        productBannerData: state.productBanner,
       ),
     );
+  }
+
+  Future<void> getBannerProduct({required String token}) async {
+    // Simpan data sebelumnya kalau state saat ini adalah ProductSuccess
+    ProductModel? flashSale = state is ProductSuccess
+        ? (state as ProductSuccess).flashSaleProduct
+        : null;
+    ProductModel? discount = state is ProductSuccess
+        ? (state as ProductSuccess).discountProduct
+        : null;
+    ProductModel? promo =
+        state is ProductSuccess ? (state as ProductSuccess).promoProduct : null;
+    ProductModel? bestSeller = state is ProductSuccess
+        ? (state as ProductSuccess).bestSellerProduct
+        : null;
+    ProductModel? popular = state is ProductSuccess
+        ? (state as ProductSuccess).popularProduct
+        : null;
+    int indexTab =
+        state is ProductSuccess ? (state as ProductSuccess).productTabIndex : 0;
+
+    String maxPriceFilter = (state is ProductSuccess)
+        ? (state as ProductSuccess).maxPriceFilter
+        : "";
+
+    String minPriceFilter = (state is ProductSuccess)
+        ? (state as ProductSuccess).minPriceFilter
+        : "";
+
+    String searchKeyword = (state is ProductSuccess)
+        ? (state as ProductSuccess).searchkeyword
+        : "";
+
+    String selectedCategoryFilter = (state is ProductSuccess)
+        ? (state as ProductSuccess).selectedCategoryFilter
+        : "";
+
+    String selectedPromoFilter = (state is ProductSuccess)
+        ? (state as ProductSuccess).selectedPromoFilter
+        : "";
+
+    String selectedRatingFilter = (state is ProductSuccess)
+        ? (state as ProductSuccess).selectedRatingFilter
+        : "";
+
+    emit(ProductLoading(indexTab));
+    try {
+      Map<String, dynamic> data = await ProductService().getBannerProduct(
+        token: token,
+      );
+
+      emit(
+        ProductSuccess(
+          maxPriceFilter: maxPriceFilter,
+          minPriceFilter: minPriceFilter,
+          searchkeyword: searchKeyword,
+          selectedCategoryFilter: selectedCategoryFilter,
+          selectedPromoFilter: selectedPromoFilter,
+          selectedRatingFilter: selectedRatingFilter,
+          flashSaleProductData: flashSale ?? state.flashSaleProduct,
+          discountProductData: discount ?? state.discountProduct,
+          promoProductData: promo ?? state.promoProduct,
+          bestSellerProductData: bestSeller ?? state.bestSellerProduct,
+          popularProductData: popular ?? state.popularProduct,
+          wildProductData: state.wildProduct,
+          productTabIndexData: indexTab,
+          productBannerData: data,
+        ),
+      );
+    } catch (e) {
+      emit(ProductFailure(e.toString()));
+    }
   }
 }
 
@@ -266,6 +348,4 @@ class DetailProductCubit extends Cubit<DetailProductState> {
       emit(DetailProductFailure(e.toString()));
     }
   }
-
-  
 }

@@ -8,6 +8,7 @@ abstract class ProductState {
   final ProductModel popularProduct;
   final ProductModel wildProduct;
   final int productTabIndex;
+  final Map<String, dynamic>? productBanner;
 
   const ProductState({
     required this.flashSaleProduct,
@@ -17,6 +18,7 @@ abstract class ProductState {
     required this.popularProduct,
     required this.wildProduct,
     required this.productTabIndex,
+    required this.productBanner,
   });
 }
 
@@ -30,6 +32,7 @@ class ProductInitial extends ProductState {
           popularProduct: ProductModel(),
           wildProduct: ProductModel(),
           productTabIndex: 0,
+          productBanner: null,
         );
 }
 
@@ -44,6 +47,7 @@ class ProductLoading extends ProductState {
           popularProduct: ProductModel(),
           wildProduct: ProductModel(),
           productTabIndex: productTabIndexData,
+          productBanner: null,
         );
 }
 
@@ -64,6 +68,7 @@ class ProductSuccess extends ProductState {
   final String minPriceFilter;
   final String maxPriceFilter;
   final DataProduct? detailProduct;
+  final Map<String, dynamic>? productBannerData;
 
   ProductSuccess({
     required this.flashSaleProductData,
@@ -73,6 +78,7 @@ class ProductSuccess extends ProductState {
     required this.popularProductData,
     required this.wildProductData,
     required this.productTabIndexData,
+    required this.productBannerData,
     this.searchkeyword = "",
     this.selectedCategoryFilter = "",
     this.selectedPromoFilter = "",
@@ -88,6 +94,7 @@ class ProductSuccess extends ProductState {
           popularProduct: popularProductData,
           wildProduct: wildProductData,
           productTabIndex: productTabIndexData,
+          productBanner: productBannerData,
         );
 }
 
@@ -102,6 +109,7 @@ class ProductFailure extends ProductState {
           popularProduct: ProductModel(),
           wildProduct: ProductModel(),
           productTabIndex: 0,
+          productBanner: null,
         );
 }
 

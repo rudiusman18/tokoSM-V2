@@ -168,7 +168,7 @@ class AddressService {
 
   Future<Map<String, dynamic>> getMapLocation({required String userID}) async {
     var url =
-        Uri.parse("http://10.10.10.98:3000/apipos/v1/map/customer/$userID");
+        Uri.parse("http://10.10.10.98:3001/apipos/v1/map/customer/$userID");
     var header = {
       'Content-Type': 'application/json',
       "skip_zrok_interstitial": "true",

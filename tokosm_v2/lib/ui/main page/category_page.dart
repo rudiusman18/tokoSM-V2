@@ -74,54 +74,48 @@ class _CategoryPageState extends State<CategoryPage> {
                                 fontWeight: bold,
                               ),
                             ),
-                            expanded: SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: [
-                                  for (var index1 = 0;
-                                      index1 <
-                                          (((context
-                                                              .read<CategoryCubit>()
-                                                              .state
-                                                              .categoryModel?[
-                                                          "data"] as List)
-                                                      .map((e) => e as Map<
-                                                          String, dynamic>)
-                                                      .toList()[index]["child"] ??
-                                                  []) as List)
-                                              .length;
-                                      index1++) ...{
-                                    GestureDetector(
-                                      onTap: () {
-                                        context
-                                            .read<ProductCubit>()
-                                            .setProductFilter(
-                                                kategori:
-                                                    "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["child"] ?? []) as List).map((e) => e as Map<String, dynamic>).toList()[index1]["kat2_slug"]}",
-                                                promo: "",
-                                                rating: "",
-                                                minPrice: "",
-                                                maxPrice: "");
-                                        Navigator.pushNamed(
-                                                context, 'product-page')
-                                            .then((_) {
-                                          initCategory();
-                                        });
-                                      },
-                                      child: Card(
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Text(
-                                            "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["child"] ?? []) as List).map((e) => e as Map<String, dynamic>).toList()[index1]["kat2"]}",
-                                            style:
-                                                const TextStyle(fontSize: 10),
-                                          ),
+                            expanded: Wrap(
+                              children: [
+                                for (var index1 = 0;
+                                    index1 <
+                                        (((context
+                                                            .read<CategoryCubit>()
+                                                            .state
+                                                            .categoryModel?[
+                                                        "data"] as List)
+                                                    .map((e) => e
+                                                        as Map<String, dynamic>)
+                                                    .toList()[index]["child"] ??
+                                                []) as List)
+                                            .length;
+                                    index1++) ...{
+                                  GestureDetector(
+                                    onTap: () {
+                                      context.read<ProductCubit>().setProductFilter(
+                                          kategori:
+                                              "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["child"] ?? []) as List).map((e) => e as Map<String, dynamic>).toList()[index1]["kat2_slug"]}",
+                                          promo: "",
+                                          rating: "",
+                                          minPrice: "",
+                                          maxPrice: "");
+                                      Navigator.pushNamed(
+                                              context, 'product-page')
+                                          .then((_) {
+                                        initCategory();
+                                      });
+                                    },
+                                    child: Card(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Text(
+                                          "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["child"] ?? []) as List).map((e) => e as Map<String, dynamic>).toList()[index1]["kat2"]}",
+                                          style: const TextStyle(fontSize: 10),
                                         ),
                                       ),
                                     ),
-                                  },
-                                ],
-                              ),
+                                  ),
+                                },
+                              ],
                             ),
                             collapsed: const SizedBox(),
                           ),

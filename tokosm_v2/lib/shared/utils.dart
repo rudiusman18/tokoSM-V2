@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 import 'package:intl/intl.dart';
 
-String baseURL = "https://apitokosm.share.zrok.io/api/v1";
+String baseURL = "http://10.10.10.98:3001/api/v1";
 //"http://10.10.10.98:3001/api/v1"; //"https://apitokosm.share.zrok.io/api/v1";
+String mapBaseURL = "http://10.10.10.98:3000/apipos/v1";
 
 class Utils {
   void scaffoldMessenger(
@@ -21,14 +22,15 @@ class Utils {
     );
   }
 
-  void alertDialog(
-      {required BuildContext context,
-      required Function function,
-      Function? cancelFunction,
-      required String title,
-      required String message,
-      String cancelTitle = "Cancel",
-      String confirmTitle = "Ok"}) {
+  void alertDialog({
+    required BuildContext context,
+    required Function function,
+    Function? cancelFunction,
+    required String title,
+    required String message,
+    String cancelTitle = "Cancel",
+    String confirmTitle = "Ok",
+  }) {
     showDialog(
       context: context,
       builder: (

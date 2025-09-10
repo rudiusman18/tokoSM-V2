@@ -25,6 +25,8 @@ class AuthCubit extends Cubit<AuthState> {
     required String phoneNumber,
     required String email,
     required String password,
+    required double? lat,
+    required double? lng,
   }) async {
     emit(AuthLoading());
     try {
@@ -34,6 +36,8 @@ class AuthCubit extends Cubit<AuthState> {
         email: email,
         userName: "",
         password: password,
+        lat: lat,
+        lng: lng,
       );
       emit(AuthSuccess(loginModelData: LoginModel()));
     } catch (e) {
