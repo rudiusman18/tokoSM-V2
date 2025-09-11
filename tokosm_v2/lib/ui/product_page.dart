@@ -582,24 +582,35 @@ class _ProductPageExtension {
     required BuildContext context,
     required String sortBy,
   }) {
+    final state = context.read<ProductCubit>().state as ProductSuccess;
+
+    final slugs = state.selectedCategoryFilter == ""
+        ? []
+        : state.selectedCategoryFilter.split(',');
+
+    List<Map<String, dynamic>> data = [];
+    if (slugs.isNotEmpty) {
+      data = slugs.map((slug) {
+        final name = slug
+            .split('_')
+            .map((word) => word[0].toUpperCase() + word.substring(1))
+            .join(' ');
+        return {
+          "kat2_slug": slug,
+          "kat2": name,
+        };
+      }).toList();
+    }
+
     context.read<CategoryCubit>().getProductCategory(
           token: context.read<AuthCubit>().state.loginModel.token ?? "",
           filter: 'populer',
-          selectedCategory: (context.read<ProductCubit>().state
-                          as ProductSuccess)
-                      .selectedCategoryFilter ==
-                  ""
-              ? null
-              : {
-                  "kat2_slug":
-                      (context.read<ProductCubit>().state as ProductSuccess)
-                          .selectedCategoryFilter,
-                  "kat2": (context.read<ProductCubit>().state as ProductSuccess)
-                      .selectedCategoryFilter
-                      .split('_')
-                      .map((word) => word[0].toUpperCase() + word.substring(1))
-                      .join(' '),
-                },
+          selectedCategory:
+              (context.read<ProductCubit>().state as ProductSuccess)
+                          .selectedCategoryFilter ==
+                      ""
+                  ? null
+                  : data,
         );
 
     selectedCategory = (context.read<ProductCubit>().state as ProductSuccess)
@@ -697,30 +708,41 @@ class _ProductPageExtension {
                                       ).then(
                                         (var category) {
                                           selectedCategory = category;
+
+                                          final slugs = selectedCategory == ""
+                                              ? []
+                                              : selectedCategory.split(',');
+
+                                          List<Map<String, dynamic>> data = [];
+                                          if (slugs.isNotEmpty) {
+                                            data = slugs.map((slug) {
+                                              final name = slug
+                                                  .split('_')
+                                                  .map((word) =>
+                                                      word[0].toUpperCase() +
+                                                      word.substring(1))
+                                                  .join(' ');
+                                              return {
+                                                "kat2_slug": slug,
+                                                "kat2": name,
+                                              };
+                                            }).toList();
+                                          }
+
                                           context
                                               .read<CategoryCubit>()
                                               .getProductCategory(
-                                                  token: context
-                                                          .read<AuthCubit>()
-                                                          .state
-                                                          .loginModel
-                                                          .token ??
-                                                      "",
-                                                  filter: 'populer',
-                                                  selectedCategory: category ==
-                                                          ""
-                                                      ? null
-                                                      : {
-                                                          "kat2": category
-                                                              .split('_')
-                                                              .map((word) =>
-                                                                  word[0]
-                                                                      .toUpperCase() +
-                                                                  word.substring(
-                                                                      1))
-                                                              .join(' '),
-                                                          "kat2_slug": category,
-                                                        });
+                                                token: context
+                                                        .read<AuthCubit>()
+                                                        .state
+                                                        .loginModel
+                                                        .token ??
+                                                    "",
+                                                filter: 'populer',
+                                                selectedCategory: category == ""
+                                                    ? null
+                                                    : data,
+                                              );
                                         },
                                       );
                                     },
@@ -749,24 +771,35 @@ class _ProductPageExtension {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          if (selectedCategory ==
+                                          var selectedCategoryList =
+                                              selectedCategory != ""
+                                                  ? selectedCategory.split(",")
+                                                  : [];
+
+                                          if (selectedCategoryList.contains(
                                               "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["kat2_slug"] ?? []))}"
-                                                  .toLowerCase()) {
-                                            selectedCategory = "";
-                                          } else {
-                                            selectedCategory =
+                                                  .toLowerCase())) {
+                                            selectedCategoryList.remove(
                                                 "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["kat2_slug"] ?? []))}"
-                                                    .toLowerCase();
+                                                    .toLowerCase());
+                                          } else {
+                                            selectedCategoryList.add(
+                                                "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["kat2_slug"] ?? []))}"
+                                                    .toLowerCase());
                                           }
+
+                                          selectedCategory =
+                                              selectedCategoryList.join(",");
                                         });
                                       },
                                       child: filterItem(
-                                        cardColor:
-                                            "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["kat2_slug"] ?? []))}"
-                                                        .toLowerCase() ==
-                                                    selectedCategory
-                                                ? Colors.black
-                                                : null,
+                                        cardColor: selectedCategory
+                                                .split(",")
+                                                .contains(
+                                                    "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["kat2_slug"] ?? []))}"
+                                                        .toLowerCase())
+                                            ? Colors.black
+                                            : null,
                                         name:
                                             "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["kat2"] ?? []))}",
                                       ),
@@ -1242,11 +1275,26 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
                               GestureDetector(
                                 onTap: () {
                                   setState(() {
-                                    newSelectedCategory = ((context
-                                            .read<CategoryCubit>()
-                                            .state
-                                            .categoryModel?['data'] ??
-                                        []) as List)[index]['kat2_slug'];
+                                    var selectedCategoryList =
+                                        newSelectedCategory == ""
+                                            ? []
+                                            : newSelectedCategory?.split(",") ??
+                                                [];
+
+                                    if (selectedCategoryList.contains(
+                                        "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["kat2_slug"] ?? []))}"
+                                            .toLowerCase())) {
+                                      selectedCategoryList.remove(
+                                          "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["kat2_slug"] ?? []))}"
+                                              .toLowerCase());
+                                    } else {
+                                      selectedCategoryList.add(
+                                          "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["kat2_slug"] ?? []))}"
+                                              .toLowerCase());
+                                    }
+
+                                    newSelectedCategory =
+                                        selectedCategoryList.join(",");
                                   });
                                 },
                                 child: _CategoryFilterPageExtension()
@@ -1256,12 +1304,14 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
                                           .state
                                           .categoryModel?['data'] ??
                                       []) as List)[index],
-                                  isSelected: newSelectedCategory ==
-                                          ((context
+                                  isSelected: (newSelectedCategory
+                                                  ?.split(",") ??
+                                              [])
+                                          .contains(((context
                                                   .read<CategoryCubit>()
                                                   .state
                                                   .categoryModel?['data'] ??
-                                              []) as List)[index]['kat2_slug']
+                                              []) as List)[index]['kat2_slug'])
                                       ? true
                                       : false,
                                 ),

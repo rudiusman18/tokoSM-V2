@@ -9,7 +9,7 @@ class CategoryCubit extends Cubit<CategoryState> {
   void getProductCategory({
     required String token,
     String filter = "",
-    Map<String, dynamic>? selectedCategory,
+    List<Map<String, dynamic>>? selectedCategory,
   }) async {
     emit(CategoryLoading());
     try {
@@ -20,11 +20,13 @@ class CategoryCubit extends Cubit<CategoryState> {
       );
 
       if (selectedCategory != null) {
-        if ((categoryModel["data"] as List)
-                .map((e) => e['kat2_slug'])
-                .contains(selectedCategory['kat2_slug']) ==
-            false) {
-          (categoryModel["data"] as List).insert(0, selectedCategory);
+        for (var data in selectedCategory) {
+          if ((categoryModel["data"] as List)
+                  .map((e) => e['kat2_slug'])
+                  .contains(data['kat2_slug']) ==
+              false) {
+            (categoryModel["data"] as List).insert(0, data);
+          }
         }
       }
 
