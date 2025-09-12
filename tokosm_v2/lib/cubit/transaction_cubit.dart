@@ -65,6 +65,8 @@ class TransactionCubit extends Cubit<TransactionState> {
     required String courier,
     required String courierService,
     required List<DataProduct> products,
+    required String transactionNotes,
+    required Map<String, dynamic> productNotes,
   }) async {
     TransactionData? selectedTransaction = state.selectedTransaction;
     TransactionModel? transactionModel = state.transactionModel;
@@ -81,6 +83,8 @@ class TransactionCubit extends Cubit<TransactionState> {
         products: products,
         courier: courier,
         courierService: courierService,
+        productNotes: productNotes,
+        transactionNotes: transactionNotes,
       );
       emit(TransactionSuccess(
         tabIndex: state.transactionTabIndex,

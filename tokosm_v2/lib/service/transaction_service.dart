@@ -84,6 +84,8 @@ class TransactionService {
     required String courier,
     required String courierService,
     required List<DataProduct> products,
+    required Map<String, dynamic> productNotes,
+    required String transactionNotes,
   }) async {
     var url = Uri.parse("$baseURL/transaksi");
     var header = {
@@ -119,12 +121,16 @@ class TransactionService {
           : null,
       "kurir": courier, // toko, jne, j&t
       "layanan_kurir": courierService.toLowerCase(),
+      "catatan_transaksi": transactionNotes,
       "pengiriman_id": int.tryParse(addressID),
-      "produk": products.map((e) => e.toJson()).toList(),
+      "produk": products.map((e) {
+        var json = e.toJson();
+        json["catatan_produk"] =
+            productNotes[(e.namaProduk ?? "").toLowerCase()];
+        return json;
+      }).toList(),
       "bonus": null,
     };
-
-    print("data yang dikirim adalah: $data");
 
     var body = jsonEncode(data);
 
@@ -189,7 +195,6 @@ class TransactionService {
       }
     } catch (e) {
       print("⚠️ Error: $e");
-      
     }
   }
 }

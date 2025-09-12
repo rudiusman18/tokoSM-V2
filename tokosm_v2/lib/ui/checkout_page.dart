@@ -21,6 +21,9 @@ class CheckoutPage extends StatefulWidget {
 }
 
 class _CheckoutPageState extends State<CheckoutPage> {
+  String transactionNotes = "";
+  Map<String, dynamic> productNotesController = {};
+
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -71,11 +74,23 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       .length;
               index++) ...{
             _CheckoutPageExtension().verticalSmallItemView(
-              context: context,
-              product:
-                  (context.read<CartCubit>().state.productToTransaction?.data ??
-                      [])[index],
-            )
+                context: context,
+                product: (context
+                        .read<CartCubit>()
+                        .state
+                        .productToTransaction
+                        ?.data ??
+                    [])[index],
+                prevNotes: productNotesController[
+                        "${(context.read<CartCubit>().state.productToTransaction?.data ?? [])[index].namaProduk?.toLowerCase()}"] ??
+                    "",
+                completion: (productNotes) {
+                  setState(() {
+                    productNotesController[
+                            "${(context.read<CartCubit>().state.productToTransaction?.data ?? [])[index].namaProduk?.toLowerCase()}"] =
+                        productNotes;
+                  });
+                })
           },
         ],
       ),
@@ -278,34 +293,141 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             const SizedBox(
                               height: 10,
                             ),
-                            Container(
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              child: Row(
-                                spacing: 5,
-                                children: [
-                                  Expanded(
-                                    child: Text(
+                            GestureDetector(
+                              onTap: () {
+                                TextEditingController
+                                    transactionNotesController =
+                                    TextEditingController(text: "");
+                                transactionNotesController.text =
+                                    transactionNotes;
+                                Utils().customBottomSheet(
+                                  context,
+                                  Container(
+                                    width: double.infinity,
+                                    margin: const EdgeInsets.symmetric(
+                                      vertical: 10,
+                                      horizontal: 16,
+                                    ),
+                                    child: Column(
+                                      spacing: 10,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Row(
+                                          spacing: 5,
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                "Catatan Toko",
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                  fontWeight: bold,
+                                                ),
+                                              ),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Icon(
+                                                Icons.close,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        Container(
+                                          height: 100,
+                                          padding: const EdgeInsets.all(8),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            border: Border.all(
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                          child: TextFormField(
+                                            maxLines: 5,
+                                            autocorrect: false,
+                                            controller:
+                                                transactionNotesController,
+                                            cursorColor: Colors.black,
+                                            decoration:
+                                                const InputDecoration.collapsed(
+                                              hintText: "Tulis Catatan",
+                                              focusColor: Colors.black,
+                                              hintStyle:
+                                                  TextStyle(fontSize: 14),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: double.infinity,
+                                          child: ElevatedButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                transactionNotes =
+                                                    transactionNotesController
+                                                        .text;
+                                                Navigator.pop(context);
+                                              });
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                                foregroundColor: colorSuccess,
+                                                backgroundColor: colorSuccess,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadiusGeometry
+                                                          .circular(
+                                                    10,
+                                                  ),
+                                                )),
+                                            child: const Text(
+                                              "Simpan",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
+                                child: Row(
+                                  spacing: 5,
+                                  children: [
+                                    Text(
                                       "Catatan Toko",
                                       style: TextStyle(
                                         fontSize: 12,
                                         fontWeight: bold,
                                       ),
                                     ),
-                                  ),
-                                  Text(
-                                    "...",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: bold,
+                                    Expanded(
+                                      child: Text(
+                                        transactionNotes == ""
+                                            ? "..."
+                                            : transactionNotes,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                        ),
+                                        textAlign: TextAlign.end,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
                                     ),
-                                  ),
-                                  const Icon(
-                                    Icons.chevron_right,
-                                    size: 18,
-                                  ),
-                                ],
+                                    const Icon(
+                                      Icons.chevron_right,
+                                      size: 18,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
 
@@ -614,6 +736,8 @@ class _CheckoutPageState extends State<CheckoutPage> {
                                             "${context.read<CheckoutCubit>().state.selectedCourier?["data"].first["id"]}",
                                         courierService:
                                             "${context.read<CheckoutCubit>().state.selectedCourier?["data"].first["layanan"].first["nama"]}",
+                                        productNotes: productNotesController,
+                                        transactionNotes: transactionNotes,
                                       );
 
                                   Navigator.pop(context);
@@ -857,6 +981,8 @@ class _CheckoutPageExtension {
   Widget verticalSmallItemView({
     required BuildContext context,
     required DataProduct? product,
+    required String prevNotes,
+    required Function(String) completion,
   }) {
     return IntrinsicHeight(
       child: Row(
@@ -1052,15 +1178,112 @@ class _CheckoutPageExtension {
                 const SizedBox(
                   height: 5,
                 ),
-                const Row(
-                  spacing: 5,
-                  children: [
-                    Icon(
-                      SolarIconsOutline.penNewSquare,
-                      size: 14,
-                    ),
-                    Text("..."),
-                  ],
+                GestureDetector(
+                  onTap: () {
+                    TextEditingController productNotesController =
+                        TextEditingController(text: prevNotes);
+                    Utils().customBottomSheet(
+                      context,
+                      Container(
+                        width: double.infinity,
+                        margin: const EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 16,
+                        ),
+                        child: Column(
+                          spacing: 10,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              spacing: 5,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    "Catatan Produk (${product?.namaProduk})",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: bold,
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Icon(
+                                    Icons.close,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Container(
+                              height: 100,
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: Colors.grey,
+                                ),
+                              ),
+                              child: TextFormField(
+                                maxLines: 5,
+                                autocorrect: false,
+                                controller: productNotesController,
+                                cursorColor: Colors.black,
+                                decoration: const InputDecoration.collapsed(
+                                  hintText: "Tulis Catatan",
+                                  focusColor: Colors.black,
+                                  hintStyle: TextStyle(fontSize: 14),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: double.infinity,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  completion(productNotesController.text);
+                                  Navigator.pop(context);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                    foregroundColor: colorSuccess,
+                                    backgroundColor: colorSuccess,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadiusGeometry.circular(
+                                        10,
+                                      ),
+                                    )),
+                                child: const Text(
+                                  "Simpan",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  child: Row(
+                    spacing: 5,
+                    children: [
+                      const Icon(
+                        SolarIconsOutline.penNewSquare,
+                        size: 14,
+                      ),
+                      Expanded(
+                        child: Text(
+                          prevNotes == "" ? "..." : prevNotes,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
