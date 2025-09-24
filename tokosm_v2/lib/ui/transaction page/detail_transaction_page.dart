@@ -55,284 +55,286 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
       );
 
       return StatefulBuilder(builder: (context, setState) {
-        return Container(
-          width: double.infinity,
-          margin: const EdgeInsets.symmetric(
-            vertical: 10,
-            horizontal: 16,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // NOTE: Judul
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      "Konfirmasi Pembayaran",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: bold,
-                      ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Icon(
-                      Icons.close,
-                    ),
-                  ),
-                ],
-              ),
-              // NOTE: Bank
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  const Expanded(
-                    child: Text(
-                      "Bank",
-                      style: TextStyle(fontSize: 14),
-                    ),
-                  ),
-                  Image.network(
-                    "https://images.tokopedia.net/img/payment/icons/${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.detailPembayaran?.namaBank?.toLowerCase()}.png",
-                    width: 50,
-                    height: 50,
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              // NOTE: No Rekening
-              Row(
-                spacing: 10,
-                children: [
-                  const Expanded(
-                    child: Text(
-                      "No Rekening",
-                      style: TextStyle(fontSize: 14),
-                    ),
-                  ),
-                  Flexible(
-                    child: TextFormField(
-                      textAlign: TextAlign.end,
-                      keyboardType: TextInputType.number,
-                      controller: noRekeningTextController,
-                      style: const TextStyle(
-                        fontSize: 14,
-                      ),
-                      decoration: const InputDecoration.collapsed(
-                        hintText: 'No Rekening Pengguna',
-                        hintStyle: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
+        return SafeArea(
+          child: Container(
+            width: double.infinity,
+            margin: const EdgeInsets.symmetric(
+              vertical: 10,
+              horizontal: 16,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // NOTE: Judul
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "Konfirmasi Pembayaran",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: bold,
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              // NOTE: Nama Lengkap
-              Row(
-                spacing: 10,
-                children: [
-                  const Text(
-                    "Nama Lengkap",
-                    style: TextStyle(fontSize: 14),
-                  ),
-                  Flexible(
-                    child: TextFormField(
-                      textAlign: TextAlign.end,
-                      controller: fullNameTextController,
-                      style: const TextStyle(
-                        fontSize: 14,
-                      ),
-                      decoration: const InputDecoration.collapsed(
-                        hintText: 'Nama Pengguna',
-                        hintStyle: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Icon(
+                        Icons.close,
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(
-                height: 5,
-              ),
-              // NOTE: Bukti Transfer
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Expanded(
-                    child: Text(
-                      "Bukti Transfer",
-                      style: TextStyle(fontSize: 14),
+                  ],
+                ),
+                // NOTE: Bank
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        "Bank",
+                        style: TextStyle(fontSize: 14),
+                      ),
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Utils().customAlertDialog(
-                        context: context,
-                        confirmationFunction: () {},
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SizedBox(
-                              width: double.infinity,
-                              child: TextButton(
-                                style: TextButton.styleFrom(
-                                  foregroundColor: colorSuccess,
-                                ),
-                                onPressed: () async {
-                                  final pickedFile = await picker.pickImage(
-                                      source: ImageSource.gallery);
-
-                                  if (pickedFile != null) {
-                                    Navigator.pop(context);
-                                    setState(() {
-                                      file = File(pickedFile.path);
-                                    });
-                                  } else {
-                                    print("Tidak ada gambar yang dipilih");
-                                  }
-                                },
-                                child: Text(
-                                  "Galeri",
-                                  style: TextStyle(
-                                    color: colorSuccess,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: double.infinity,
-                              child: TextButton(
-                                style: TextButton.styleFrom(
-                                  foregroundColor: colorSuccess,
-                                ),
-                                onPressed: () async {
-                                  final pickedFile = await picker.pickImage(
-                                      source: ImageSource.camera);
-
-                                  if (pickedFile != null) {
-                                    Navigator.pop(context);
-                                    setState(() {
-                                      file = File(pickedFile.path);
-                                    });
-                                    print("isi file adalah $file");
-                                  } else {
-                                    print("Tidak ada gambar yang dipilih");
-                                  }
-                                },
-                                child: Text(
-                                  "Kamera",
-                                  style: TextStyle(
-                                    color: colorSuccess,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        title: "Pilih Sumber Gambar",
-                      );
-                    },
-                    child: Container(
+                    Image.network(
+                      "https://images.tokopedia.net/img/payment/icons/${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.detailPembayaran?.namaBank?.toLowerCase()}.png",
                       width: 50,
                       height: 50,
-                      color: Colors.transparent,
-                      child: file != null
-                          ? Image.file(
-                              file!,
-                              fit: BoxFit.cover,
-                            )
-                          : const DottedBorder(
-                              options: RectDottedBorderOptions(
-                                dashPattern: [
-                                  5,
-                                ],
-                                color: Colors.grey,
-                                strokeWidth: 2,
-                                padding: EdgeInsets.all(16),
-                              ),
-                              child: Icon(
-                                Icons.camera_alt_outlined,
-                                color: Colors.grey,
-                                size: 20,
-                              ),
-                            ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                // NOTE: No Rekening
+                Row(
+                  spacing: 10,
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        "No Rekening",
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ),
+                    Flexible(
+                      child: TextFormField(
+                        textAlign: TextAlign.end,
+                        keyboardType: TextInputType.number,
+                        controller: noRekeningTextController,
+                        style: const TextStyle(
+                          fontSize: 14,
+                        ),
+                        decoration: const InputDecoration.collapsed(
+                          hintText: 'No Rekening Pengguna',
+                          hintStyle: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                // NOTE: Nama Lengkap
+                Row(
+                  spacing: 10,
+                  children: [
+                    const Text(
+                      "Nama Lengkap",
+                      style: TextStyle(fontSize: 14),
+                    ),
+                    Flexible(
+                      child: TextFormField(
+                        textAlign: TextAlign.end,
+                        controller: fullNameTextController,
+                        style: const TextStyle(
+                          fontSize: 14,
+                        ),
+                        decoration: const InputDecoration.collapsed(
+                          hintText: 'Nama Pengguna',
+                          hintStyle: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  height: 5,
+                ),
+                // NOTE: Bukti Transfer
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        "Bukti Transfer",
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Utils().customAlertDialog(
+                          context: context,
+                          confirmationFunction: () {},
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SizedBox(
+                                width: double.infinity,
+                                child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: colorSuccess,
+                                  ),
+                                  onPressed: () async {
+                                    final pickedFile = await picker.pickImage(
+                                        source: ImageSource.gallery);
 
-              // Button Simpan
-              Container(
-                margin: const EdgeInsets.only(
-                  top: 20,
+                                    if (pickedFile != null) {
+                                      Navigator.pop(context);
+                                      setState(() {
+                                        file = File(pickedFile.path);
+                                      });
+                                    } else {
+                                      print("Tidak ada gambar yang dipilih");
+                                    }
+                                  },
+                                  child: Text(
+                                    "Galeri",
+                                    style: TextStyle(
+                                      color: colorSuccess,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: double.infinity,
+                                child: TextButton(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: colorSuccess,
+                                  ),
+                                  onPressed: () async {
+                                    final pickedFile = await picker.pickImage(
+                                        source: ImageSource.camera);
+
+                                    if (pickedFile != null) {
+                                      Navigator.pop(context);
+                                      setState(() {
+                                        file = File(pickedFile.path);
+                                      });
+                                      print("isi file adalah $file");
+                                    } else {
+                                      print("Tidak ada gambar yang dipilih");
+                                    }
+                                  },
+                                  child: Text(
+                                    "Kamera",
+                                    style: TextStyle(
+                                      color: colorSuccess,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          title: "Pilih Sumber Gambar",
+                        );
+                      },
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        color: Colors.transparent,
+                        child: file != null
+                            ? Image.file(
+                                file!,
+                                fit: BoxFit.cover,
+                              )
+                            : const DottedBorder(
+                                options: RectDottedBorderOptions(
+                                  dashPattern: [
+                                    5,
+                                  ],
+                                  color: Colors.grey,
+                                  strokeWidth: 2,
+                                  padding: EdgeInsets.all(16),
+                                ),
+                                child: Icon(
+                                  Icons.camera_alt_outlined,
+                                  color: Colors.grey,
+                                  size: 20,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ],
                 ),
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (noRekeningTextController.text != "" &&
-                        fullNameTextController.text != "" &&
-                        file != null) {
-                      Utils().loadingDialog(context: context);
-                      await context
-                          .read<DetailTransactionCubit>()
-                          .postPaymentConfirmation(
-                            token: context
-                                    .read<AuthCubit>()
-                                    .state
-                                    .loginModel
-                                    .token ??
-                                "",
-                            noInvoice:
-                                "${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.noInvoice}",
-                            noRekening: noRekeningTextController.text,
-                            nama: fullNameTextController.text,
-                            bukti: file!,
-                          );
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                      Utils().scaffoldMessenger(context,
-                          "Anda telah melakukan konfirmasi pembayaran");
-                    } else {
-                      toastification.show(
-                        context:
-                            context, // optional if you use ToastificationWrapper
-                        title: const Text(
-                            'Silahkan lengkapi data Anda terlebih dahulu'),
-                        autoCloseDuration: const Duration(seconds: 2),
-                        style: ToastificationStyle.simple,
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: colorSuccess,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadiusGeometry.circular(10),
+
+                // Button Simpan
+                Container(
+                  margin: const EdgeInsets.only(
+                    top: 20,
+                  ),
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (noRekeningTextController.text != "" &&
+                          fullNameTextController.text != "" &&
+                          file != null) {
+                        Utils().loadingDialog(context: context);
+                        await context
+                            .read<DetailTransactionCubit>()
+                            .postPaymentConfirmation(
+                              token: context
+                                      .read<AuthCubit>()
+                                      .state
+                                      .loginModel
+                                      .token ??
+                                  "",
+                              noInvoice:
+                                  "${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.noInvoice}",
+                              noRekening: noRekeningTextController.text,
+                              nama: fullNameTextController.text,
+                              bukti: file!,
+                            );
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                        Utils().scaffoldMessenger(context,
+                            "Anda telah melakukan konfirmasi pembayaran");
+                      } else {
+                        toastification.show(
+                          context:
+                              context, // optional if you use ToastificationWrapper
+                          title: const Text(
+                              'Silahkan lengkapi data Anda terlebih dahulu'),
+                          autoCloseDuration: const Duration(seconds: 2),
+                          style: ToastificationStyle.simple,
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colorSuccess,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadiusGeometry.circular(10),
+                      ),
+                    ),
+                    child: const Text(
+                      "Simpan",
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                  child: const Text(
-                    "Simpan",
-                    style: TextStyle(
-                      color: Colors.white,
-                    ),
-                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       });

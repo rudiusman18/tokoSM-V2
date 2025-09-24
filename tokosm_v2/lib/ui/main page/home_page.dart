@@ -236,7 +236,6 @@ class _HomePageState extends State<HomePage> {
 
     Widget carouselBanner() {
       return Container(
-        height: 98,
         decoration: BoxDecoration(
           boxShadow: [
             BoxShadow(

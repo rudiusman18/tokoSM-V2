@@ -35,7 +35,7 @@ class _CartPageState extends State<CartPage> {
               context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
         );
   }
- 
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CabangCubit, CabangState>(
@@ -407,8 +407,8 @@ class _CartPageExtenion {
                 ),
                 // Gambar di kiri
                 Container(
-                  height: 96,
-                  width: 96,
+                  height: 48,
+                  width: 48,
                   decoration: BoxDecoration(
                     color: Colors.grey,
                     borderRadius: BorderRadius.circular(10),

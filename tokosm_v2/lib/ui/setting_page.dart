@@ -169,137 +169,139 @@ class _SettingPageState extends State<SettingPage> {
             ),
             centerTitle: true,
           ),
-          body: Column(
-            children: [
-              Expanded(
-                child: ListView(
-                  children: [
-                    header(),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Expanded(
-                      child: Container(
-                        height: 5,
-                        color: greyBase300,
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                      ),
-                      child: Column(
-                        spacing: 10,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                  context, 'setting-page/change-password');
-                            },
-                            child: _SettingPageExtension().settingItem(
-                              icon: SolarIconsOutline.lockPassword,
-                              title: "Ubah Kata Sandi",
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () async {
-                              Utils().loadingDialog(context: context);
-                              await context.read<AddressCubit>().getAddress(
-                                  token: context
-                                          .read<AuthCubit>()
-                                          .state
-                                          .loginModel
-                                          .token ??
-                                      "");
-                              Navigator.pop(context);
-                              Navigator.pushNamed(context, 'address');
-                            },
-                            child: _SettingPageExtension().settingItem(
-                              icon: SolarIconsOutline.delivery,
-                              title: "Daftar Alamat",
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              context.read<PageCubit>().setPage(3);
-                              Navigator.pop(context);
-                            },
-                            child: _SettingPageExtension().settingItem(
-                              icon: SolarIconsOutline.billList,
-                              title: "Daftar Transaksi",
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pushNamed(
-                                  context, "product/all-review-user");
-                            },
-                            child: _SettingPageExtension().settingItem(
-                              icon: Icons.star_border,
-                              title: "Ulasan",
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              context.read<PageCubit>().setPage(2);
-                              Navigator.pop(context);
-                            },
-                            child: _SettingPageExtension().settingItem(
-                              icon: SolarIconsOutline.heart,
-                              title: "Favorit",
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  Utils().alertDialog(
-                    context: context,
-                    function: () {
-                      Navigator.pop(context);
-                      context.read<AuthCubit>().logout();
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        'login',
-                        (route) => false,
-                      );
-                    },
-                    title: "Logout",
-                    message: "Anda yakin untuk melanjutkan logout?",
-                  );
-                },
-                child: Container(
-                  margin: const EdgeInsets.only(
-                    bottom: 20,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+          body: SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: ListView(
                     children: [
-                      Icon(
-                        SolarIconsOutline.power,
-                        size: 30,
-                        color: colorSuccess,
+                      header(),
+                      const SizedBox(
+                        height: 10,
                       ),
-                      Text(
-                        "Logout",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: colorSuccess,
-                          fontWeight: bold,
+                      Expanded(
+                        child: Container(
+                          height: 5,
+                          color: greyBase300,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Container(
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                        ),
+                        child: Column(
+                          spacing: 10,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, 'setting-page/change-password');
+                              },
+                              child: _SettingPageExtension().settingItem(
+                                icon: SolarIconsOutline.lockPassword,
+                                title: "Ubah Kata Sandi",
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+                                Utils().loadingDialog(context: context);
+                                await context.read<AddressCubit>().getAddress(
+                                    token: context
+                                            .read<AuthCubit>()
+                                            .state
+                                            .loginModel
+                                            .token ??
+                                        "");
+                                Navigator.pop(context);
+                                Navigator.pushNamed(context, 'address');
+                              },
+                              child: _SettingPageExtension().settingItem(
+                                icon: SolarIconsOutline.delivery,
+                                title: "Daftar Alamat",
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                context.read<PageCubit>().setPage(3);
+                                Navigator.pop(context);
+                              },
+                              child: _SettingPageExtension().settingItem(
+                                icon: SolarIconsOutline.billList,
+                                title: "Daftar Transaksi",
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, "product/all-review-user");
+                              },
+                              child: _SettingPageExtension().settingItem(
+                                icon: Icons.star_border,
+                                title: "Ulasan",
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                context.read<PageCubit>().setPage(2);
+                                Navigator.pop(context);
+                              },
+                              child: _SettingPageExtension().settingItem(
+                                icon: SolarIconsOutline.heart,
+                                title: "Favorit",
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ),
-              )
-            ],
+                GestureDetector(
+                  onTap: () {
+                    Utils().alertDialog(
+                      context: context,
+                      function: () {
+                        Navigator.pop(context);
+                        context.read<AuthCubit>().logout();
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          'login',
+                          (route) => false,
+                        );
+                      },
+                      title: "Logout",
+                      message: "Anda yakin untuk melanjutkan logout?",
+                    );
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(
+                      bottom: 20,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          SolarIconsOutline.power,
+                          size: 30,
+                          color: colorSuccess,
+                        ),
+                        Text(
+                          "Logout",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: colorSuccess,
+                            fontWeight: bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         );
       },

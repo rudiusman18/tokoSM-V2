@@ -14,6 +14,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
+  flutter_launcher_icons: ^0.14.4
   flutter_rating_bar: ^4.0.1
   geolocator: ^14.0.2
   http: ^1.4.0
@@ -37,6 +38,11 @@ flutter:
 
   assets:
     - assets/
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo-tokosm.png"
 
   fonts:
     - family: Urbanist
