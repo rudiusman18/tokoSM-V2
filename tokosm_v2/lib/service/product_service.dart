@@ -61,7 +61,12 @@ class ProductService {
 
     if (response.statusCode >= 200 && response.statusCode <= 299) {
       var data = jsonDecode(response.body);
+
+      print("isi data adalah ${data["data"]}");
+
       final DetailProductModel productModel = DetailProductModel.fromJson(data);
+
+      print("isi data productMOdel adalah ${productModel.toJson()}");
 
       return productModel;
     } else {

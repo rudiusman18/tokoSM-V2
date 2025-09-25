@@ -9,6 +9,7 @@ import 'package:tokosm_v2/cubit/cart_cubit.dart';
 import 'package:tokosm_v2/cubit/checkout_cubit.dart';
 import 'package:tokosm_v2/cubit/page_cubit.dart';
 import 'package:tokosm_v2/cubit/transaction_cubit.dart';
+import 'package:tokosm_v2/model/address_model.dart';
 import 'package:tokosm_v2/model/product_model.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 import 'package:tokosm_v2/shared/utils.dart';
@@ -42,6 +43,13 @@ class _CheckoutPageState extends State<CheckoutPage> {
     await context.read<CheckoutCubit>().getCourier(
         token: context.read<AuthCubit>().state.loginModel.token ?? "",
         cabangID: context.read<CabangCubit>().state.selectedCabangData.id ?? 0);
+
+    context.read<AddressCubit>().selectAddress(
+            addressData:
+                (context.read<AddressCubit>().state.addressModel?.data ?? [])
+                    .firstWhere(
+          (element) => element.isUtama == 1,
+        ));
 
     Navigator.pop(context);
 

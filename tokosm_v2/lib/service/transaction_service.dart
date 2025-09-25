@@ -162,7 +162,7 @@ class TransactionService {
     required String nama,
     required File bukti,
   }) async {
-    var url = Uri.parse("$baseURL/transaksi");
+    var url = Uri.parse("$baseURL/transaksi/konfirmpembayaran");
 
     var request = http.MultipartRequest('POST', url);
 
@@ -174,7 +174,7 @@ class TransactionService {
     // 🔹 Tambahkan file
     request.files.add(
       await http.MultipartFile.fromPath(
-        'file', // 🔑 key sesuai backend (misalnya 'bukti_transfer' atau 'upload')
+        'bukti', // 🔑 key sesuai backend (misalnya 'bukti_transfer' atau 'upload')
         bukti.path,
       ),
     );

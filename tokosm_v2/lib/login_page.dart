@@ -2,7 +2,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:solar_icons/solar_icons.dart';
+import 'package:tokosm_v2/cubit/address_cubit.dart';
 import 'package:tokosm_v2/cubit/auth_cubit.dart';
+import 'package:tokosm_v2/model/address_model.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 import 'package:tokosm_v2/shared/utils.dart';
 
@@ -108,11 +110,14 @@ class _LoginPageState extends State<LoginPage> {
                   isPassword: true,
                 ),
                 const SizedBox(
-                  height: 10,
+                  height: 22,
                 ),
                 GestureDetector(
                   onTap: () {
                     if (context.read<AuthCubit>().state is! AuthLoading) {
+                      context
+                          .read<AddressCubit>()
+                          .selectAddress(addressData: AddressData());
                       context.read<AuthCubit>().postLogin(
                           email: emailController.text,
                           password: passwordController.text);
@@ -120,7 +125,7 @@ class _LoginPageState extends State<LoginPage> {
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      vertical: 5,
+                      vertical: 10,
                     ),
                     decoration: BoxDecoration(
                       color: colorSuccess,
@@ -144,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 const SizedBox(
-                  height: 10,
+                  height: 16,
                 ),
                 Center(
                   child: RichText(

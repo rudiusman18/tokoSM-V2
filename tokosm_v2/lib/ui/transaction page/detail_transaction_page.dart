@@ -71,7 +71,17 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                   children: [
                     Expanded(
                       child: Text(
-                        "Konfirmasi Pembayaran",
+                        context
+                                    .read<DetailTransactionCubit>()
+                                    .state
+                                    .detailTransactionModel
+                                    ?.data
+                                    ?.first
+                                    .keteranganStatus
+                                    ?.toLowerCase() ==
+                                "menunggu konfirmasi pembayaran"
+                            ? "Bukti Pembayaran"
+                            : "Konfirmasi Pembayaran",
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: bold,
@@ -90,7 +100,6 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                 ),
                 // NOTE: Bank
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     const Expanded(
                       child: Text(
@@ -120,6 +129,17 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                     ),
                     Flexible(
                       child: TextFormField(
+                        enabled: context
+                                    .read<DetailTransactionCubit>()
+                                    .state
+                                    .detailTransactionModel
+                                    ?.data
+                                    ?.first
+                                    .keteranganStatus
+                                    ?.toLowerCase() ==
+                                "menunggu konfirmasi pembayaran"
+                            ? false
+                            : true,
                         textAlign: TextAlign.end,
                         keyboardType: TextInputType.number,
                         controller: noRekeningTextController,
@@ -150,6 +170,17 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                     ),
                     Flexible(
                       child: TextFormField(
+                        enabled: context
+                                    .read<DetailTransactionCubit>()
+                                    .state
+                                    .detailTransactionModel
+                                    ?.data
+                                    ?.first
+                                    .keteranganStatus
+                                    ?.toLowerCase() ==
+                                "menunggu konfirmasi pembayaran"
+                            ? false
+                            : true,
                         textAlign: TextAlign.end,
                         controller: fullNameTextController,
                         style: const TextStyle(
@@ -181,158 +212,197 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Utils().customAlertDialog(
-                          context: context,
-                          confirmationFunction: () {},
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                width: double.infinity,
-                                child: TextButton(
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: colorSuccess,
-                                  ),
-                                  onPressed: () async {
-                                    final pickedFile = await picker.pickImage(
-                                        source: ImageSource.gallery);
+                        if (context
+                                .read<DetailTransactionCubit>()
+                                .state
+                                .detailTransactionModel
+                                ?.data
+                                ?.first
+                                .keteranganStatus
+                                ?.toLowerCase() !=
+                            "menunggu konfirmasi pembayaran") {
+                          Utils().customAlertDialog(
+                            context: context,
+                            confirmationFunction: () {},
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: TextButton(
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: colorSuccess,
+                                    ),
+                                    onPressed: () async {
+                                      final pickedFile = await picker.pickImage(
+                                          source: ImageSource.gallery);
 
-                                    if (pickedFile != null) {
-                                      Navigator.pop(context);
-                                      setState(() {
-                                        file = File(pickedFile.path);
-                                      });
-                                    } else {
-                                      print("Tidak ada gambar yang dipilih");
-                                    }
-                                  },
-                                  child: Text(
-                                    "Galeri",
-                                    style: TextStyle(
-                                      color: colorSuccess,
+                                      if (pickedFile != null) {
+                                        Navigator.pop(context);
+                                        setState(() {
+                                          file = File(pickedFile.path);
+                                        });
+                                      } else {
+                                        print("Tidak ada gambar yang dipilih");
+                                      }
+                                    },
+                                    child: Text(
+                                      "Galeri",
+                                      style: TextStyle(
+                                        color: colorSuccess,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              SizedBox(
-                                width: double.infinity,
-                                child: TextButton(
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: colorSuccess,
-                                  ),
-                                  onPressed: () async {
-                                    final pickedFile = await picker.pickImage(
-                                        source: ImageSource.camera);
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: TextButton(
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: colorSuccess,
+                                    ),
+                                    onPressed: () async {
+                                      final pickedFile = await picker.pickImage(
+                                          source: ImageSource.camera);
 
-                                    if (pickedFile != null) {
-                                      Navigator.pop(context);
-                                      setState(() {
-                                        file = File(pickedFile.path);
-                                      });
-                                      print("isi file adalah $file");
-                                    } else {
-                                      print("Tidak ada gambar yang dipilih");
-                                    }
-                                  },
-                                  child: Text(
-                                    "Kamera",
-                                    style: TextStyle(
-                                      color: colorSuccess,
+                                      if (pickedFile != null) {
+                                        Navigator.pop(context);
+                                        setState(() {
+                                          file = File(pickedFile.path);
+                                        });
+                                        print("isi file adalah $file");
+                                      } else {
+                                        print("Tidak ada gambar yang dipilih");
+                                      }
+                                    },
+                                    child: Text(
+                                      "Kamera",
+                                      style: TextStyle(
+                                        color: colorSuccess,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          title: "Pilih Sumber Gambar",
-                        );
+                              ],
+                            ),
+                            title: "Pilih Sumber Gambar",
+                          );
+                        }
                       },
                       child: Container(
                         width: 50,
                         height: 50,
                         color: Colors.transparent,
-                        child: file != null
-                            ? Image.file(
-                                file!,
-                                fit: BoxFit.cover,
+                        child: (context
+                                    .read<DetailTransactionCubit>()
+                                    .state
+                                    .detailTransactionModel
+                                    ?.data
+                                    ?.first
+                                    .keteranganStatus
+                                    ?.toLowerCase() ==
+                                "menunggu konfirmasi pembayaran")
+                            ? Image.network(
+                                context
+                                    .read<DetailTransactionCubit>()
+                                    .state
+                                    .detailTransactionModel
+                                    ?.data
+                                    ?.first
+                                    .detailPembayaran
+                                    ?.buktiTransfer,
                               )
-                            : const DottedBorder(
-                                options: RectDottedBorderOptions(
-                                  dashPattern: [
-                                    5,
-                                  ],
-                                  color: Colors.grey,
-                                  strokeWidth: 2,
-                                  padding: EdgeInsets.all(16),
-                                ),
-                                child: Icon(
-                                  Icons.camera_alt_outlined,
-                                  color: Colors.grey,
-                                  size: 20,
-                                ),
-                              ),
+                            : file != null
+                                ? Image.file(
+                                    file!,
+                                    fit: BoxFit.cover,
+                                  )
+                                : const DottedBorder(
+                                    options: RectDottedBorderOptions(
+                                      dashPattern: [
+                                        5,
+                                      ],
+                                      color: Colors.grey,
+                                      strokeWidth: 2,
+                                      padding: EdgeInsets.all(16),
+                                    ),
+                                    child: Icon(
+                                      Icons.camera_alt_outlined,
+                                      color: Colors.grey,
+                                      size: 20,
+                                    ),
+                                  ),
                       ),
                     ),
                   ],
                 ),
 
                 // Button Simpan
-                Container(
-                  margin: const EdgeInsets.only(
-                    top: 20,
-                  ),
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      if (noRekeningTextController.text != "" &&
-                          fullNameTextController.text != "" &&
-                          file != null) {
-                        Utils().loadingDialog(context: context);
-                        await context
+                (context
                             .read<DetailTransactionCubit>()
-                            .postPaymentConfirmation(
-                              token: context
-                                      .read<AuthCubit>()
-                                      .state
-                                      .loginModel
-                                      .token ??
-                                  "",
-                              noInvoice:
-                                  "${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.noInvoice}",
-                              noRekening: noRekeningTextController.text,
-                              nama: fullNameTextController.text,
-                              bukti: file!,
-                            );
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                        Utils().scaffoldMessenger(context,
-                            "Anda telah melakukan konfirmasi pembayaran");
-                      } else {
-                        toastification.show(
-                          context:
-                              context, // optional if you use ToastificationWrapper
-                          title: const Text(
-                              'Silahkan lengkapi data Anda terlebih dahulu'),
-                          autoCloseDuration: const Duration(seconds: 2),
-                          style: ToastificationStyle.simple,
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: colorSuccess,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadiusGeometry.circular(10),
+                            .state
+                            .detailTransactionModel
+                            ?.data
+                            ?.first
+                            .keteranganStatus
+                            ?.toLowerCase() ==
+                        "menunggu konfirmasi pembayaran")
+                    ? const SizedBox()
+                    : Container(
+                        margin: const EdgeInsets.only(
+                          top: 20,
+                        ),
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            if (noRekeningTextController.text != "" &&
+                                fullNameTextController.text != "" &&
+                                file != null) {
+                              Utils().loadingDialog(context: context);
+                              await context
+                                  .read<DetailTransactionCubit>()
+                                  .postPaymentConfirmation(
+                                    token: context
+                                            .read<AuthCubit>()
+                                            .state
+                                            .loginModel
+                                            .token ??
+                                        "",
+                                    noInvoice:
+                                        "${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.noInvoice}",
+                                    noRekening: noRekeningTextController.text,
+                                    nama: fullNameTextController.text,
+                                    bukti: file!,
+                                  );
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                              Utils().scaffoldMessenger(context,
+                                  "Anda telah melakukan konfirmasi pembayaran");
+                            } else {
+                              toastification.show(
+                                context:
+                                    context, // optional if you use ToastificationWrapper
+                                title: const Text(
+                                    'Silahkan lengkapi data Anda terlebih dahulu'),
+                                autoCloseDuration: const Duration(seconds: 2),
+                                style: ToastificationStyle.simple,
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: colorSuccess,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadiusGeometry.circular(10),
+                            ),
+                          ),
+                          child: const Text(
+                            "Simpan",
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                    child: const Text(
-                      "Simpan",
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
@@ -598,20 +668,88 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                                       ),
                                       _DetailTransactionPageExtension()
                                           .itemView(
-                                        title: "Batas Pembayaran",
+                                        title: context
+                                                    .read<
+                                                        DetailTransactionCubit>()
+                                                    .state
+                                                    .detailTransactionModel
+                                                    ?.data
+                                                    ?.first
+                                                    .keteranganStatus
+                                                    ?.toLowerCase() ==
+                                                "menunggu konfirmasi pembayaran"
+                                            ? "Tanggal Pembayaran"
+                                            : "Batas Pembayaran",
                                         value: context
-                                                .read<DetailTransactionCubit>()
-                                                .state
-                                                .detailTransactionModel
-                                                ?.data
-                                                ?.first
-                                                .tglJatuhtempo ??
-                                            "-",
+                                                    .read<
+                                                        DetailTransactionCubit>()
+                                                    .state
+                                                    .detailTransactionModel
+                                                    ?.data
+                                                    ?.first
+                                                    .keteranganStatus
+                                                    ?.toLowerCase() ==
+                                                "menunggu konfirmasi pembayaran"
+                                            ? context
+                                                    .read<
+                                                        DetailTransactionCubit>()
+                                                    .state
+                                                    .detailTransactionModel
+                                                    ?.data
+                                                    ?.first
+                                                    .detailPembayaran
+                                                    ?.paidAt ??
+                                                "-"
+                                            : context
+                                                    .read<
+                                                        DetailTransactionCubit>()
+                                                    .state
+                                                    .detailTransactionModel
+                                                    ?.data
+                                                    ?.first
+                                                    .tglJatuhtempo ??
+                                                "-",
                                       ),
                                     ],
                                   ),
                                 ),
 
+                                const SizedBox(
+                                  height: 10,
+                                ),
+
+                                context
+                                            .read<DetailTransactionCubit>()
+                                            .state
+                                            .detailTransactionModel
+                                            ?.data
+                                            ?.first
+                                            .keteranganStatus
+                                            ?.toLowerCase() ==
+                                        "menunggu konfirmasi pembayaran"
+                                    ? Container(
+                                        margin: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 5,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: colorWarning.withAlpha(50),
+                                          borderRadius:
+                                              BorderRadius.circular(5),
+                                        ),
+                                        child: const Text(
+                                          "Menunggu Konfirmasi Pembayaran",
+                                          style: TextStyle(
+                                            color: Colors.orange,
+                                            fontSize: 12,
+                                            fontStyle: FontStyle.italic,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      )
+                                    : const SizedBox(),
                                 const SizedBox(
                                   height: 10,
                                 ),
@@ -986,7 +1124,18 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                                                       .status ??
                                                   0) ==
                                               0
-                                          ? "Konfirmasi Pembayaran"
+                                          ? context
+                                                      .read<
+                                                          DetailTransactionCubit>()
+                                                      .state
+                                                      .detailTransactionModel
+                                                      ?.data
+                                                      ?.first
+                                                      .keteranganStatus
+                                                      ?.toLowerCase() ==
+                                                  "menunggu konfirmasi pembayaran"
+                                              ? "Bukti Pembayaran"
+                                              : "Konfirmasi Pembayaran"
                                           : "",
                                       style: TextStyle(
                                         color: colorSuccess,

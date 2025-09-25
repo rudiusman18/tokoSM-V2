@@ -254,18 +254,17 @@ class _HomePageState extends State<HomePage> {
                   items: [
                     for (var img in imgList!)
                       Container(
-                        width: double.infinity,
                         decoration: BoxDecoration(
-                          color: colorSecondary,
+                          color: greyBase300,
                           image: DecorationImage(
                             image: NetworkImage(img),
-                            fit: BoxFit.contain,
+                            fit: BoxFit.cover,
                           ),
                         ),
                       ),
                   ],
                   options: CarouselOptions(
-                      height: 98,
+                      aspectRatio: 24 / 9,
                       initialPage: 0,
                       enableInfiniteScroll: true,
                       padEnds: false,

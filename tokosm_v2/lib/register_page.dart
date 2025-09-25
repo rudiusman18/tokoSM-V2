@@ -200,24 +200,34 @@ class _RegisterPageState extends State<RegisterPage> {
                   isPassword: true,
                 ),
                 const SizedBox(
-                  height: 10,
+                  height: 22,
                 ),
                 GestureDetector(
                   onTap: () {
                     if (context.read<AuthCubit>().state is! AuthLoading) {
-                      context.read<AuthCubit>().postRegister(
-                            fullName: fullNameController.text,
-                            phoneNumber: "+62${phoneNumberController.text}",
-                            email: emailController.text,
-                            password: passwordController.text,
-                            lat: position?.latitude,
-                            lng: position?.longitude,
-                          );
+                      if (fullNameController.text != "" &&
+                          phoneNumberController.text != "" &&
+                          emailController.text != "" &&
+                          passwordController.text != "") {
+                        context.read<AuthCubit>().postRegister(
+                              fullName: fullNameController.text,
+                              phoneNumber: "+62${phoneNumberController.text}",
+                              email: emailController.text,
+                              password: passwordController.text,
+                              lat: position?.latitude,
+                              lng: position?.longitude,
+                            );
+                      } else {
+                        Utils().scaffoldMessenger(
+                          context,
+                          "Silahkan lengkapi form terlebih dahulu",
+                        );
+                      }
                     }
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                      vertical: 5,
+                      vertical: 10,
                     ),
                     decoration: BoxDecoration(
                       color: colorSuccess,
@@ -241,7 +251,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
                 const SizedBox(
-                  height: 10,
+                  height: 16,
                 ),
                 Center(
                   child: RichText(

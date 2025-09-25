@@ -49,6 +49,9 @@ class _DetailProductPageState extends State<DetailProductPage> {
     context.read<ReviewCubit>().getReviewProduct(
         token: context.read<AuthCubit>().state.loginModel.token ?? "",
         productID: "${product.id}");
+
+    print(
+        "isi detail data adalah: ${context.read<DetailProductCubit>().state.detailProductModel.toJson()}");
   }
 
   @override
@@ -319,8 +322,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                           // terjual/limit
                                           child: LinearProgressIndicator(
                                             value: double.parse(
-                                                    "${(product.flashsaleLimit ?? 0) - (product.hargaProduk ?? 0)}") /
-                                                100, // Ensure it stays between 0 and 1
+                                                "${(product.flashsaleTerjual ?? 0) / (product.flashsaleLimit)}"), // Ensure it stays between 0 and 1
                                             minHeight: 10,
                                             borderRadius:
                                                 BorderRadius.circular(999),
@@ -568,52 +570,103 @@ class _DetailProductPageState extends State<DetailProductPage> {
 
                                 return StatefulBuilder(
                                   builder: (context, setState) {
-                                    return Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Container(
-                                          width: double.infinity,
-                                          margin: const EdgeInsets.all(
-                                            20,
-                                          ),
-                                          decoration: const BoxDecoration(
-                                            borderRadius: BorderRadius.vertical(
-                                              top: Radius.circular(
-                                                10,
+                                    return SafeArea(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Container(
+                                            width: double.infinity,
+                                            margin: const EdgeInsets.all(
+                                              20,
+                                            ),
+                                            decoration: const BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.vertical(
+                                                top: Radius.circular(
+                                                  10,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          child: Column(
-                                            spacing: 5,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: <Widget>[
-                                              for (var i = 0;
-                                                  i <
-                                                      (product.multisatuanJumlah ??
-                                                              [])
-                                                          .length;
-                                                  i++) ...{
-                                                // NOTE: content multisatuan
-                                                Row(
-                                                  spacing: 5,
-                                                  children: [
-                                                    Expanded(
-                                                      child: Text(
-                                                        "${product.multisatuanUnit?[i]} (${product.multisatuanJumlah?[i]})",
+                                            child: Column(
+                                              spacing: 5,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: <Widget>[
+                                                for (var i = 0;
+                                                    i <
+                                                        (product.multisatuanJumlah ??
+                                                                [])
+                                                            .length;
+                                                    i++) ...{
+                                                  // NOTE: content multisatuan
+                                                  Row(
+                                                    spacing: 5,
+                                                    children: [
+                                                      Expanded(
+                                                        child: Text(
+                                                          "${product.multisatuanUnit?[i]} (${product.multisatuanJumlah?[i]})",
+                                                        ),
                                                       ),
-                                                    ),
-                                                    // NOTE: kurang
-                                                    GestureDetector(
-                                                      onTap: () {
-                                                        if (context
-                                                                .read<
-                                                                    CartCubit>()
-                                                                .state
-                                                                .productAmount?[i] !=
-                                                            0) {
+                                                      // NOTE: kurang
+                                                      GestureDetector(
+                                                        onTap: () {
+                                                          if (context
+                                                                  .read<
+                                                                      CartCubit>()
+                                                                  .state
+                                                                  .productAmount?[i] !=
+                                                              0) {
+                                                            setState(() {
+                                                              productAmount[
+                                                                  i] = (context
+                                                                          .read<
+                                                                              CartCubit>()
+                                                                          .state
+                                                                          .productAmount?[i] ??
+                                                                      0) -
+                                                                  1;
+
+                                                              context
+                                                                  .read<
+                                                                      CartCubit>()
+                                                                  .setProductAmount(
+                                                                    productAmount:
+                                                                        productAmount,
+                                                                  );
+                                                            });
+                                                          }
+                                                        },
+                                                        child: Container(
+                                                          width: 25,
+                                                          height: 25,
+                                                          alignment:
+                                                              Alignment.center,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: greyBase300,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5),
+                                                          ),
+                                                          child: const Text(
+                                                            "-",
+                                                            style: TextStyle(
+                                                                fontSize: 16),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        "${productAmount[i]}",
+                                                        style: const TextStyle(
+                                                          fontSize: 12,
+                                                        ),
+                                                      ),
+                                                      // NOTE: tambah
+                                                      GestureDetector(
+                                                        onTap: () {
                                                           setState(() {
                                                             productAmount[
                                                                 i] = (context
@@ -621,7 +674,7 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                                                             CartCubit>()
                                                                         .state
                                                                         .productAmount?[i] ??
-                                                                    0) -
+                                                                    0) +
                                                                 1;
 
                                                             context
@@ -632,222 +685,200 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                                                       productAmount,
                                                                 );
                                                           });
-                                                        }
-                                                      },
-                                                      child: Container(
-                                                        width: 25,
-                                                        height: 25,
-                                                        alignment:
-                                                            Alignment.center,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: greyBase300,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(5),
+                                                        },
+                                                        child: Container(
+                                                          width: 25,
+                                                          height: 25,
+                                                          alignment:
+                                                              Alignment.center,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: colorSuccess,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5),
+                                                          ),
+                                                          child: const Text(
+                                                            "+",
+                                                            style: TextStyle(
+                                                              fontSize: 16,
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                          ),
                                                         ),
-                                                        child: const Text(
-                                                          "-",
-                                                          style: TextStyle(
-                                                              fontSize: 16),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                },
+                                                const SizedBox(
+                                                  height: 12,
+                                                ),
+                                                Row(
+                                                  spacing: 10,
+                                                  children: [
+                                                    Expanded(
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: Container(
+                                                          width:
+                                                              double.infinity,
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                            horizontal: 10,
+                                                            vertical: 10,
+                                                          ),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            border: Border.all(
+                                                                color:
+                                                                    colorSuccess),
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5),
+                                                          ),
+                                                          child: Text(
+                                                            "Batal",
+                                                            style: TextStyle(
+                                                              color:
+                                                                  colorSuccess,
+                                                            ),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
                                                         ),
                                                       ),
                                                     ),
-                                                    Text(
-                                                      "${productAmount[i]}",
-                                                      style: const TextStyle(
-                                                        fontSize: 12,
-                                                      ),
-                                                    ),
-                                                    // NOTE: tambah
-                                                    GestureDetector(
-                                                      onTap: () {
-                                                        setState(() {
-                                                          productAmount[
-                                                              i] = (context
+                                                    Expanded(
+                                                      child: GestureDetector(
+                                                        onTap: () async {
+                                                          if ((context
                                                                       .read<
                                                                           CartCubit>()
                                                                       .state
-                                                                      .productAmount?[i] ??
-                                                                  0) +
-                                                              1;
+                                                                      .productAmount ??
+                                                                  [])
+                                                              .every(
+                                                                  (element) =>
+                                                                      element <=
+                                                                      0)) {
+                                                            Navigator.pop(
+                                                                context);
+                                                            Utils().scaffoldMessenger(
+                                                                context,
+                                                                "Silahkan Masukkan Produk kedalam Keranjang");
+                                                          } else {
+                                                            Utils()
+                                                                .loadingDialog(
+                                                                    context:
+                                                                        context);
+                                                            await context
+                                                                .read<
+                                                                    CartCubit>()
+                                                                .addCart(
+                                                                  token: context
+                                                                          .read<
+                                                                              AuthCubit>()
+                                                                          .state
+                                                                          .loginModel
+                                                                          .token ??
+                                                                      "",
+                                                                  cabangId: context
+                                                                          .read<
+                                                                              CabangCubit>()
+                                                                          .state
+                                                                          .selectedCabangData
+                                                                          .id ??
+                                                                      0,
+                                                                  productId:
+                                                                      product
+                                                                          .id,
+                                                                  isMultiCart:
+                                                                      true,
+                                                                  amount: null,
+                                                                  jumlahmultiSatuan: context
+                                                                      .read<
+                                                                          CartCubit>()
+                                                                      .state
+                                                                      .productAmount,
+                                                                  multisatuanJumlah: ((product
+                                                                              .multisatuanJumlah ??
+                                                                          [])
+                                                                      .map((e) =>
+                                                                          int.tryParse(
+                                                                              e) ??
+                                                                          0)).toList(),
+                                                                  multisatuanUnit:
+                                                                      product
+                                                                          .multisatuanUnit,
+                                                                );
 
-                                                          context
-                                                              .read<CartCubit>()
-                                                              .setProductAmount(
-                                                                productAmount:
-                                                                    productAmount,
-                                                              );
-                                                        });
-                                                      },
-                                                      child: Container(
-                                                        width: 25,
-                                                        height: 25,
-                                                        alignment:
-                                                            Alignment.center,
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: colorSuccess,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(5),
-                                                        ),
-                                                        child: const Text(
-                                                          "+",
-                                                          style: TextStyle(
-                                                            fontSize: 16,
-                                                            color: Colors.white,
+                                                            Navigator.pop(
+                                                                context);
+                                                            Navigator.pop(
+                                                                context);
+                                                            if (context
+                                                                    .read<
+                                                                        CartCubit>()
+                                                                    .state
+                                                                is CartSuccess) {
+                                                              Navigator
+                                                                  .pushNamed(
+                                                                      context,
+                                                                      'cart');
+                                                            } else if (context
+                                                                    .read<
+                                                                        CartCubit>()
+                                                                    .state
+                                                                is CartFailure) {
+                                                              Utils().scaffoldMessenger(
+                                                                  context,
+                                                                  "Gagal menambahkan produk ke keranjang");
+                                                            }
+                                                          }
+                                                        },
+                                                        child: Container(
+                                                          width:
+                                                              double.infinity,
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                            horizontal: 10,
+                                                            vertical: 10,
+                                                          ),
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            color: colorSuccess,
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        5),
+                                                          ),
+                                                          child: const Text(
+                                                            "Simpan",
+                                                            style: TextStyle(
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
+                                                            textAlign: TextAlign
+                                                                .center,
                                                           ),
                                                         ),
                                                       ),
                                                     ),
                                                   ],
                                                 ),
-                                              },
-                                              const SizedBox(
-                                                height: 12,
-                                              ),
-                                              Row(
-                                                spacing: 10,
-                                                children: [
-                                                  Expanded(
-                                                    child: GestureDetector(
-                                                      onTap: () {
-                                                        Navigator.pop(context);
-                                                      },
-                                                      child: Container(
-                                                        width: double.infinity,
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                          horizontal: 10,
-                                                          vertical: 10,
-                                                        ),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          border: Border.all(
-                                                              color:
-                                                                  colorSuccess),
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(5),
-                                                        ),
-                                                        child: Text(
-                                                          "Batal",
-                                                          style: TextStyle(
-                                                            color: colorSuccess,
-                                                          ),
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  Expanded(
-                                                    child: GestureDetector(
-                                                      onTap: () async {
-                                                        if ((product?.jumlahMultisatuan ??
-                                                                [])
-                                                            .every((element) =>
-                                                                element <= 0)) {
-                                                          Utils().scaffoldMessenger(
-                                                              context,
-                                                              "Silahkan Masukkan Produk kedalam Keranjang");
-                                                        } else {
-                                                          Utils().loadingDialog(
-                                                              context: context);
-                                                          await context
-                                                              .read<CartCubit>()
-                                                              .addCart(
-                                                                token: context
-                                                                        .read<
-                                                                            AuthCubit>()
-                                                                        .state
-                                                                        .loginModel
-                                                                        .token ??
-                                                                    "",
-                                                                cabangId: context
-                                                                        .read<
-                                                                            CabangCubit>()
-                                                                        .state
-                                                                        .selectedCabangData
-                                                                        .id ??
-                                                                    0,
-                                                                productId:
-                                                                    product.id,
-                                                                isMultiCart:
-                                                                    true,
-                                                                amount: null,
-                                                                jumlahmultiSatuan: context
-                                                                    .read<
-                                                                        CartCubit>()
-                                                                    .state
-                                                                    .productAmount,
-                                                                multisatuanJumlah: ((product
-                                                                            .multisatuanJumlah ??
-                                                                        [])
-                                                                    .map((e) =>
-                                                                        int.tryParse(
-                                                                            e) ??
-                                                                        0)).toList(),
-                                                                multisatuanUnit:
-                                                                    product
-                                                                        .multisatuanUnit,
-                                                              );
-
-                                                          Navigator.pop(
-                                                              context);
-                                                          Navigator.pop(
-                                                              context);
-                                                          if (context
-                                                                  .read<CartCubit>()
-                                                                  .state
-                                                              is CartSuccess) {
-                                                            Navigator.pushNamed(
-                                                                context,
-                                                                'cart');
-                                                          } else if (context
-                                                                  .read<CartCubit>()
-                                                                  .state
-                                                              is CartFailure) {
-                                                            Utils().scaffoldMessenger(
-                                                                context,
-                                                                "Gagal menambahkan produk ke keranjang");
-                                                          }
-                                                        }
-                                                      },
-                                                      child: Container(
-                                                        width: double.infinity,
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                          horizontal: 10,
-                                                          vertical: 10,
-                                                        ),
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color: colorSuccess,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(5),
-                                                        ),
-                                                        child: const Text(
-                                                          "Simpan",
-                                                          style: TextStyle(
-                                                            color: Colors.white,
-                                                          ),
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     );
                                   },
                                 );

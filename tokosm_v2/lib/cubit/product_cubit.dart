@@ -341,7 +341,8 @@ class DetailProductCubit extends Cubit<DetailProductState> {
       DetailProductModel detailProduct = await ProductService()
           .getDetailProduct(
               token: token, productId: productId, cabangId: cabangId);
-      print("detail product ${detailProduct}");
+
+      print("detail product ${detailProduct.data?.toJson()}");
       emit(DetailProductSuccess(detailProduct));
     } catch (e) {
       print("detail product error ${e.toString()}");

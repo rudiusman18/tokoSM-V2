@@ -182,14 +182,17 @@ class DetailPembayaran {
   dynamic norekeningPengirim;
   dynamic namaPengirim;
   dynamic buktiTransfer;
+  String? paidAt;
 
-  DetailPembayaran(
-      {this.bankId,
-      this.namaBank,
-      this.bankPengirim,
-      this.norekeningPengirim,
-      this.namaPengirim,
-      this.buktiTransfer});
+  DetailPembayaran({
+    this.bankId,
+    this.namaBank,
+    this.bankPengirim,
+    this.norekeningPengirim,
+    this.namaPengirim,
+    this.buktiTransfer,
+    this.paidAt,
+  });
 
   DetailPembayaran.fromJson(Map<String, dynamic> json) {
     bankId = json['bank_id'];
@@ -198,6 +201,7 @@ class DetailPembayaran {
     norekeningPengirim = json['norekening_pengirim'];
     namaPengirim = json['nama_pengirim'];
     buktiTransfer = json['bukti_transfer'];
+    paidAt = json['paid_at'];
   }
 
   Map<String, dynamic> toJson() {
@@ -208,6 +212,7 @@ class DetailPembayaran {
     data['norekening_pengirim'] = norekeningPengirim;
     data['nama_pengirim'] = namaPengirim;
     data['bukti_transfer'] = buktiTransfer;
+    data['paid_at'] = paidAt;
     return data;
   }
 }

@@ -316,7 +316,7 @@ class _TransactionPageExtension {
                         horizontal: 5,
                       ),
                       decoration: BoxDecoration(
-                        color: transactionModel.status == 0
+                        color: (transactionModel.status == 0)
                             ? colorWarning.withAlpha(50)
                             : transactionModel.status == 1
                                 ? colorWarning.withAlpha(50)
