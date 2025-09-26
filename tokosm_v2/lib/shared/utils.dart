@@ -11,12 +11,26 @@ class Utils {
     BuildContext context,
     String text,
   ) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(
+    final messenger =
+        ScaffoldMessenger.of(context); // ✅ simpan messenger di sini
+
+    messenger.showSnackBar(
       SnackBar(
-        content: Text(
-          text,
+        content: Row(
+          children: [
+            Expanded(
+              child: Text(text),
+            ),
+            GestureDetector(
+              onTap: () {
+                messenger.hideCurrentSnackBar(); // ✅ pakai messenger langsung
+              },
+              child: const Icon(
+                Icons.close,
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
       ),
     );

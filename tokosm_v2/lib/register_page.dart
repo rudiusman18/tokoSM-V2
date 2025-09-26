@@ -213,10 +213,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         Utils().loadingDialog(context: context);
                         await _getCurrentLocation();
                         Navigator.pop(context);
-
-                        print(
-                            "isi lokasi adalah ${position?.latitude} dengan ${position?.longitude}");
-
                         context.read<AuthCubit>().postRegister(
                               fullName: fullNameController.text,
                               phoneNumber: "+62${phoneNumberController.text}",
