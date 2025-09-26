@@ -161,48 +161,47 @@ class _CartPageState extends State<CartPage> {
                                   color: colorSuccess,
                                 ),
                               )
-                            : ListView(
-                                children: [
-                                  const SizedBox(
-                                    height: 30,
-                                  ),
-                                  if ((context
-                                              .read<CartCubit>()
-                                              .state
-                                              .productModel
-                                              ?.data ??
-                                          [])
-                                      .isEmpty) ...{
-                                    const Center(
-                                      child: Text(
-                                        "Data tidak ditemukan",
-                                      ),
+                            : (context
+                                            .read<CartCubit>()
+                                            .state
+                                            .productModel
+                                            ?.data ??
+                                        [])
+                                    .isEmpty
+                                ? const Center(
+                                    child: Text(
+                                      "Data tidak ditemukan",
                                     ),
-                                  } else ...{
-                                    for (var i = 0;
-                                        i <
-                                            (context
-                                                        .read<CartCubit>()
-                                                        .state
-                                                        .productModel
-                                                        ?.data ??
-                                                    [])
-                                                .length;
-                                        i++) ...{
-                                      _CartPageExtenion().verticalSmallItemView(
-                                          context: context,
-                                          product: context
-                                              .read<CartCubit>()
-                                              .state
-                                              .productModel
-                                              ?.data?[i]),
+                                  )
+                                : ListView(
+                                    children: [
                                       const SizedBox(
-                                        height: 10,
+                                        height: 30,
                                       ),
-                                    }
-                                  },
-                                ],
-                              ),
+                                      for (var i = 0;
+                                          i <
+                                              (context
+                                                          .read<CartCubit>()
+                                                          .state
+                                                          .productModel
+                                                          ?.data ??
+                                                      [])
+                                                  .length;
+                                          i++) ...{
+                                        _CartPageExtenion()
+                                            .verticalSmallItemView(
+                                                context: context,
+                                                product: context
+                                                    .read<CartCubit>()
+                                                    .state
+                                                    .productModel
+                                                    ?.data?[i]),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                      }
+                                    ],
+                                  ),
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(vertical: 10),

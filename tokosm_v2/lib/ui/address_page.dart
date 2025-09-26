@@ -100,49 +100,62 @@ class _AddressPageState extends State<AddressPage> {
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: ListView(
-                      children: [
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        for (var index = 0;
-                            index <
-                                (context
-                                            .read<AddressCubit>()
-                                            .state
-                                            .addressModel
-                                            ?.data ??
-                                        [])
-                                    .length;
-                            index++) ...{
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                              context.read<AddressCubit>().selectAddress(
-                                  addressData: (context
-                                          .read<AddressCubit>()
-                                          .state
-                                          .addressModel
-                                          ?.data ??
-                                      [])[index]);
-                              Utils().scaffoldMessenger(context,
-                                  "${(context.read<AddressCubit>().state.addressModel?.data ?? [])[index].namaAlamat ?? ""} menjadi alamat terpilih");
-                            },
-                            child: _AddressPageExtension().addressItemView(
-                              context,
-                              context
-                                  .read<AddressCubit>()
-                                  .state
-                                  .addressModel
-                                  ?.data?[index],
+                    child: (context
+                                    .read<AddressCubit>()
+                                    .state
+                                    .addressModel
+                                    ?.data ??
+                                [])
+                            .isEmpty
+                        ? const Center(
+                            child: Text(
+                              "Data tidak ditemukan",
                             ),
+                          )
+                        : ListView(
+                            children: [
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              for (var index = 0;
+                                  index <
+                                      (context
+                                                  .read<AddressCubit>()
+                                                  .state
+                                                  .addressModel
+                                                  ?.data ??
+                                              [])
+                                          .length;
+                                  index++) ...{
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                    context.read<AddressCubit>().selectAddress(
+                                        addressData: (context
+                                                .read<AddressCubit>()
+                                                .state
+                                                .addressModel
+                                                ?.data ??
+                                            [])[index]);
+                                    Utils().scaffoldMessenger(context,
+                                        "${(context.read<AddressCubit>().state.addressModel?.data ?? [])[index].namaAlamat ?? ""} menjadi alamat terpilih");
+                                  },
+                                  child:
+                                      _AddressPageExtension().addressItemView(
+                                    context,
+                                    context
+                                        .read<AddressCubit>()
+                                        .state
+                                        .addressModel
+                                        ?.data?[index],
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                              }
+                            ],
                           ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                        }
-                      ],
-                    ),
                   ),
                 ),
               ],

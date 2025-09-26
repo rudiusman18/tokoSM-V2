@@ -44,12 +44,15 @@ class _CheckoutPageState extends State<CheckoutPage> {
         token: context.read<AuthCubit>().state.loginModel.token ?? "",
         cabangID: context.read<CabangCubit>().state.selectedCabangData.id ?? 0);
 
-    context.read<AddressCubit>().selectAddress(
-            addressData:
-                (context.read<AddressCubit>().state.addressModel?.data ?? [])
-                    .firstWhere(
-          (element) => element.isUtama == 1,
-        ));
+    if ((context.read<AddressCubit>().state.addressModel?.data ?? [])
+        .isNotEmpty) {
+      context.read<AddressCubit>().selectAddress(
+              addressData:
+                  (context.read<AddressCubit>().state.addressModel?.data ?? [])
+                      .firstWhere(
+            (element) => element.isUtama == 1,
+          ));
+    }
 
     Navigator.pop(context);
 

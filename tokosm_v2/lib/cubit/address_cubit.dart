@@ -16,12 +16,12 @@ class AddressCubit extends Cubit<AddressState> {
           await AddressService().getAddress(token: token);
 
       // ignore: prefer_conditional_assignment
-      if (selectedAddressModel == null) {
-        selectedAddressModel = addressModel.data
-            ?.where((element) => element.isUtama == 1)
-            .toList()
-            .first;
-      }
+      // if (selectedAddressModel == null) {
+      //   selectedAddressModel = addressModel.data
+      //       ?.where((element) => element.isUtama == 1)
+      //       .toList()
+      //       .first;
+      // }
 
       emit(AddressSuccess(
         addressModelData: addressModel,
