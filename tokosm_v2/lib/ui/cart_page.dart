@@ -166,27 +166,41 @@ class _CartPageState extends State<CartPage> {
                                   const SizedBox(
                                     height: 30,
                                   ),
-                                  for (var i = 0;
-                                      i <
-                                          (context
-                                                      .read<CartCubit>()
-                                                      .state
-                                                      .productModel
-                                                      ?.data ??
-                                                  [])
-                                              .length;
-                                      i++) ...{
-                                    _CartPageExtenion().verticalSmallItemView(
-                                        context: context,
-                                        product: context
-                                            .read<CartCubit>()
-                                            .state
-                                            .productModel
-                                            ?.data?[i]),
-                                    const SizedBox(
-                                      height: 10,
+                                  if ((context
+                                              .read<CartCubit>()
+                                              .state
+                                              .productModel
+                                              ?.data ??
+                                          [])
+                                      .isEmpty) ...{
+                                    const Center(
+                                      child: Text(
+                                        "Data tidak ditemukan",
+                                      ),
                                     ),
-                                  }
+                                  } else ...{
+                                    for (var i = 0;
+                                        i <
+                                            (context
+                                                        .read<CartCubit>()
+                                                        .state
+                                                        .productModel
+                                                        ?.data ??
+                                                    [])
+                                                .length;
+                                        i++) ...{
+                                      _CartPageExtenion().verticalSmallItemView(
+                                          context: context,
+                                          product: context
+                                              .read<CartCubit>()
+                                              .state
+                                              .productModel
+                                              ?.data?[i]),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                    }
+                                  },
                                 ],
                               ),
                       ),

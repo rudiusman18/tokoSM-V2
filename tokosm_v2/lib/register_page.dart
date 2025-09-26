@@ -47,7 +47,7 @@ class _RegisterPageState extends State<RegisterPage> {
       setState(() {});
     });
 
-    _getCurrentLocation();
+    // _getCurrentLocation();
   }
 
   @override
@@ -103,12 +103,12 @@ class _RegisterPageState extends State<RegisterPage> {
       );
       return;
     } else {
-      Utils().loadingDialog(context: context);
+      // Utils().loadingDialog(context: context);
       // ambil lokasi sekarang
       position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
-      Navigator.pop(context);
+      // Navigator.pop(context);
       setState(() {});
     }
   }
@@ -203,12 +203,20 @@ class _RegisterPageState extends State<RegisterPage> {
                   height: 22,
                 ),
                 GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     if (context.read<AuthCubit>().state is! AuthLoading) {
                       if (fullNameController.text != "" &&
                           phoneNumberController.text != "" &&
                           emailController.text != "" &&
                           passwordController.text != "") {
+                        // NOTE: Mendapatkan data lokasi
+                        Utils().loadingDialog(context: context);
+                        await _getCurrentLocation();
+                        Navigator.pop(context);
+
+                        print(
+                            "isi lokasi adalah ${position?.latitude} dengan ${position?.longitude}");
+
                         context.read<AuthCubit>().postRegister(
                               fullName: fullNameController.text,
                               phoneNumber: "+62${phoneNumberController.text}",
