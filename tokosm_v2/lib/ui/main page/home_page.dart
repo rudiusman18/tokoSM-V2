@@ -340,8 +340,11 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-                _HomePageExtension()
-                    .allButtonView(context: context, onTap: () {})
+                _HomePageExtension().allButtonView(
+                  context: context,
+                  onTap: () {},
+                  onMenu: "flashsale",
+                ),
               ],
             ),
           ),
@@ -389,8 +392,11 @@ class _HomePageState extends State<HomePage> {
                     fontWeight: bold,
                   ),
                 ),
-                _HomePageExtension()
-                    .allButtonView(context: context, onTap: () {})
+                _HomePageExtension().allButtonView(
+                  context: context,
+                  onTap: () {},
+                  onMenu: "diskon",
+                ),
               ],
             ),
           ),
@@ -438,8 +444,11 @@ class _HomePageState extends State<HomePage> {
                     fontWeight: bold,
                   ),
                 ),
-                _HomePageExtension()
-                    .allButtonView(context: context, onTap: () {})
+                _HomePageExtension().allButtonView(
+                  context: context,
+                  onTap: () {},
+                  onMenu: "promo",
+                ),
               ],
             ),
           ),
@@ -487,8 +496,11 @@ class _HomePageState extends State<HomePage> {
                     fontWeight: bold,
                   ),
                 ),
-                _HomePageExtension()
-                    .allButtonView(context: context, onTap: () {})
+                _HomePageExtension().allButtonView(
+                  context: context,
+                  onTap: () {},
+                  onMenu: "terlaris",
+                ),
               ],
             ),
           ),
@@ -534,8 +546,11 @@ class _HomePageState extends State<HomePage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                _HomePageExtension()
-                    .allButtonView(context: context, onTap: () {}),
+                _HomePageExtension().allButtonView(
+                  context: context,
+                  onTap: () {},
+                  onMenu: "populer",
+                ),
               ],
             ),
           ),
@@ -672,10 +687,27 @@ class _HomePageState extends State<HomePage> {
 }
 
 class _HomePageExtension {
-  Widget allButtonView(
-      {required BuildContext context, required Function onTap}) {
+  Widget allButtonView({
+    required BuildContext context,
+    required Function onTap,
+    required String onMenu,
+  }) {
     return GestureDetector(
       onTap: () {
+        if (onMenu.toLowerCase() == "populer" ||
+            onMenu.toLowerCase() == "terlaris") {
+          context
+              .read<ProductCubit>()
+              .productTabIndex(onMenu.toLowerCase() == "populer" ? 0 : 1);
+        } else {
+          context.read<ProductCubit>().setProductFilter(
+                kategori: "",
+                promo: onMenu.toLowerCase(),
+                rating: "",
+                minPrice: "",
+                maxPrice: "",
+              );
+        }
         context.read<ProductCubit>().setSearchKeyword("");
         Navigator.pushNamed(context, 'product-page');
       },

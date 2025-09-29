@@ -24,14 +24,14 @@ class _ProductPageState extends State<ProductPage> {
 
   @override
   void initState() {
-    context.read<ProductCubit>().setProductFilter(
-          kategori: '',
-          promo: '',
-          rating: '',
-          minPrice: '',
-          maxPrice: '',
-        );
-    context.read<ProductCubit>().productTabIndex(0);
+    // context.read<ProductCubit>().setProductFilter(
+    //       kategori: '',
+    //       promo: '',
+    //       rating: '',
+    //       minPrice: '',
+    //       maxPrice: '',
+    //     );
+    // context.read<ProductCubit>().productTabIndex(0);
     searchController.text =
         (context.read<ProductCubit>().state as ProductSuccess).searchkeyword;
     initProductData();
@@ -187,8 +187,46 @@ class _ProductPageState extends State<ProductPage> {
                                 .productTabIndex]
                             .toLowerCase());
                   },
-                  child: const Icon(
-                    SolarIconsOutline.tuning_2,
+                  child: Stack(
+                    children: [
+                      const Icon(
+                        SolarIconsOutline.tuning_2,
+                      ),
+                      (context.read<ProductCubit>().state is ProductSuccess)
+                          ? (context.read<ProductCubit>().state
+                                              as ProductSuccess)
+                                          .selectedCategoryFilter !=
+                                      "" ||
+                                  (context.read<ProductCubit>().state
+                                              as ProductSuccess)
+                                          .maxPriceFilter !=
+                                      "" ||
+                                  (context.read<ProductCubit>().state
+                                              as ProductSuccess)
+                                          .minPriceFilter !=
+                                      "" ||
+                                  (context.read<ProductCubit>().state
+                                              as ProductSuccess)
+                                          .selectedPromoFilter !=
+                                      "" ||
+                                  (context.read<ProductCubit>().state
+                                              as ProductSuccess)
+                                          .selectedRatingFilter !=
+                                      ""
+                              ? Positioned(
+                                  right: 1,
+                                  child: Container(
+                                    width: 10,
+                                    height: 10,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.red,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox()
+                          : const SizedBox(),
+                    ],
                   ),
                 ),
               ],

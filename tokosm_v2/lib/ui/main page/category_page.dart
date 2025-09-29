@@ -91,6 +91,9 @@ class _CategoryPageState extends State<CategoryPage> {
                                     index1++) ...{
                                   GestureDetector(
                                     onTap: () {
+                                      context
+                                          .read<ProductCubit>()
+                                          .productTabIndex(0);
                                       context.read<ProductCubit>().setProductFilter(
                                           kategori:
                                               "${(((context.read<CategoryCubit>().state.categoryModel?["data"] as List).map((e) => e as Map<String, dynamic>).toList()[index]["child"] ?? []) as List).map((e) => e as Map<String, dynamic>).toList()[index1]["kat2_slug"]}",
