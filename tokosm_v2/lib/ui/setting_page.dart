@@ -314,32 +314,35 @@ class _SettingPageExtension {
     required IconData icon,
     required String title,
   }) {
-    return Column(
-      children: [
-        Row(
-          spacing: 10,
-          children: [
-            Icon(
-              icon,
-              size: 24,
-            ),
-            Text(
-              title,
-            ),
-            const Spacer(),
-            const Icon(
-              Icons.chevron_right,
-            ),
-          ],
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        const Divider(
-          color: Colors.grey,
-          height: 5,
-        ),
-      ],
+    return Container(
+      color: Colors.transparent,
+      child: Column(
+        children: [
+          Row(
+            spacing: 10,
+            children: [
+              Icon(
+                icon,
+                size: 24,
+              ),
+              Text(
+                title,
+              ),
+              const Spacer(),
+              const Icon(
+                Icons.chevron_right,
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          const Divider(
+            color: Colors.grey,
+            height: 5,
+          ),
+        ],
+      ),
     );
   }
 }

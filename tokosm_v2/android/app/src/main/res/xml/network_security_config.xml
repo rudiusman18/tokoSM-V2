@@ -9,4 +9,9 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">localhost</domain>
     </domain-config>
+
+    <!-- Izinkan HTTP untuk localhost juga (kalau dibutuhkan) -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">192.168.1.13</domain>
+    </domain-config>
 </network-security-config>

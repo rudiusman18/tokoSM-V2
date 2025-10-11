@@ -189,77 +189,86 @@ class _TransactionPageState extends State<TransactionPage> {
         }
       },
       builder: (context, state) {
-        return Scaffold(
-          body: SafeArea(
-              child: Column(
-            children: [
-              Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  child: header()),
-              const SizedBox(
-                height: 10,
-              ),
-              Expanded(
-                child: (context
-                                .read<TransactionCubit>()
-                                .state
-                                .transactionModel
-                                ?.data ??
-                            [])
-                        .isEmpty
-                    ? const Center(
-                        child: Text(
-                          "Data tidak ditemukan",
-                        ),
-                      )
-                    : ListView(
-                        children: [
-                          for (var i = 0;
-                              i <
-                                  (context
-                                              .read<TransactionCubit>()
-                                              .state
-                                              .transactionModel
-                                              ?.data ??
-                                          [])
-                                      .length;
-                              i++) ...{
-                            GestureDetector(
-                              onTap: () {
-                                context
-                                    .read<TransactionCubit>()
-                                    .selectTransaction(
-                                      transaction: context
-                                              .read<TransactionCubit>()
-                                              .state
-                                              .transactionModel
-                                              ?.data?[i] ??
-                                          TransactionData(),
-                                    );
-                                Navigator.pushNamed(
-                                    context, 'transaction/detail-transaction');
-                              },
-                              child: _TransactionPageExtension()
-                                  .transactionItemView(
-                                context: context,
-                                transactionModel: context
-                                        .read<TransactionCubit>()
-                                        .state
-                                        .transactionModel
-                                        ?.data?[i] ??
-                                    TransactionData(),
-                              ),
+        return RefreshIndicator(
+          color: colorSuccess,
+          onRefresh: () async {
+            initTransactionData();
+          },
+          child: Scaffold(
+            body: SafeArea(
+                child: Column(
+              children: [
+                Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    child: header()),
+                const SizedBox(
+                  height: 10,
+                ),
+                Expanded(
+                  child: (context
+                                  .read<TransactionCubit>()
+                                  .state
+                                  .transactionModel
+                                  ?.data ??
+                              [])
+                          .isEmpty
+                      ? const SingleChildScrollView(
+                          physics: AlwaysScrollableScrollPhysics(),
+                          child: Center(
+                            child: Text(
+                              "Data tidak ditemukan",
                             ),
-                          },
-                          Container(
-                            height: 5,
-                            color: greyBase300,
                           ),
-                        ],
-                      ),
-              ),
-            ],
-          )),
+                        )
+                      : ListView(
+                          children: [
+                            for (var i = 0;
+                                i <
+                                    (context
+                                                .read<TransactionCubit>()
+                                                .state
+                                                .transactionModel
+                                                ?.data ??
+                                            [])
+                                        .length;
+                                i++) ...{
+                              GestureDetector(
+                                onTap: () {
+                                  context
+                                      .read<TransactionCubit>()
+                                      .selectTransaction(
+                                        transaction: context
+                                                .read<TransactionCubit>()
+                                                .state
+                                                .transactionModel
+                                                ?.data?[i] ??
+                                            TransactionData(),
+                                      );
+                                  Navigator.pushNamed(context,
+                                      'transaction/detail-transaction');
+                                },
+                                child: _TransactionPageExtension()
+                                    .transactionItemView(
+                                  context: context,
+                                  transactionModel: context
+                                          .read<TransactionCubit>()
+                                          .state
+                                          .transactionModel
+                                          ?.data?[i] ??
+                                      TransactionData(),
+                                ),
+                              ),
+                            },
+                            Container(
+                              height: 5,
+                              color: greyBase300,
+                            ),
+                          ],
+                        ),
+                ),
+              ],
+            )),
+          ),
         );
       },
     );
@@ -429,37 +438,41 @@ class _TransactionPageExtension {
                         ],
                       ),
                     ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colorSuccess,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Text(
-                        transactionModel.keteranganStatus?.toLowerCase() ==
-                                'belum dibayar'
-                            ? "Bayar"
-                            : transactionModel.keteranganStatus
-                                        ?.toLowerCase() ==
-                                    'diproses'
-                                ? "Detail"
-                                : transactionModel.keteranganStatus
-                                            ?.toLowerCase() ==
-                                        'dikirim'
-                                    ? "Lacak"
-                                    : transactionModel.keteranganStatus
-                                                ?.toLowerCase() ==
-                                            'selesai'
-                                        ? "Beli Lagi"
-                                        : "Bayar",
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
-                    )
+                    transactionModel.keteranganStatus?.toLowerCase() ==
+                            "dibatalkan"
+                        ? const SizedBox()
+                        : Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: colorSuccess,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Text(
+                              transactionModel.keteranganStatus
+                                          ?.toLowerCase() ==
+                                      'belum dibayar'
+                                  ? "Bayar"
+                                  : transactionModel.keteranganStatus
+                                              ?.toLowerCase() ==
+                                          'diproses'
+                                      ? "Detail"
+                                      : transactionModel.keteranganStatus
+                                                  ?.toLowerCase() ==
+                                              'dikirim'
+                                          ? "Lacak"
+                                          : transactionModel.keteranganStatus
+                                                      ?.toLowerCase() ==
+                                                  'selesai'
+                                              ? "Beli Lagi"
+                                              : "Bayar",
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
+                          )
                   ],
                 ),
               ],

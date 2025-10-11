@@ -629,87 +629,129 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                                         value:
                                             "${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.metodePembayaran}",
                                       ),
-                                      _DetailTransactionPageExtension()
-                                          .itemView(
-                                        title: "Status Pembayaran",
-                                        value: context
-                                                    .read<
-                                                        DetailTransactionCubit>()
-                                                    .state
-                                                    .detailTransactionModel
-                                                    ?.data
-                                                    ?.first
-                                                    .status !=
-                                                0
-                                            ? "Sudah Dibayar"
-                                            : "${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.keteranganStatus}",
-                                        color: context
-                                                    .read<
-                                                        DetailTransactionCubit>()
-                                                    .state
-                                                    .detailTransactionModel
-                                                    ?.data
-                                                    ?.first
-                                                    .status !=
-                                                0
-                                            ? colorSuccess
-                                            : Colors.orange,
-                                        isClickable: context
-                                                    .read<
-                                                        DetailTransactionCubit>()
-                                                    .state
-                                                    .detailTransactionModel
-                                                    ?.data
-                                                    ?.first
-                                                    .status !=
-                                                0
-                                            ? true
-                                            : false,
-                                      ),
-                                      _DetailTransactionPageExtension()
-                                          .itemView(
-                                        title: context
-                                                    .read<
-                                                        DetailTransactionCubit>()
-                                                    .state
-                                                    .detailTransactionModel
-                                                    ?.data
-                                                    ?.first
-                                                    .keteranganStatus
-                                                    ?.toLowerCase() ==
-                                                "menunggu konfirmasi pembayaran"
-                                            ? "Tanggal Pembayaran"
-                                            : "Batas Pembayaran",
-                                        value: context
-                                                    .read<
-                                                        DetailTransactionCubit>()
-                                                    .state
-                                                    .detailTransactionModel
-                                                    ?.data
-                                                    ?.first
-                                                    .keteranganStatus
-                                                    ?.toLowerCase() ==
-                                                "menunggu konfirmasi pembayaran"
-                                            ? context
-                                                    .read<
-                                                        DetailTransactionCubit>()
-                                                    .state
-                                                    .detailTransactionModel
-                                                    ?.data
-                                                    ?.first
-                                                    .detailPembayaran
-                                                    ?.paidAt ??
-                                                "-"
-                                            : context
-                                                    .read<
-                                                        DetailTransactionCubit>()
-                                                    .state
-                                                    .detailTransactionModel
-                                                    ?.data
-                                                    ?.first
-                                                    .tglJatuhtempo ??
-                                                "-",
-                                      ),
+                                      context
+                                                      .read<
+                                                          DetailTransactionCubit>()
+                                                      .state
+                                                      .detailTransactionModel
+                                                      ?.data
+                                                      ?.first
+                                                      .keteranganStatus
+                                                      ?.toLowerCase() ==
+                                                  "dibatalkan" ||
+                                              context
+                                                      .read<
+                                                          DetailTransactionCubit>()
+                                                      .state
+                                                      .detailTransactionModel
+                                                      ?.data
+                                                      ?.first
+                                                      .metodePembayaran
+                                                      ?.toLowerCase() ==
+                                                  "cod"
+                                          ? const SizedBox()
+                                          : _DetailTransactionPageExtension()
+                                              .itemView(
+                                              title: "Status Pembayaran",
+                                              value: context
+                                                          .read<
+                                                              DetailTransactionCubit>()
+                                                          .state
+                                                          .detailTransactionModel
+                                                          ?.data
+                                                          ?.first
+                                                          .status !=
+                                                      0
+                                                  ? "Sudah Dibayar"
+                                                  : "${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.keteranganStatus}",
+                                              color: context
+                                                          .read<
+                                                              DetailTransactionCubit>()
+                                                          .state
+                                                          .detailTransactionModel
+                                                          ?.data
+                                                          ?.first
+                                                          .status !=
+                                                      0
+                                                  ? colorSuccess
+                                                  : Colors.orange,
+                                              isClickable: context
+                                                          .read<
+                                                              DetailTransactionCubit>()
+                                                          .state
+                                                          .detailTransactionModel
+                                                          ?.data
+                                                          ?.first
+                                                          .status !=
+                                                      0
+                                                  ? true
+                                                  : false,
+                                            ),
+                                      context
+                                                      .read<
+                                                          DetailTransactionCubit>()
+                                                      .state
+                                                      .detailTransactionModel
+                                                      ?.data
+                                                      ?.first
+                                                      .keteranganStatus
+                                                      ?.toLowerCase() ==
+                                                  "dibatalkan" ||
+                                              context
+                                                      .read<
+                                                          DetailTransactionCubit>()
+                                                      .state
+                                                      .detailTransactionModel
+                                                      ?.data
+                                                      ?.first
+                                                      .metodePembayaran
+                                                      ?.toLowerCase() ==
+                                                  "cod"
+                                          ? const SizedBox()
+                                          : _DetailTransactionPageExtension()
+                                              .itemView(
+                                              title: context
+                                                          .read<
+                                                              DetailTransactionCubit>()
+                                                          .state
+                                                          .detailTransactionModel
+                                                          ?.data
+                                                          ?.first
+                                                          .keteranganStatus
+                                                          ?.toLowerCase() ==
+                                                      "menunggu konfirmasi pembayaran"
+                                                  ? "Tanggal Pembayaran"
+                                                  : "Batas Pembayaran",
+                                              value: context
+                                                          .read<
+                                                              DetailTransactionCubit>()
+                                                          .state
+                                                          .detailTransactionModel
+                                                          ?.data
+                                                          ?.first
+                                                          .keteranganStatus
+                                                          ?.toLowerCase() ==
+                                                      "menunggu konfirmasi pembayaran"
+                                                  ? context
+                                                          .read<
+                                                              DetailTransactionCubit>()
+                                                          .state
+                                                          .detailTransactionModel
+                                                          ?.data
+                                                          ?.first
+                                                          .detailPembayaran
+                                                          ?.paidAt ??
+                                                      "-"
+                                                  : context
+                                                          .read<
+                                                              DetailTransactionCubit>()
+                                                          .state
+                                                          .detailTransactionModel
+                                                          ?.data
+                                                          ?.first
+                                                          .tglJatuhtempo ??
+                                                      "-",
+                                            ),
                                     ],
                                   ),
                                 ),

@@ -221,7 +221,7 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             ),
                             Expanded(
                               child: Text(
-                                'Checkout',
+                                "Checkout",
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: bold,
@@ -239,25 +239,34 @@ class _CheckoutPageState extends State<CheckoutPage> {
                         child: ListView(
                           children: [
                             // NOTE: ALAMAT
-                            Container(
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        Navigator.pushNamed(context, "address");
-                                      },
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(context, "address");
+                              },
+                              child: Container(
+                                color: Colors.transparent,
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
                                       child: _CheckoutPageExtension()
                                           .addressItemView(context),
                                     ),
-                                  ),
-                                  const Icon(
-                                    Icons.chevron_right,
-                                  ),
-                                ],
+                                    Icon(
+                                      Icons.chevron_right,
+                                      color: context
+                                                  .read<AddressCubit>()
+                                                  .state
+                                                  .selectedAddressModel
+                                                  ?.namaAlamat ==
+                                              null
+                                          ? colorSuccess
+                                          : Colors.black,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                             const SizedBox(
@@ -947,41 +956,64 @@ class _CheckoutPageExtension {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 5,
       children: [
-        const Icon(
+        Icon(
           SolarIconsOutline.mapPoint,
           size: 24,
+          color: context
+                      .read<AddressCubit>()
+                      .state
+                      .selectedAddressModel
+                      ?.namaAlamat ==
+                  null
+              ? colorSuccess
+              : Colors.black,
         ),
         Expanded(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text:
-                          "${context.read<AddressCubit>().state.selectedAddressModel?.namaAlamat}",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 12,
-                        fontWeight: bold,
+              if (context
+                      .read<AddressCubit>()
+                      .state
+                      .selectedAddressModel
+                      ?.namaAlamat ==
+                  null) ...{
+                Text(
+                  "Tambah Alamat",
+                  style: TextStyle(
+                    color: colorSuccess,
+                  ),
+                ),
+              } else ...{
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text:
+                            "${context.read<AddressCubit>().state.selectedAddressModel?.namaAlamat}",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                          fontWeight: bold,
+                        ),
                       ),
-                    ),
-                    TextSpan(
-                      text:
-                          " | ${context.read<AddressCubit>().state.selectedAddressModel?.telpPenerima}",
-                      style: const TextStyle(color: Colors.grey, fontSize: 12),
-                    ),
-                  ],
+                      TextSpan(
+                        text:
+                            " | ${context.read<AddressCubit>().state.selectedAddressModel?.telpPenerima}",
+                        style:
+                            const TextStyle(color: Colors.grey, fontSize: 12),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Text(
-                "${context.read<AddressCubit>().state.selectedAddressModel?.alamatLengkap ?? ""}, ${context.read<AddressCubit>().state.selectedAddressModel?.kelurahan ?? ""}, ${context.read<AddressCubit>().state.selectedAddressModel?.kecamatan ?? ""}, ${context.read<AddressCubit>().state.selectedAddressModel?.kabkota ?? ""}, ${context.read<AddressCubit>().state.selectedAddressModel?.provinsi ?? ""}\n${context.read<AddressCubit>().state.selectedAddressModel?.kodepos ?? ""}",
-                style: const TextStyle(
-                  fontSize: 12,
+                Text(
+                  "${context.read<AddressCubit>().state.selectedAddressModel?.alamatLengkap ?? ""}, ${context.read<AddressCubit>().state.selectedAddressModel?.kelurahan ?? ""}, ${context.read<AddressCubit>().state.selectedAddressModel?.kecamatan ?? ""}, ${context.read<AddressCubit>().state.selectedAddressModel?.kabkota ?? ""}, ${context.read<AddressCubit>().state.selectedAddressModel?.provinsi ?? ""}\n${context.read<AddressCubit>().state.selectedAddressModel?.kodepos ?? ""}",
+                  style: const TextStyle(
+                    fontSize: 12,
+                  ),
                 ),
-              ),
+              },
             ],
           ),
         ),

@@ -167,8 +167,7 @@ class AddressService {
   }
 
   Future<Map<String, dynamic>> getMapLocation({required String userID}) async {
-    var url =
-        Uri.parse("http://10.10.10.98:3000/apipos/v1/map/customer/$userID");
+    var url = Uri.parse("$mapBaseURL/map/customer/$userID");
     var header = {
       'Content-Type': 'application/json',
       "skip_zrok_interstitial": "true",
@@ -181,10 +180,11 @@ class AddressService {
 
     if (response.statusCode >= 200 && response.statusCode <= 299) {
       var data = jsonDecode(response.body);
+      print("isi datanya adalah $data");
       return data;
     } else {
       var data = jsonDecode(response.body);
-      throw ("${data['message']}");
+      throw ("error map dengan pesan ${data['message']}");
     }
   }
 }
