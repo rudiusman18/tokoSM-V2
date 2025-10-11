@@ -804,15 +804,24 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                                   height: 10,
                                 ),
                                 if ((context
-                                            .read<DetailTransactionCubit>()
-                                            .state
-                                            .detailTransactionModel
-                                            ?.data
-                                            ?.first
-                                            .pengiriman
-                                            ?.kurir ??
-                                        "") !=
-                                    "") ...{
+                                                .read<DetailTransactionCubit>()
+                                                .state
+                                                .detailTransactionModel
+                                                ?.data
+                                                ?.first
+                                                .pengiriman
+                                                ?.kurir ??
+                                            "") !=
+                                        "" &&
+                                    (context
+                                                .read<DetailTransactionCubit>()
+                                                .state
+                                                .detailTransactionModel
+                                                ?.data
+                                                ?.first
+                                                .status ??
+                                            0) >=
+                                        2) ...{
                                   // NOTE: Info Pengiriman
                                   Container(
                                     margin: const EdgeInsets.symmetric(

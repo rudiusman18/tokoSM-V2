@@ -956,21 +956,15 @@ class _CheckoutPageExtension {
       crossAxisAlignment: CrossAxisAlignment.start,
       spacing: 5,
       children: [
-        Icon(
-          SolarIconsOutline.mapPoint,
-          size: 24,
-          color: context
-                      .read<AddressCubit>()
-                      .state
-                      .selectedAddressModel
-                      ?.namaAlamat ==
-                  null
-              ? colorSuccess
-              : Colors.black,
-        ),
+        context.read<AddressCubit>().state.selectedAddressModel?.namaAlamat ==
+                null
+            ? const SizedBox()
+            : const Icon(
+                SolarIconsOutline.mapPoint,
+                size: 24,
+              ),
         Expanded(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (context

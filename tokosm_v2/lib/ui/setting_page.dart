@@ -179,11 +179,9 @@ class _SettingPageState extends State<SettingPage> {
                       const SizedBox(
                         height: 10,
                       ),
-                      Expanded(
-                        child: Container(
-                          height: 5,
-                          color: greyBase300,
-                        ),
+                      Container(
+                        height: 5,
+                        color: greyBase300,
                       ),
                       const SizedBox(
                         height: 10,
