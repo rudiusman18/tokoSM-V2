@@ -192,9 +192,42 @@ class TransactionService {
         print("✅ Upload berhasil: $respStr");
       } else {
         print("❌ Upload gagal: ${response.statusCode}");
+        throw ("Failed Upload ${response.statusCode}");
       }
     } catch (e) {
       print("⚠️ Error: $e");
+      throw ("$e");
+    }
+  }
+
+  Future<Map<String, dynamic>> getPaymentDetailTransaction({
+    required String token,
+    required String noInvoice,
+  }) async {
+    var url = Uri.parse(
+      "$baseURL/transaksi/datapembayaran/$noInvoice",
+    );
+
+    var header = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+      "skip_zrok_interstitial": "true",
+    };
+
+    var response = await http.get(
+      url,
+      headers: header,
+    );
+
+    print("data mengembalikan ${response.statusCode} ${response.body}");
+
+    if (response.statusCode >= 200 && response.statusCode <= 299) {
+      Map<String, dynamic> data = jsonDecode(response.body);
+
+      return data;
+    } else {
+      var data = jsonDecode(response.body);
+      throw ("${data['message']}");
     }
   }
 }

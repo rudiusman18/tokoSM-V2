@@ -19,6 +19,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final ScrollController _scrollController = ScrollController();
+
   List<String>? imgList;
 
   TextEditingController searchController = TextEditingController(text: "");
@@ -28,11 +30,41 @@ class _HomePageState extends State<HomePage> {
 
   int carouselCurrentIndex = 0;
 
+  int popularProductIndex = 1;
+
   @override
   void initState() {
+    _scrollController.addListener(_scrollListener);
     context.read<ProductCubit>().setSearchKeyword("");
     initCabangData();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      _loadMore();
+    }
+  }
+
+  Future<void> _loadMore() async {
+    popularProductIndex += 1;
+    context.read<ProductCubit>().getProducts(
+          token: context.read<AuthCubit>().state.loginModel.token ?? "",
+          cabangId:
+              context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
+          type: 'populer',
+          sort: 'populer',
+          page: popularProductIndex,
+          limit: 10,
+        );
+    print("object data 2");
   }
 
   void initProductData() async {
@@ -71,7 +103,7 @@ class _HomePageState extends State<HomePage> {
               context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
           type: 'populer',
           sort: 'populer',
-          limit: 99999999,
+          limit: 10,
         );
   }
 
@@ -252,7 +284,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               CarouselSlider(
                   items: [
-                    for (var img in imgList!)
+                    for (var img in imgList ?? [])
                       Container(
                         decoration: BoxDecoration(
                           color: greyBase300,
@@ -285,7 +317,7 @@ class _HomePageState extends State<HomePage> {
                 margin: const EdgeInsets.only(bottom: 10),
                 child: AnimatedSmoothIndicator(
                   activeIndex: carouselCurrentIndex,
-                  count: imgList!.length,
+                  count: (imgList ?? []).length,
                   effect: WormEffect(
                     activeDotColor: colorSuccess,
                     dotColor: Colors.white,
@@ -478,6 +510,8 @@ class _HomePageState extends State<HomePage> {
 
     Widget terlarisSection() {
       var product = context.read<ProductCubit>().state.bestSellerProduct.data;
+      print(
+          "isi product untuk terlaris adalah ${context.read<ProductCubit>().state.bestSellerProduct.toJson()}");
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 10,
@@ -610,6 +644,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       Expanded(
                         child: ListView(
+                          controller: _scrollController,
                           children: [
                             Container(
                               margin: const EdgeInsets.symmetric(
@@ -760,7 +795,9 @@ class _HomePageExtension {
                     borderRadius: BorderRadius.circular(10),
                     image: DecorationImage(
                       image: NetworkImage(
-                        product?.gambarProduk?.first ?? "",
+                        (product?.gambarProduk ?? []).isEmpty
+                            ? ""
+                            : product?.gambarProduk?.first ?? "",
                       ),
                       fit: BoxFit.cover,
                     ),

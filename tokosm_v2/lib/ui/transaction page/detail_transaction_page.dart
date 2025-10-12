@@ -373,11 +373,24 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                                     nama: fullNameTextController.text,
                                     bukti: file!,
                                   );
-                              Navigator.pop(context);
-                              Navigator.pop(context);
-                              Navigator.pop(context);
-                              Utils().scaffoldMessenger(context,
-                                  "Anda telah melakukan konfirmasi pembayaran");
+
+                              if (context.read<DetailTransactionCubit>().state
+                                  is DetailTransactionSuccess) {
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                                Navigator.pop(context);
+                                Utils().scaffoldMessenger(context,
+                                    "Anda telah melakukan konfirmasi pembayaran");
+                              } else {
+                                toastification.show(
+                                  context:
+                                      context, // optional if you use ToastificationWrapper
+                                  title: const Text(
+                                      'Konfirmasi pembayaran gagal. Silahkan coba lagi'),
+                                  autoCloseDuration: const Duration(seconds: 2),
+                                  style: ToastificationStyle.simple,
+                                );
+                              }
                             } else {
                               toastification.show(
                                 context:
@@ -568,33 +581,50 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                                               ),
                                             ),
                                           ),
-                                          Text(
-                                            ((context
-                                                            .read<
-                                                                DetailTransactionCubit>()
-                                                            .state
-                                                            .detailTransactionModel
-                                                            ?.data
-                                                            ?.first
-                                                            .status ??
-                                                        0) ==
-                                                    0)
-                                                ? "Cara Bayar"
-                                                : ((context
-                                                                .read<
-                                                                    DetailTransactionCubit>()
-                                                                .state
-                                                                .detailTransactionModel
-                                                                ?.data
-                                                                ?.first
-                                                                .status ??
-                                                            0) ==
-                                                        2)
-                                                    ? "Lacak Pengiriman"
-                                                    : "",
-                                            style: TextStyle(
-                                              color: colorSuccess,
-                                              fontWeight: bold,
+                                          GestureDetector(
+                                            onTap: () {
+                                              if ((context
+                                                          .read<
+                                                              DetailTransactionCubit>()
+                                                          .state
+                                                          .detailTransactionModel
+                                                          ?.data
+                                                          ?.first
+                                                          .status ??
+                                                      0) ==
+                                                  0) {
+                                                Navigator.pushNamed(context,
+                                                    "transaction/detail-transaction/how-to-pay");
+                                              }
+                                            },
+                                            child: Text(
+                                              ((context
+                                                              .read<
+                                                                  DetailTransactionCubit>()
+                                                              .state
+                                                              .detailTransactionModel
+                                                              ?.data
+                                                              ?.first
+                                                              .status ??
+                                                          0) ==
+                                                      0)
+                                                  ? "Cara Bayar"
+                                                  : ((context
+                                                                  .read<
+                                                                      DetailTransactionCubit>()
+                                                                  .state
+                                                                  .detailTransactionModel
+                                                                  ?.data
+                                                                  ?.first
+                                                                  .status ??
+                                                              0) ==
+                                                          2)
+                                                      ? "Lacak Pengiriman"
+                                                      : "",
+                                              style: TextStyle(
+                                                color: colorSuccess,
+                                                fontWeight: bold,
+                                              ),
                                             ),
                                           ),
                                         ],

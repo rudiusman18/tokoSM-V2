@@ -55,6 +55,7 @@ class ProductCubit extends Cubit<ProductState> {
     ProductModel? popular = state is ProductSuccess
         ? (state as ProductSuccess).popularProduct
         : null;
+
     int indexTab =
         state is ProductSuccess ? (state as ProductSuccess).productTabIndex : 0;
 
@@ -84,6 +85,8 @@ class ProductCubit extends Cubit<ProductState> {
 
     Map<String, dynamic>? productBannerData = state.productBanner;
 
+    ProductModel wildProduct = state.wildProduct;
+
     emit(ProductLoading(indexTab));
     try {
       ProductModel productModel = await ProductService().getProduct(
@@ -99,6 +102,13 @@ class ProductCubit extends Cubit<ProductState> {
         page: page,
         limit: limit,
       );
+
+      if ((wildProduct.data ?? []).isEmpty) {
+        wildProduct = productModel;
+      } else {
+        wildProduct.data?.addAll(productModel.data ?? []);
+      }
+
       emit(
         ProductSuccess(
           maxPriceFilter: maxPriceFilter,
@@ -132,6 +142,8 @@ class ProductCubit extends Cubit<ProductState> {
   }) async {
     Map<String, dynamic>? productBanner = state.productBanner;
 
+    ProductModel popularProduct = state.popularProduct;
+
     emit(ProductLoading(0));
     try {
       ProductModel productModel = await ProductService().getProduct(
@@ -152,6 +164,14 @@ class ProductCubit extends Cubit<ProductState> {
         print(productModel.data);
       }
 
+      if (type == "populer") {
+        if ((popularProduct.data ?? []).isEmpty) {
+          popularProduct = productModel;
+        } else {
+          (popularProduct.data ?? []).addAll(productModel.data ?? []);
+        }
+      }
+
       emit(
         ProductSuccess(
           flashSaleProductData:
@@ -162,7 +182,7 @@ class ProductCubit extends Cubit<ProductState> {
           bestSellerProductData:
               type == "terlaris" ? productModel : state.bestSellerProduct,
           popularProductData:
-              type == "populer" ? productModel : state.popularProduct,
+              type == "populer" ? popularProduct : state.popularProduct,
           wildProductData: state.wildProduct,
           productTabIndexData: state.productTabIndex,
           productBannerData: productBanner,

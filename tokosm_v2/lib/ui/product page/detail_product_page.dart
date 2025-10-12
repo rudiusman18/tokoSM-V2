@@ -181,7 +181,9 @@ class _DetailProductPageState extends State<DetailProductPage> {
                                     color: Colors.grey,
                                     image: DecorationImage(
                                       image: NetworkImage(
-                                        product.gambarProduk?.first ?? "",
+                                        (product.gambarProduk ?? []).isEmpty
+                                            ? ""
+                                            : product.gambarProduk?.first ?? "",
                                       ),
                                       fit: BoxFit.cover,
                                     ),

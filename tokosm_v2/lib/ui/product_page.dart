@@ -22,6 +22,10 @@ class _ProductPageState extends State<ProductPage> {
 
   TextEditingController searchController = TextEditingController(text: "");
 
+  int productPageIndex = 1;
+
+  final ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     // context.read<ProductCubit>().setProductFilter(
@@ -32,10 +36,48 @@ class _ProductPageState extends State<ProductPage> {
     //       maxPrice: '',
     //     );
     // context.read<ProductCubit>().productTabIndex(0);
+    _scrollController.addListener(_scrollListener);
+
     searchController.text =
         (context.read<ProductCubit>().state as ProductSuccess).searchkeyword;
     initProductData();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels ==
+        _scrollController.position.maxScrollExtent) {
+      _loadMore();
+    }
+  }
+
+  Future<void> _loadMore() async {
+    productPageIndex += 1;
+    context.read<ProductCubit>().getAllProduct(
+          token: context.read<AuthCubit>().state.loginModel.token ?? "",
+          cabangId:
+              context.read<CabangCubit>().state.selectedCabangData.id ?? 0,
+          type: (context.read<ProductCubit>().state as ProductSuccess)
+              .selectedPromoFilter,
+          category: (context.read<ProductCubit>().state as ProductSuccess)
+              .selectedCategoryFilter,
+          minrating: (context.read<ProductCubit>().state as ProductSuccess)
+              .selectedRatingFilter,
+          maxprice: (context.read<ProductCubit>().state as ProductSuccess)
+              .maxPriceFilter,
+          minprice: (context.read<ProductCubit>().state as ProductSuccess)
+              .minPriceFilter,
+          page: productPageIndex,
+          limit: 10,
+          sort: tabFilter[context.read<ProductCubit>().state.productTabIndex]
+              .toLowerCase(),
+        );
   }
 
   void initProductData() async {
@@ -54,7 +96,7 @@ class _ProductPageState extends State<ProductPage> {
           minprice: (context.read<ProductCubit>().state as ProductSuccess)
               .minPriceFilter,
           page: 1,
-          limit: 999999999,
+          limit: 10,
           sort: tabFilter[context.read<ProductCubit>().state.productTabIndex]
               .toLowerCase(),
         );
@@ -241,6 +283,7 @@ class _ProductPageState extends State<ProductPage> {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
+                        productPageIndex = 1;
                         context.read<ProductCubit>().productTabIndex(i);
                         context.read<ProductCubit>().getAllProduct(
                               token: context
@@ -270,8 +313,8 @@ class _ProductPageState extends State<ProductPage> {
                               minprice: (context.read<ProductCubit>().state
                                       as ProductSuccess)
                                   .minPriceFilter,
-                              page: 1,
-                              limit: 999999999,
+                              page: productPageIndex,
+                              limit: 10,
                               sort: tabFilter[context
                                       .read<ProductCubit>()
                                       .state
@@ -348,6 +391,7 @@ class _ProductPageState extends State<ProductPage> {
                         horizontal: 16,
                       ),
                       child: ListView(
+                        controller: _scrollController,
                         children: [
                           Wrap(
                             spacing: 10,

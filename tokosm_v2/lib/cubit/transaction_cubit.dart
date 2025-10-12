@@ -143,7 +143,28 @@ class DetailTransactionCubit extends Cubit<DetailTransactionState> {
       );
       emit(DetailTransactionSuccess(transactionModel));
     } catch (e) {
+      print("seharusnya error");
       emit(DetailTransactionFailure(e.toString()));
+    }
+  }
+}
+
+class DetailPaymentTransactionCubit
+    extends Cubit<DetailPaymentTransactionState> {
+  DetailPaymentTransactionCubit() : super(DetailPaymentTrasansactionInitial());
+
+  Future<void> getDetailPaymentTransaction({
+    required String token,
+    required String noInvoice,
+  }) async {
+    emit(DetailPaymentTransactionLoading());
+    try {
+      Map<String, dynamic> responseData = await TransactionService()
+          .getPaymentDetailTransaction(token: token, noInvoice: noInvoice);
+
+      emit(DetailPaymentTrasansactionSuccess(responseData));
+    } catch (e) {
+      emit(DetailPaymentTrasansactionFailure(e.toString()));
     }
   }
 }

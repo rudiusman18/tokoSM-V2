@@ -32,6 +32,9 @@ class ProductService {
       headers: header,
     );
 
+    print(
+        "isi response $baseURL/produk?cabang=$cabangId&type=$type&page=$page&limit=$limit&sort=$sort&cat=$cat&minrating=$minrating&minprice=$minprice&maxprice=$maxprice&q=$search untuk $sort dan $cat dan $type adalah ${response.statusCode} dengan ${response.body}");
+
     if (response.statusCode >= 200 && response.statusCode <= 299) {
       var data = jsonDecode(response.body);
       final ProductModel productModel = ProductModel.fromJson(data);

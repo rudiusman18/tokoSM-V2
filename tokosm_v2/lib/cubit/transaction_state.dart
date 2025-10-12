@@ -41,7 +41,7 @@ final class TransactionFailure extends TransactionState {
 }
 
 // NOTE: Detail transaction
-abstract class DetailTransactionState {
+sealed class DetailTransactionState {
   TransactionModel? detailTransactionModel;
   DetailTransactionState({this.detailTransactionModel});
 }
@@ -59,4 +59,26 @@ final class DetailTransactionSuccess extends DetailTransactionState {
 final class DetailTransactionFailure extends DetailTransactionState {
   final String error;
   DetailTransactionFailure(this.error) : super();
+}
+
+// NOTE: Detail payment transaction (cara bayar)
+sealed class DetailPaymentTransactionState {}
+
+final class DetailPaymentTrasansactionInitial
+    extends DetailPaymentTransactionState {}
+
+final class DetailPaymentTransactionLoading
+    extends DetailPaymentTransactionState {}
+
+final class DetailPaymentTrasansactionSuccess
+    extends DetailPaymentTransactionState {
+  final Map<String, dynamic> detailPaymentTransactionData;
+  DetailPaymentTrasansactionSuccess(this.detailPaymentTransactionData)
+      : super();
+}
+
+final class DetailPaymentTrasansactionFailure
+    extends DetailPaymentTransactionState {
+  final String error;
+  DetailPaymentTrasansactionFailure(this.error);
 }

@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:tokosm_v2/shared/themes.dart';
 import 'package:intl/intl.dart';
 
-String baseURL = "http://192.168.1.13:3001/api/v1";
+String baseURL = "http://192.168.1.4:3001/api/v1";
 //"http://10.10.10.98:3001/api/v1"; //"https://apitokosm.share.zrok.io/api/v1";
-String mapBaseURL = "http://192.168.1.13:3000/apipos/v1";
+String mapBaseURL = "http://192.168.1.4:3000/apipos/v1";
+String paymentTutorialURL = "http://192.168.1.4:3000/mobile/transaksi";
 
-// 192.168.1.13
+// 192.168.1.12
 
 class Utils {
   void scaffoldMessenger(
