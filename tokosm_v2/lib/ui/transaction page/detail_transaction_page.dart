@@ -382,6 +382,7 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                                 Utils().scaffoldMessenger(context,
                                     "Anda telah melakukan konfirmasi pembayaran");
                               } else {
+                                Navigator.pop(context);
                                 toastification.show(
                                   context:
                                       context, // optional if you use ToastificationWrapper
