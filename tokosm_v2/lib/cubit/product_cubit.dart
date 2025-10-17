@@ -86,8 +86,9 @@ class ProductCubit extends Cubit<ProductState> {
     Map<String, dynamic>? productBannerData = state.productBanner;
 
     ProductModel wildProduct = state.wildProduct;
-
-    emit(ProductLoading(indexTab));
+    if (page == 0) {
+      emit(ProductLoading(indexTab));
+    }
     try {
       ProductModel productModel = await ProductService().getProduct(
         token: token,
@@ -103,7 +104,7 @@ class ProductCubit extends Cubit<ProductState> {
         limit: limit,
       );
 
-      if ((wildProduct.data ?? []).isEmpty) {
+      if ((wildProduct.data ?? []).isEmpty || page == 1) {
         wildProduct = productModel;
       } else {
         wildProduct.data?.addAll(productModel.data ?? []);
@@ -122,7 +123,7 @@ class ProductCubit extends Cubit<ProductState> {
           promoProductData: promo ?? state.promoProduct,
           bestSellerProductData: bestSeller ?? state.bestSellerProduct,
           popularProductData: popular ?? state.popularProduct,
-          wildProductData: productModel,
+          wildProductData: wildProduct,
           productTabIndexData: indexTab,
           productBannerData: productBannerData,
         ),

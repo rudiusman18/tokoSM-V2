@@ -28,14 +28,6 @@ class _ProductPageState extends State<ProductPage> {
 
   @override
   void initState() {
-    // context.read<ProductCubit>().setProductFilter(
-    //       kategori: '',
-    //       promo: '',
-    //       rating: '',
-    //       minPrice: '',
-    //       maxPrice: '',
-    //     );
-    // context.read<ProductCubit>().productTabIndex(0);
     _scrollController.addListener(_scrollListener);
 
     searchController.text =
@@ -184,7 +176,7 @@ class _ProductPageState extends State<ProductPage> {
                                               .state as ProductSuccess)
                                           .minPriceFilter,
                                       page: 1,
-                                      limit: 999999999,
+                                      limit: 10,
                                       sort: tabFilter[context
                                               .read<ProductCubit>()
                                               .state
@@ -283,6 +275,12 @@ class _ProductPageState extends State<ProductPage> {
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
+                        _scrollController.animateTo(
+                          0, // posisi paling atas
+                          duration: const Duration(
+                              milliseconds: 500), // durasi animasi
+                          curve: Curves.easeInOut, // efek animasi
+                        );
                         productPageIndex = 1;
                         context.read<ProductCubit>().productTabIndex(i);
                         context.read<ProductCubit>().getAllProduct(
@@ -1158,7 +1156,7 @@ class _ProductPageExtension {
                                           maxprice: highestPriceController.text,
                                           minprice: lowestPriceController.text,
                                           page: 1,
-                                          limit: 999999999,
+                                          limit: 10,
                                           sort: sortBy,
                                         );
                                     Navigator.pop(context);
@@ -1216,7 +1214,7 @@ class _ProductPageExtension {
                                           maxprice: highestPriceController.text,
                                           minprice: lowestPriceController.text,
                                           page: 1,
-                                          limit: 999999999,
+                                          limit: 10,
                                           sort: sortBy,
                                         );
                                     Navigator.pop(context);
