@@ -22,7 +22,7 @@ class _TransactionPageState extends State<TransactionPage> {
     "Belum bayar",
     "Diproses",
     "Dikirim",
-    "Diterima",
+    //"Diterima",
     "Selesai",
     "Dibatalkan",
     "Dikembalikan",
