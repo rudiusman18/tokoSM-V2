@@ -64,7 +64,6 @@ class _HomePageState extends State<HomePage> {
           page: popularProductIndex,
           limit: 10,
         );
-    print("object data 2");
   }
 
   void initProductData() async {

@@ -144,7 +144,14 @@ class ProductCubit extends Cubit<ProductState> {
 
     ProductModel popularProduct = state.popularProduct;
 
-    emit(ProductLoading(0));
+    ProductModel flashsaleProduct = state.flashSaleProduct;
+    ProductModel discountProduct = state.discountProduct;
+    ProductModel promoProduct = state.promoProduct;
+    ProductModel bestSellerProduct = state.bestSellerProduct;
+
+    if (page == 1) {
+      emit(ProductLoading(0));
+    }
     try {
       ProductModel productModel = await ProductService().getProduct(
         token: token,
@@ -160,10 +167,6 @@ class ProductCubit extends Cubit<ProductState> {
         minrating: "",
       );
 
-      if (type == "flashsale") {
-        print(productModel.data);
-      }
-
       if (type == "populer") {
         if ((popularProduct.data ?? []).isEmpty) {
           popularProduct = productModel;
@@ -174,13 +177,26 @@ class ProductCubit extends Cubit<ProductState> {
 
       emit(
         ProductSuccess(
-          flashSaleProductData:
-              type == "flashsale" ? productModel : state.flashSaleProduct,
-          discountProductData:
-              type == "diskon" ? productModel : state.discountProduct,
-          promoProductData: type == "promo" ? productModel : state.promoProduct,
-          bestSellerProductData:
-              type == "terlaris" ? productModel : state.bestSellerProduct,
+          flashSaleProductData: type == "flashsale"
+              ? productModel
+              : (flashsaleProduct.data ?? []).isEmpty
+                  ? state.flashSaleProduct
+                  : flashsaleProduct,
+          discountProductData: type == "diskon"
+              ? productModel
+              : (discountProduct.data ?? []).isEmpty
+                  ? state.discountProduct
+                  : discountProduct,
+          promoProductData: type == "promo"
+              ? productModel
+              : (promoProduct.data ?? []).isEmpty
+                  ? state.promoProduct
+                  : promoProduct,
+          bestSellerProductData: type == "terlaris"
+              ? productModel
+              : (bestSellerProduct.data ?? []).isEmpty
+                  ? state.bestSellerProduct
+                  : bestSellerProduct,
           popularProductData:
               type == "populer" ? popularProduct : state.popularProduct,
           wildProductData: state.wildProduct,

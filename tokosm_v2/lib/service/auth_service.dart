@@ -23,9 +23,6 @@ class AuthService {
       body: body,
     );
 
-    print(
-        'isi response adalah: ${response.statusCode} dengan pesan ${response.body}');
-
     if (response.statusCode >= 200 && response.statusCode <= 299) {
       var data = jsonDecode(response.body);
       final LoginModel loginModel = LoginModel.fromJson(data);
