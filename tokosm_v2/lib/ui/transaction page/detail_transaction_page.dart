@@ -594,8 +594,24 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                                                           .status ??
                                                       0) ==
                                                   0) {
+                                                // Cara Bayar
                                                 Navigator.pushNamed(context,
                                                     "transaction/detail-transaction/how-to-pay");
+                                              }
+
+                                              if ((context
+                                                          .read<
+                                                              DetailTransactionCubit>()
+                                                          .state
+                                                          .detailTransactionModel
+                                                          ?.data
+                                                          ?.first
+                                                          .status ??
+                                                      0) ==
+                                                  2) {
+                                                // Lacak Pengiriman
+                                                Navigator.pushNamed(context,
+                                                    "transaction/detail-transaction/trace-delivery");
                                               }
                                             },
                                             child: Text(
@@ -632,7 +648,7 @@ class _DetailTransactionPageState extends State<DetailTransactionPage> {
                                       ),
                                       _DetailTransactionPageExtension()
                                           .itemView(
-                                        title: "No Pelanggan",
+                                        title: "No Pesanan",
                                         value:
                                             "${context.read<DetailTransactionCubit>().state.detailTransactionModel?.data?.first.noInvoice}",
                                       ),

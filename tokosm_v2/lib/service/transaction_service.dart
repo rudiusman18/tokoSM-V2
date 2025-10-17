@@ -125,6 +125,7 @@ class TransactionService {
       "pengiriman_id": int.tryParse(addressID),
       "produk": products.map((e) {
         var json = e.toJson();
+        json["produk_id"] = e.id;
         json["catatan_produk"] =
             productNotes[(e.namaProduk ?? "").toLowerCase()];
         return json;
@@ -220,6 +221,38 @@ class TransactionService {
     );
 
     print("data mengembalikan ${response.statusCode} ${response.body}");
+
+    if (response.statusCode >= 200 && response.statusCode <= 299) {
+      Map<String, dynamic> data = jsonDecode(response.body);
+
+      return data;
+    } else {
+      var data = jsonDecode(response.body);
+      throw ("${data['message']}");
+    }
+  }
+
+  Future<Map<String, dynamic>> getTransactionTracking({
+    required String token,
+    required String noInvoice,
+  }) async {
+    var url = Uri.parse(
+      "$baseURL/transaksi/status/$noInvoice",
+    );
+
+    var header = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+      "skip_zrok_interstitial": "true",
+    };
+
+    var response = await http.get(
+      url,
+      headers: header,
+    );
+
+    print(
+        "data mengembalikan get transaction tracking ${response.statusCode} ${response.body}");
 
     if (response.statusCode >= 200 && response.statusCode <= 299) {
       Map<String, dynamic> data = jsonDecode(response.body);

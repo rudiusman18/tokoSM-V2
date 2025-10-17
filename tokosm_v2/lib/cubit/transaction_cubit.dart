@@ -168,3 +168,22 @@ class DetailPaymentTransactionCubit
     }
   }
 }
+
+class TrackingTransactionCubit extends Cubit<TrackingTransactionState> {
+  TrackingTransactionCubit() : super(TrackingTransactionInitial());
+
+  Future<void> getTrackingTransaction({
+    required String token,
+    required String noInvoice,
+  }) async {
+    emit(TrackingTransactionLoading());
+    try {
+      Map<String, dynamic> responseData = await TransactionService()
+          .getTransactionTracking(token: token, noInvoice: noInvoice);
+
+      emit(TrackingTransactionSuccess(responseData));
+    } catch (e) {
+      emit(TrackingTransactionFailure(e.toString()));
+    }
+  }
+}

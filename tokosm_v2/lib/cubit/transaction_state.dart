@@ -82,3 +82,20 @@ final class DetailPaymentTrasansactionFailure
   final String error;
   DetailPaymentTrasansactionFailure(this.error);
 }
+
+// NOTE: Tracking Transaction
+sealed class TrackingTransactionState {}
+
+final class TrackingTransactionInitial extends TrackingTransactionState {}
+
+final class TrackingTransactionLoading extends TrackingTransactionState {}
+
+final class TrackingTransactionSuccess extends TrackingTransactionState {
+  final Map<String, dynamic> TrackingTransactionData;
+  TrackingTransactionSuccess(this.TrackingTransactionData);
+}
+
+final class TrackingTransactionFailure extends TrackingTransactionState {
+  final String error;
+  TrackingTransactionFailure(this.error);
+}

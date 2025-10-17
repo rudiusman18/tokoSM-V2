@@ -31,6 +31,7 @@ import 'package:tokosm_v2/ui/setting_page.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:tokosm_v2/ui/transaction%20page/detail_transaction_page.dart';
 import 'package:tokosm_v2/ui/transaction%20page/how_to_pay_page.dart';
+import 'package:tokosm_v2/ui/transaction%20page/track_delivery_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // jika di Flutter
@@ -95,6 +96,9 @@ class MainApp extends StatelessWidget {
         BlocProvider(
           create: (context) => DetailPaymentTransactionCubit(),
         ),
+        BlocProvider(
+          create: (context) => TrackingTransactionCubit(),
+        ),
       ],
       child: MaterialApp(
         onGenerateRoute: (RouteSettings settings) {
@@ -144,6 +148,14 @@ class MainApp extends StatelessWidget {
                 type: PageTransitionType.rightToLeft,
                 childCurrent: context.currentRoute,
                 child: const HowToPayPage(),
+                settings: settings,
+              );
+
+            case 'transaction/detail-transaction/trace-delivery':
+              return PageTransition(
+                type: PageTransitionType.rightToLeft,
+                childCurrent: context.currentRoute,
+                child: const TrackDeliveryPage(),
                 settings: settings,
               );
 
