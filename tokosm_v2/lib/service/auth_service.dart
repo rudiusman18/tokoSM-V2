@@ -28,6 +28,7 @@ class AuthService {
       final LoginModel loginModel = LoginModel.fromJson(data);
       return loginModel;
     } else {
+      print("isi response adalah: ${response.body}");
       var data = jsonDecode(response.body);
       throw ("${data['message']}");
     }

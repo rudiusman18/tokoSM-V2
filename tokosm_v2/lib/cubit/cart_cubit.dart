@@ -60,25 +60,55 @@ class CartCubit extends Cubit<CartState> {
             .toList()
             .first;
 
-        if ((selectedProductCart?.data ?? [])[index].isFlashsale == 1 &&
-            (selectedProductCart?.data ?? [])[index].satuanProduk !=
-                (selectedProductCart?.data ?? [])[index].flashsaleSatuan) {
-          productCartPrices.add(
+        //NOTE: perhitungan pembelian grosir
+        if ((selectedProductCart?.data ?? [])[index].isGrosir == 1) {
+          var hargaGrosir =
               (selectedProductCart?.data ?? [])[index].hargaProduk *
-                  (selectedProductCart?.data ?? [])[index].jumlah);
-        } else if ((selectedProductCart?.data ?? [])[index].isFlashsale == 1) {
-          productCartPrices.add(
-              (selectedProductCart?.data ?? [])[index].hargaDiskonFlashsale *
-                  (selectedProductCart?.data ?? [])[index].jumlah);
-        } else if ((selectedProductCart?.data ?? [])[index].isDiskon == 1) {
-          productCartPrices.add(
-              (selectedProductCart?.data ?? [])[index].hargaDiskon *
-                  (selectedProductCart?.data ?? [])[index].jumlah);
-        } else {
-          productCartPrices.add(
-            (selectedProductCart?.data ?? [])[index].hargaProduk *
-                (selectedProductCart?.data ?? [])[index].jumlah,
-          );
+                  (selectedProductCart?.data ?? [])[index].jumlah;
+          for (var i = 0;
+              i <
+                  ((selectedProductCart?.data ?? [])[index].grosirJumlahMin ??
+                          [])
+                      .length;
+              i++) {
+            print(
+                "isi grosir min adalah ${((selectedProductCart?.data ?? [])[index].grosirJumlahMin?[i] ?? 0)}");
+            if ((selectedProductCart?.data ?? [])[index].jumlah >=
+                ((selectedProductCart?.data ?? [])[index].grosirJumlahMin?[i] ??
+                    0)) {
+              hargaGrosir = (selectedProductCart?.data ?? [])[index].jumlah *
+                  (selectedProductCart?.data ?? [])[index].hargaGrosir?[i];
+            }
+          }
+
+          print("isi harga grosir adalah ${hargaGrosir}");
+
+          productCartPrices.add(hargaGrosir);
+        }
+
+        //NOTE: perhitungan flashsale (sesuai syarat dan syarat harus sama persis dengan flashsale_kuantitas)
+        if ((selectedProductCart?.data ?? [])[index].isFlashsale == 1) {
+          if ((selectedProductCart?.data ?? [])[index].jumlah ==
+              (selectedProductCart?.data ?? [])[index].flashsaleKuantitas) {
+            productCartPrices.add(
+                (selectedProductCart?.data ?? [])[index].hargaDiskonFlashsale *
+                    (selectedProductCart?.data ?? [])[index].jumlah);
+          } else {
+            // jika tidak sesuai kuantitas kena harga normal
+            productCartPrices.add(
+                (selectedProductCart?.data ?? [])[index].hargaProduk *
+                    (selectedProductCart?.data ?? [])[index].jumlah);
+          }
+        }
+
+        //NOTE: perhitungan diskon (sesuai dengan syarat max beli untuk diskon)
+        if ((selectedProductCart?.data ?? [])[index].isDiskon == 1) {
+          if ((selectedProductCart?.data ?? [])[index].jumlah <=
+              (selectedProductCart?.data ?? [])[index].diskonMaxBeli) {
+            productCartPrices.add(
+                (selectedProductCart?.data ?? [])[index].hargaDiskon *
+                    (selectedProductCart?.data ?? [])[index].jumlah);
+          }
         }
       }
 
@@ -175,24 +205,52 @@ class CartCubit extends Cubit<CartState> {
 
   void cartProducttoTransaction({required ProductModel product}) {
     final List<int> productPricestoTransaction = [];
+
     for (var index = 0; index < (product.data ?? []).length; index++) {
-      if ((product.data ?? [])[index].isFlashsale == 1 &&
-          (product.data ?? [])[index].satuanProduk !=
-              (product.data ?? [])[index].flashsaleSatuan) {
-        productPricestoTransaction.add((product.data ?? [])[index].hargaProduk *
-            (product.data ?? [])[index].jumlah);
-      } else if ((product.data ?? [])[index].isFlashsale == 1) {
-        productPricestoTransaction.add(
-            (product.data ?? [])[index].hargaDiskonFlashsale *
-                (product.data ?? [])[index].jumlah);
-      } else if ((product.data ?? [])[index].isDiskon == 1) {
-        productPricestoTransaction.add((product.data ?? [])[index].hargaDiskon *
-            (product.data ?? [])[index].jumlah);
-      } else {
-        productPricestoTransaction.add(
-          (product.data ?? [])[index].hargaProduk *
-              (product.data ?? [])[index].jumlah,
-        );
+      //NOTE: perhitungan pembelian grosir
+      if ((product.data ?? [])[index].isGrosir == 1) {
+        var hargaGrosir = (product.data ?? [])[index].hargaProduk *
+            (product.data ?? [])[index].jumlah;
+        for (var i = 0;
+            i < ((product.data ?? [])[index].grosirJumlahMin ?? []).length;
+            i++) {
+          print(
+              "isi grosir min adalah ${((product.data ?? [])[index].grosirJumlahMin?[i] ?? 0)}");
+          if ((product.data ?? [])[index].jumlah >=
+              ((product.data ?? [])[index].grosirJumlahMin?[i] ?? 0)) {
+            hargaGrosir = (product.data ?? [])[index].jumlah *
+                (product.data ?? [])[index].hargaGrosir?[i];
+          }
+        }
+
+        print("isi harga grosir adalah ${hargaGrosir}");
+
+        productPricestoTransaction.add(hargaGrosir);
+      }
+
+      //NOTE: perhitungan flashsale (sesuai syarat dan syarat harus sama persis dengan flashsale_kuantitas)
+      if ((product.data ?? [])[index].isFlashsale == 1) {
+        if ((product.data ?? [])[index].jumlah ==
+            (product.data ?? [])[index].flashsaleKuantitas) {
+          productPricestoTransaction.add(
+              (product.data ?? [])[index].hargaDiskonFlashsale *
+                  (product.data ?? [])[index].jumlah);
+        } else {
+          // jika tidak sesuai kuantitas kena harga normal
+          productPricestoTransaction.add(
+              (product.data ?? [])[index].hargaProduk *
+                  (product.data ?? [])[index].jumlah);
+        }
+      }
+
+      //NOTE: perhitungan diskon (sesuai dengan syarat max beli untuk diskon)
+      if ((product.data ?? [])[index].isDiskon == 1) {
+        if ((product.data ?? [])[index].jumlah <=
+            (product.data ?? [])[index].diskonMaxBeli) {
+          productPricestoTransaction.add(
+              (product.data ?? [])[index].hargaDiskon *
+                  (product.data ?? [])[index].jumlah);
+        }
       }
     }
 

@@ -112,7 +112,7 @@ class CartService {
   }) async {
     var url = Uri.parse("$baseURL/keranjang/$cartId");
     var header = {
-      'Content-Type': 'application/json',
+      // 'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
       "skip_zrok_interstitial": "true",
     };
@@ -121,13 +121,15 @@ class CartService {
       headers: header,
     );
 
+    print("url yang dikirim adalah: ${url}");
+
     if (response.statusCode >= 200 && response.statusCode <= 299) {
       var data = jsonDecode(response.body);
       print("berhasil dengan isi $data");
       return data;
     } else {
       var data = jsonDecode(response.body);
-      print("gagal dengan isi $data");
+      print("gagal hapus transaksi dengan isi $data");
       throw ("${data['message']}");
     }
   }
